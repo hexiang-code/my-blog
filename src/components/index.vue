@@ -2,15 +2,18 @@
   <div class="my-blog">
     <headTop></headTop>
     <router-view></router-view>
+    <footBottom></footBottom>
   </div>
 </template>
 
 <script>
-import HeadTop from './headTop/headTop'
+import HeadTop from './headTop/headTop';
+import FootBottom from './footBottom/footBottom';
 export default {
   name: 'Index',
   components: {
-    headTop: HeadTop
+    headTop: HeadTop,
+    footBottom: FootBottom
   }
 }
 </script>

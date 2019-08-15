@@ -39,7 +39,7 @@ export default {
 
         .nav-list {
             position: relative;
-            right: 628px;
+            right: 20%;
             display: flex;
             
             .nav-item {

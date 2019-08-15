@@ -1,8 +1,8 @@
 <template>
     <div class="foot-zone">
         <div class="foot-left">
-            <p class="font-left">hello</p>
-            <p class="font-right">world</p>
+            <p class="font-left">天高鸟嗷嗷飞</p>
+            <p class="font-right">水深鱼哗哗游</p>
         </div>
         <div class="foot-right">
             <div class="bottom-nav">
@@ -60,7 +60,7 @@ export default {
             .bottom-nav {
                 width: 300px;
                 display: flex;
-                justify-content: space-around;
+                justify-content: space-between;
                 .bottom-nav-item {
                     color: #ffffff;
                     font-size: 13px;
@@ -72,7 +72,8 @@ export default {
                 display: flex;
                 align-content: space-between;
                 width: 500px;
-                height: 150px;
+                height: 70px;
+                margin-top: 20px;
                 
                 p{
                     display: flex;

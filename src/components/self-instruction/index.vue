@@ -1,8 +1,8 @@
 <template>
     <div :class="instruction_content">
-        <!-- <div :class="instruction_left" v-html="text">
+        <div :class="instruction_left" v-html="styleText">
             
-        </div> -->
+        </div>
         <div :class="instruction_right">
             <div :class="header_instruction">
                 <div :class="person_info">
@@ -32,11 +32,12 @@
 </template>
 
 <script>
-import { userInfo } from '../../config/selfInstruction'
+import { userInfo, styleStr } from '../../config/selfInstruction'
 export default {
     data() {
         return {
             userInfo: userInfo,
+            styleText: '',
             instruction_content: '',
             instruction_left: '',
             instruction_right: '',
@@ -54,13 +55,14 @@ export default {
     mounted() {
         setTimeout(() => {
             this.getClassName();
+            this.getStyleText();
         }, 2000);
     },
 
     methods: {
         getClassName() {
             let classNameArr = Object.keys(this.$data);
-            let times = 1;
+            let times = 2;
             let timeInterVal = setInterval(()=>{
                 if(times > classNameArr.length - 2) {
                     clearInterval(timeInterVal)
@@ -68,7 +70,21 @@ export default {
                 let res = classNameArr[times].replace(/_/g, '-')
                 this.$data[classNameArr[times]] = res;
                 times ++
-            }, 500)
+            }, 100)
+        },
+
+        getStyleText() {
+        //    let str = styleStr.replace(/{|;|}/g, '<br>')
+           let str = styleStr.replace(/{/g, '{<br>').replace(/;/g, ';<br>').replace(/}/g, '}<br>')
+           let times = 0;
+           let length = 10;
+           let timeInterVal = setInterval(()=>{
+               if(times > parseInt(str.length / 10)) {
+                   clearInterval(timeInterVal)
+               }
+               this.styleText = this.styleText + str.slice(times*length, times*length+ length)
+               times ++
+           }, 50) 
         }
     }
 }
@@ -85,6 +101,7 @@ export default {
             width: 40%;
             height: 500px;
             border: 1px solid #5f5f5f;
+            overflow-y: scroll;
         }
 
         .instruction-right {

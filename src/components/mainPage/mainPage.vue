@@ -18,24 +18,30 @@
                 <p class="title-text">我眼里的</p>
             </div>
             <div class="photo-list">
-                <!-- <el-image :class="item.arrangement == 'X' ? 'x-photo-item' : 'y-photo-item'" v-for="(item,index) in photoList" :key="index" :src="item.src" fit="contain"></el-image> -->
-                <el-image :class="['photo-one', photoList[0].arrangement == 'X' ? 'x-photo-item' : 'y-photo-item']"  :src="photoList[0].src" fit="contain"></el-image>
-                <el-image :class="['photo-two',photoList[1].arrangement == 'X' ? 'x-photo-item' : 'y-photo-item']"  :src="photoList[1].src" fit="contain"></el-image>
-                <el-image :class="['photo-three',photoList[2].arrangement == 'X' ? 'x-photo-item' : 'y-photo-item']"  :src="photoList[2].src" fit="contain"></el-image>
-                <el-image :class="['photo-four', photoList[3].arrangement == 'X' ? 'x-photo-item' : 'y-photo-item']"  :src="photoList[3].src" fit="contain"></el-image>
+                <div class="photo-item" v-for="(item,index) in photoList" :key="index">
+                    <el-image :class="item.arrangement == 'X' ? 'x-photo-item' : 'y-photo-item'" :src="item.src" fit="contain"></el-image>
+                    <p class="photo-direction">{{item.photoDirection}}</p>
+                </div>
             </div>
         </div>
+        <photoUtils :photoList="photoList"></photoUtils>
     </div>
+
+
 
 </template>
 <script>
 import {pictureArr, photoList}  from '../../config/mainPagePicture';
+import PhotoUtils  from '../utils/photo-utils/photo-utils';
 export default {
     data() {
         return {
             pictureArr: pictureArr,  //轮播数组
             photoList: photoList,  //照片数组
         }
+    },
+    components: {
+        photoUtils: PhotoUtils
     }
 }
 </script>
@@ -97,9 +103,26 @@ export default {
             }
 
             .photo-list {
-                width: 500px;
-                margin: 0 auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                position: relative;
+                z-index: 9;
+                
+                .photo-item {
+                    width: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
 
+                    .photo-direction {
+                        widows: 30%;
+                        color: #BBA9A9;
+                    }
+                }
+
+                
                 .x-photo-item {
                     height: 150px;
                     width: 300px;
@@ -109,21 +132,6 @@ export default {
                     width: 150px;
                     height: 300px;
                 }
-
-                .photo-three {
-                    position: relative;
-                    left: 132px;
-                }
-
-                .photo-four {
-                    position: relative;
-                    left: 132px;
-                    top: -150px
-                }
-            }
-
-            .photo-list:hover {
-                animation: circling 5s linear 0s infinite;
             }
 
             @keyframes circling {

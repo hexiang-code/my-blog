@@ -5,13 +5,18 @@ Vue.use(Router);
 //引入组件区域
 import Index from '@/components/index';
 import MainPage from '@/components/mainPage/mainPage';
+import Instruction from '@/components/self-instruction/index';
 
 export const routerList = [
     {
         path: '',
-        redirect: '/index'
+        redirect: '/instruction'
     },
     {
+        path: '/instruction',
+        component: Instruction
+    },
+    {   
         path: '/index',
         component: Index,
         children: [

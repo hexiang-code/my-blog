@@ -1,16 +1,16 @@
 <template>
     <div :class="instruction_content">
-        <div :class="instruction_left" v-html="text">
+        <!-- <div :class="instruction_left" v-html="text">
             
-        </div>
+        </div> -->
         <div :class="instruction_right">
-            <div class="header">
-                <div class="person-info">
-                    <el-image class="person-image" :src="userInfo.personImage" fit="contain"></el-image>
+            <div :class="header_instruction">
+                <div :class="person_info">
+                    <el-image :class="person_image" :src="userInfo.personImage" fit="contain"></el-image>
                     
-                    <div class="person-info-right">
-                        <div class="person-name-top">
-                            <p class="person-name"><b>{{userInfo.name}}</b></p>
+                    <div :class="person_info_right">
+                        <div :class="person_name_top">
+                            <p :class="person_name"><b>{{userInfo.name}}</b></p>
                             <p>求职意向：{{userInfo.targetWork}}</p>
                         </div>
                         <div>
@@ -19,8 +19,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="email-phone">
-                    <div class="logo-instruction">个人简历</div>
+                <div :class="email_phone">
+                    <div :class="logo_instruction">个人简历</div>
                     <div>
                         <p>电话：{{userInfo.phone}}</p>
                         <p>邮箱：{{userInfo.email}}</p>
@@ -39,16 +39,37 @@ export default {
             userInfo: userInfo,
             instruction_content: '',
             instruction_left: '',
-            instruction_right: ''
+            instruction_right: '',
+            header_instruction: '',
+            person_info: '',
+            person_image: '',
+            person_info_right: '',
+            person_name_top: '',
+            person_name: '',
+            email_phone: '',
+            logo_instruction: ''
         }
     },
 
     mounted() {
-        console.log(this.userInfo)
+        setTimeout(() => {
+            this.getClassName();
+        }, 2000);
     },
 
     methods: {
-
+        getClassName() {
+            let classNameArr = Object.keys(this.$data);
+            let times = 1;
+            let timeInterVal = setInterval(()=>{
+                if(times > classNameArr.length - 2) {
+                    clearInterval(timeInterVal)
+                }
+                let res = classNameArr[times].replace(/_/g, '-')
+                this.$data[classNameArr[times]] = res;
+                times ++
+            }, 500)
+        }
     }
 }
 </script>
@@ -71,7 +92,7 @@ export default {
             color: #000;
             border: 1px solid #5f5f5f;
 
-            .header {
+            .header-instruction {
                 padding: 20px;
                 display: flex;
                 height: 120px;

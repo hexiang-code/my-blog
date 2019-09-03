@@ -70,7 +70,7 @@ export default {
                 let res = classNameArr[times].replace(/_/g, '-')
                 this.$data[classNameArr[times]] = res;
                 times ++
-            }, 100)
+            }, 200)
         },
 
         getStyleText() {
@@ -84,7 +84,7 @@ export default {
                }
                this.styleText = this.styleText + str.slice(times*length, times*length+ length)
                times ++
-           }, 50) 
+           }, 30) 
         }
     }
 }
@@ -99,9 +99,7 @@ export default {
 
         .instruction-left {
             width: 40%;
-            height: 500px;
             border: 1px solid #5f5f5f;
-            overflow-y: scroll;
         }
 
         .instruction-right {

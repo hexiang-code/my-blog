@@ -35,7 +35,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        z-index: 1000;
+        z-index: 10;
 
         .nav-list {
             position: relative;

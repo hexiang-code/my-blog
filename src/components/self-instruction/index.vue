@@ -26,7 +26,7 @@ export default {
             text1: ''
         }
     },
-
+  
     mounted() {
 
     },

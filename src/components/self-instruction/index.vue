@@ -1,9 +1,9 @@
 <template>
-    <div :class="instruction_content">
-        <div :class="instruction_left" v-html="styleText">
+    <div class="instruction-content show">
+        <div class="instruction-left" v-html="styleText">
             
         </div>
-        <div :class="instruction_right">
+        <div class="instruction-right show">
             <div :class="header_instruction">
                 <div :class="person_info">
                     <el-image :class="person_image" :src="userInfo.personImage" fit="contain"></el-image>
@@ -33,6 +33,7 @@
 
 <script>
 import { userInfo, styleStr } from '../../config/selfInstruction'
+import { Loading } from 'element-ui'
 export default {
     data() {
         return {
@@ -53,9 +54,19 @@ export default {
     },
 
     mounted() {
+        let loading = Loading.service({
+            fullscreen: true,
+            text: '准备中'
+        })
         setTimeout(() => {
-            this.getClassName();
-            this.getStyleText();
+            loading.close()
+            this.$confirm('准备就绪，请点击确定按钮开始', '简历准备好啦', {
+                confirmButtonText: '确定',
+                center: true
+            }).then(()=>{
+                this.getClassName();
+                this.getStyleText();
+            })
         }, 2000);
     },
 
@@ -70,7 +81,7 @@ export default {
                 let res = classNameArr[times].replace(/_/g, '-')
                 this.$data[classNameArr[times]] = res;
                 times ++
-            }, 200)
+            }, 400)
         },
 
         getStyleText() {
@@ -96,66 +107,77 @@ export default {
         display: flex;
         margin: 0 auto;
         justify-content: space-around;
+    }
 
-        .instruction-left {
-            width: 40%;
-            border: 1px solid #5f5f5f;
+    .instruction-left {
+        width: 40%;
+        border: 1px solid #5f5f5f;
+    }
+
+    .instruction-right {
+        width: 40%;
+        color: #000;
+        border: 1px solid #5f5f5f;
+    }
+
+    .header-instruction {
+        padding: 20px;
+        display: flex;
+        height: 120px;
+        justify-content: space-around;
+    }
+    .person-info {
+        height: 120px;
+        display: flex;
+    }
+
+    .person-image {
+        width: 60px;
+        height: 120px;
+        border: 1px solid #f5f5f5;
+    }
+
+    .person-info-right {
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    
+    .person-name-top {
+        height: 120px;
+    }
+
+    .person-name {
+        font-size: 26px;
+    }
+
+    .email-phone {
+        padding-left:  20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .logo-instruction {
+        color: #fff;
+        font-size: 20px;
+        background-color: #FF6600;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 10px;
+    }
+
+    @keyframes showAnimation {
+        from {
+            opacity: 0;
+        } to {
+            opacity: 1;
         }
+    }
 
-        .instruction-right {
-            width: 40%;
-            color: #000;
-            border: 1px solid #5f5f5f;
-
-            .header-instruction {
-                padding: 20px;
-                display: flex;
-                height: 120px;
-
-                .person-info {
-                    height: 120px;
-                    display: flex;
-
-                    .person-image {
-                        width: 60px;
-                        height: 120px;
-                        border: 1px solid #f5f5f5;
-                    }
-
-                    .person-info-right {
-                        padding: 0 20px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: space-between;
-
-                        .person-name-top {
-                            height: 120px;
-                            .person-name {
-                                font-size: 26px;
-                            }
-                        }
-
-
-                    }
-                }
-
-                .email-phone {
-                    padding-left:  20px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                }
-
-                .logo-instruction {
-                    color: #fff;
-                    font-size: 20px;
-                    background-color: #FF6600;
-                    text-align: center;
-                    padding: 5px 0;
-                    border-radius: 10px;
-                }
-      
-            }
-        }
+    .show {
+        animation: showAnimation 2s linear;
     }
 </style>

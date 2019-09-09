@@ -15,11 +15,11 @@ export default {
     name: 'photoUtils',
     props:{
         photoList: null,  //相片数组
-        curPhoto: ''   //当前照片
+        // curPhoto: ''   //当前照片
     },
 
     created() {
-        console.log(this.photoList)
+
     }
 }
 </script>

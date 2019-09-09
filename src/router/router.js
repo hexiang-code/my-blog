@@ -6,15 +6,20 @@ Vue.use(Router);
 import Index from '@/components/index';
 import MainPage from '@/components/mainPage/mainPage';
 import Instruction from '@/components/self-instruction/index';
+import Login from '@/components/login/index';
 
 export const routerList = [
     {
         path: '',
-        redirect: '/instruction'
+        redirect: '/login'
     },
     {
         path: '/instruction',
         component: Instruction
+    },
+    {
+        path: '/login',
+        component: Login
     },
     {   
         path: '/index',

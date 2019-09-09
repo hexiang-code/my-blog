@@ -4,9 +4,9 @@
             
         </div>
         <div class="instruction-right show">
-            <div :class="header_instruction">
-                <div :class="person_info">
-                    <el-image :class="person_image" :src="userInfo.personImage" fit="contain"></el-image>
+            <div :class="classNameArr.header_instruction">
+                <div :class="classNameArr.person_info">
+                    <el-image :class="classNameArr.person_image" :src="userInfo.personImage" fit="contain"></el-image>
                     
                     <div :class="classNameArr.person_info_right">
                         <div :class="classNameArr.person_name_top">
@@ -75,7 +75,7 @@ export default {
             let classNameArr = Object.keys(this.classNameArr);
             let times = 0;
             let timeInterVal = setInterval(()=>{
-                if(times > classNameArr.length - 1) {
+                if(times == classNameArr.length - 1) {
                     clearInterval(timeInterVal)
                 }
                 let res = classNameArr[times].replace(/_/g, '-')
@@ -128,6 +128,7 @@ export default {
         height: 120px;
         justify-content: space-around;
     }
+
     .person-info {
         height: 120px;
         display: flex;

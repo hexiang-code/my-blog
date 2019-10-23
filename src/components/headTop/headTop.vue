@@ -28,7 +28,7 @@ export default {
 <style lang='scss' scoped>
     .head-top-zone /deep/ {
         height: 120px;
-        position: fixed;
+        position: relative;
         top: 0;
         width: 100%;
         line-height: 120px;

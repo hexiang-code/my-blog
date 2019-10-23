@@ -24,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <photoUtils :photoList="photoList"></photoUtils>
+        <!-- <photoUtils :photoList="photoList"></photoUtils> -->
     </div>
 
 

@@ -14,7 +14,7 @@
                     <span>电话: 18715057130</span>
                 </p>
                 <p>
-                    <span>地址: 安徽合肥蜀山区</span>
+                    <span>地址: 安徽合肥</span>
                     <span>邮箱: hxlyy18715057130@163.com</span>
                 </p>
  

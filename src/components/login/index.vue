@@ -27,7 +27,7 @@ export default {
         // this.drawArc(starCtx, 300, 300, 100, 0, Math.PI * 2, false, "#e0dedf");
         // this.drawArc(starCtx, 300, 300, 80, 0, Math.PI * 2, false, "#dd5870");
         // this.drawArc(starCtx, 300, 300, 60, 0, Math.PI * 2, false, "#2773d3");
-        this.drawStars(starCtx, 20, 60, 300, 300, 0, "#fff"); // 五角星 
+        this.drawStars(starCtx, 20, 60, 300, 300, 20, "#fff"); // 五角星 
         
     
     },

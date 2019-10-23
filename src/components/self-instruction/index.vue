@@ -14,18 +14,28 @@
                             <p>求职意向：{{userInfo.targetWork}}</p>
                         </div>
                         <div>
-                            <p>生日：{{userInfo.birthday}}</p>
-                            <p>住址：{{userInfo.adress}}</p>
+                            <p><i :class="classNameArr.icon_image"><img src="../../assets/person-image.png"/></i>生日：{{userInfo.birthday}}</p>
+                            <p><i :class="classNameArr.icon_image"><img src="../../assets/adress.png"/></i>住址：{{userInfo.adress}}</p>
                         </div>
                     </div>
                 </div>
                 <div :class="classNameArr.email_phone">
-                    <div :class="classNameArr.logo_instruction">个人简历</div>
+                    <div :class="classNameArr.logo_instruction">
+                        <div class="left-item"></div>
+                        <div class="instruction-text"><b>个人简历</b></div>
+                        <div class="right-item"></div>
+                    </div>
                     <div>
-                        <p>电话：{{userInfo.phone}}</p>
-                        <p>邮箱：{{userInfo.email}}</p>
+                        <p><i :class="classNameArr.icon_image"><img src="../../assets/phone-image.png"/></i>电话：{{userInfo.phone}}</p>
+                        <p><i :class="classNameArr.icon_image"><img src="../../assets/email-image.png"/></i>邮箱：{{userInfo.email}}</p>
                     </div>
                 </div>
+            </div>
+
+            <div class="line-row"></div>
+
+            <div class="evaluate-background">
+
             </div>
         </div>
     </div>
@@ -47,7 +57,8 @@ export default {
                 person_name_top: '',
                 person_name: '',
                 email_phone: '',
-                logo_instruction: ''
+                logo_instruction: '',
+                icon_image: ''
             }
         }
     },
@@ -109,6 +120,7 @@ export default {
         display: flex;
         margin: 0 auto;
         justify-content: space-around;
+        font-size: 14px;
     }
 
     .instruction-left {
@@ -125,12 +137,11 @@ export default {
     .header-instruction {
         padding: 20px;
         display: flex;
-        height: 120px;
         justify-content: space-around;
     }
 
     .person-info {
-        height: 120px;
+        height: 140px;
         display: flex;
     }
 
@@ -147,6 +158,10 @@ export default {
         justify-content: space-between;
     }
 
+    .person-info-right p {
+        line-height: 30px;
+    }
+
     
     .person-name-top {
         height: 120px;
@@ -161,16 +176,41 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        height: 140px;
+    }
+
+    .email-phone p {
+        line-height: 30px;
     }
 
     .logo-instruction {
+        display: flex;
+    }
+
+    .instruction-text {
+        padding: 5px 0;
+        width: 150px;
+        background: rgb(217, 150, 147);
         color: #fff;
         font-size: 20px;
-        background-color: #FF6600;
         text-align: center;
-        padding: 5px 0;
-        border-radius: 10px;
     }
+
+    .logo-instruction .left-item {
+        background: rgb(217, 150, 147);
+        width: 10px;
+        height: 40px;
+        margin-right: 3px;
+    }
+
+    
+    .logo-instruction .right-item {
+        background: rgb(217, 150, 147);
+        width: 10px;
+        height: 40px;
+        margin-left: 3px;
+    }
+
 
     @keyframes showAnimation {
         from {
@@ -182,5 +222,19 @@ export default {
 
     .show {
         animation: showAnimation 2s linear;
+    }
+
+    .icon-image {
+        margin-right: 10px;
+    }
+
+    .line-row {
+        height: 4px;
+        width: 100%;
+        background-color: rgb(118, 113, 113)
+    }
+
+    .evaluate-background {
+        padding: 20px;
     }
 </style>

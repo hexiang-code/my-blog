@@ -7,11 +7,12 @@ import Index from '@/components/index';
 import MainPage from '@/components/mainPage/mainPage';
 import Instruction from '@/components/self-instruction/index';
 import Login from '@/components/login/index';
+import StartPage from '@/components/start-page/start-page'
 
 export const routerList = [
     {
         path: '',
-        redirect: '/login'
+        redirect: '/index'
     },
     {
         path: '/instruction',
@@ -27,12 +28,17 @@ export const routerList = [
         children: [
             {
                 path: '',
-                redirect: '/mainPage'
+                redirect: '/startPage'
             },
             {
                 path: '/mainPage',
                 component: MainPage,
                 name: 'mainPage'
+            }, 
+            {
+                path: '/startPage',
+                component: StartPage,
+                name: 'startPage'
             }
         ]
     }

@@ -34,13 +34,13 @@ export const routerList = [
                 path: '/mainPage',
                 component: MainPage,
                 name: 'mainPage'
-            }, 
-            {
-                path: '/startPage',
-                component: StartPage,
-                name: 'startPage'
             }
         ]
+    },
+    {
+        path: '/startPage',
+        component: StartPage,
+        name: 'startPage'
     }
 ]
 

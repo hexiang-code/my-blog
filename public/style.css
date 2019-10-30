@@ -17,6 +17,6 @@ table { border-collapse:collapse; border-spacing:0; }
 
 @media screen and (max-width: 1920px) {
     html{
-        font-size: 6.25%;
+        font-size: 75%;
     }
 }

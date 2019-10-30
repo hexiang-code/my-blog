@@ -4,13 +4,13 @@
         <div class="photo">
             <el-image :src="photoList[0].src" fit="contain"></el-image>
         </div>
-
 </div>
 
 
 </template>
 
 <script>
+
 export default {
     name: 'photoUtils',
     props:{

@@ -8,7 +8,7 @@
 		</form>
         <div class="icon-list">
             <img class="icon-item" src="../../assets/iconfont/txtEdit.png" alt="">
-            <el-popover placement="left" title="书签" width="300" trigger="click">
+            <el-popover placement="left" title="书签" width="500" trigger="click">
                 <el-input
                     placeholder="输入关键字进行过滤"
                     v-model="filterText"
@@ -30,6 +30,7 @@
 
 <script>
 import VueVideoBackground from 'vue-video-background'
+import request from '../../utils/http'
 const bookmark = [
     {
         label: '娱乐',
@@ -69,6 +70,11 @@ export default {
         'vue-video-background': VueVideoBackground
     },
 
+    created () {
+        //请求书签内容
+        this.getBookmarksData()
+    },
+
    watch: {
       filterText(val) {
         this.$refs.bookmarks.filter(val);
@@ -86,6 +92,16 @@ export default {
         filterNode(value, data) {
             if (!value) return true
             return data.label.indexOf(value) !== -1
+        },
+
+        //请求数钱内容
+        getBookmarksData () {
+            let url = 'http://49.233.148.29/api/bookmarks/getBookMarksContent'
+            let method = 'GET'
+            request({url, method: 'GET'}).then(res =>{
+                let value = res.data.data
+                this.bookmark = value.bookmarksData.children
+            })
         }
     }
 }
@@ -102,7 +118,7 @@ export default {
     }
 
     .search-zone {
-        width: 30rem;
+        width: 360px;
         height: 100px;
         position: relative;
         display: flex;
@@ -122,6 +138,7 @@ export default {
         padding: 0 80px;
         position: relative;
         z-index: 9;
+        font-size: 20px;
     }
 
     .search-icon {

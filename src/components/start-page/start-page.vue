@@ -125,8 +125,14 @@ export default {
     },
 
     created () {
-        //请求书签内容
+        // 请求书签内容
         this.getBookmarksData()
+        // 请求记事本列表
+        this.getNotepadList()
+        // 请求记事本内容
+        this.getNotepadContent()
+        // 更新记事本内容
+        this.updateNotepadContent()
     },
 
    watch: {
@@ -147,6 +153,44 @@ export default {
             if (!value) return true
             return data.label.indexOf(value) !== -1
         },
+        
+        // 请求记事本列表
+        getNotepadList() {
+            let userId = 1;
+            let url = 'notepad/getNotepadCatalog'
+            let method = 'GET'
+            request({url, method, params: { userId }}).then(res => {
+                console.log(res)
+            })
+        },
+        
+        // 请求记事本内容
+        getNotepadContent () {
+            let method = 'GET'
+            let url = 'notepad/getNotepadContent'
+            let params = {
+                userId: 1,
+                id: 1,
+            }
+            request({url, method, params}).then(res => {
+                console.log(res)
+            })
+        },
+
+        // 更新记事本内容
+        updateNotepadContent () {
+            let method = 'POST'
+            let url = 'notepad/updateNotepadContent'
+            let data = {
+                userId: 1,
+                id: 3,
+                content: 'test',
+                name: 'test'
+            }
+            request({url, method, data}).then(res => {
+                console.log(res)
+            })
+        }, 
 
         //请求书签内容
         getBookmarksData () {
@@ -167,7 +211,6 @@ export default {
                 userPassword: this.userInfo.userPassword
             }
             request({url, method, data}).then( res => {
-                console.log(res)
                 if (!res.data.status) {
                     this.$message.error(res.data.msg)
                 } else {

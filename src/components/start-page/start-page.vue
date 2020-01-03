@@ -319,7 +319,7 @@ export default {
                 this.loginWindow = false
                 this.registerWindow = false
             }).catch(e => {
-                this.$$message.error(e.msg)
+                this.$message.error(e.msg)
             })
         },
 

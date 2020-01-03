@@ -11,7 +11,7 @@ import StartPage from '@/components/start-page/start-page'
 
 export const routerList = [
     {
-        path: '',
+        path: '/',
         redirect: '/index'
     },
     {
@@ -27,7 +27,7 @@ export const routerList = [
         component: Index,
         children: [
             {
-                path: '',
+                path: '/',
                 redirect: '/startPage'
             },
             {
@@ -45,6 +45,7 @@ export const routerList = [
 ]
 
 export default new Router({
+    mode: 'hash',
     routes: routerList
 })
 

@@ -318,6 +318,8 @@ export default {
                 this.$store.commit('setUserInfo', res.userData)
                 this.loginWindow = false
                 this.registerWindow = false
+            }).catch(e => {
+                this.$$message.error(e.msg)
             })
         },
 
@@ -333,6 +335,8 @@ export default {
                     this.$message.success('创建用户成功')
                     this.registerWindow = false
                     cookieServe.setCookie('token', res.data.data.token, 1)
+                }).catch(e => {
+                    this.$message.error(e.msg)
                 })
             } else {
                 this.$message.error('两次输入密码不一致，请重新输入')

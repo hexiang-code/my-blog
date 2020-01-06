@@ -1,10 +1,27 @@
 <template>
     <div class="bg-wall">
         <background-video :resource="soure"></background-video>
-        <form action="https://www.baidu.com/s" target="_blank" class="search-zone">
-            <input type="image" alt="Submit" class="search-icon" @keyup.enter="submit" :src="(require('../../assets/iconfont/search-icon.png'))" >
-            <input type="text" name="wd" class="search-input" autocomplete="off" />
-		</form>
+        <div class="search-question">
+            <div class="search-tabs">
+                <div class="search-items" @click="selectTabs('baiduSearch')">
+                    <img v-if="curSelectTabs == 'baiduSearch'" class="leimu-icon" :src="tabsSelectIcon" />
+                    <div class="baidu-search">百度搜索</div>
+                </div>
+                <div class="search-items" @click="selectTabs('openUrl')">
+                    <img v-if="curSelectTabs == 'openUrl'" class="leimu-icon" :src="tabsSelectIcon" />
+                    <div class="baidu-search tabs-margin-left">打开网址</div>
+                </div>
+                
+            </div>
+            <form v-if="curSelectTabs == 'baiduSearch'" action="https://www.baidu.com/s" target="_blank" class="search-zone">
+                <input type="image" alt="Submit" class="search-icon" @keyup.enter="submit" :src="(require('../../assets/iconfont/search-icon.png'))" >
+                <input type="text" name="wd" class="search-input" autocomplete="off" />
+            </form>
+            <div class="search-zone" v-if="curSelectTabs == 'openUrl'" @keyup.enter="openNewTabs">
+                <input type="text" name="wd" class="search-input go-new-tab" autocomplete="off" v-model="websideUrl" />
+                <input @click="openNewTabs" type="image" class="next-icon" :src="(require('../../assets/iconfont/next.png'))" >
+            </div>
+        </div>
         <div class="icon-list">
             <img title="登录" v-if="isShowlogin" @click="loginWindow = true" class="icon-item" src="../../assets/iconfont/login.png" alt="">
             <img title="注册" v-if="isShowRegister"  @click="registerWindow = true" class="icon-item" src="../../assets/iconfont/register.png" alt="">
@@ -118,6 +135,7 @@ import BackgroundVideo from '../utils/background-video'
 import request from '../../utils/http'
 import cookieServe from '../../utils/cookie'
 import { VueEditor } from "vue2-editor";
+import tabsConfig from '../../config/start-page'
 export default {
     data() {
         return {
@@ -158,7 +176,10 @@ export default {
             isShowBookmarkList: false, // 是否展示书签列表
             isShowNotepadList: false,  // 是否展示记事本列表
             isShowNotepadContent: false, // 是否展示记事本内容
-            selFile: '' // 用户选择的文件
+            selFile: '', // 用户选择的文件
+            tabsSelectIcon: tabsConfig.tabsSelectIcon, // 导航栏选择中状态的图标
+            curSelectTabs: 'baiduSearch', // openUrl: 打开网址， baidusearch： 百度搜索
+            websideUrl: '', // 要打开的导航地址
         }
     },
 
@@ -168,7 +189,6 @@ export default {
     },
 
     created () {
-
     },
 
     computed: {
@@ -343,7 +363,15 @@ export default {
                 this.registerUserInfo.userPassword = ''
                 this.registerUserInfo.userPasswordConfirm = ''
             }
+        },
 
+        // 选择标签页事件
+        selectTabs (val) {
+            this.curSelectTabs = val
+        },
+        
+        openNewTabs () {
+            window.open(this.websideUrl, '_blank')
         }
     }
 }
@@ -368,14 +396,65 @@ export default {
         height: 100%;
     }
 
-    .search-zone {
-        width: 360px;
-        height: 100px;
+    .search-question /deep/ {
         position: fixed;
+        left: 200px;
+        top: 100px;
+        width: 360px;
+
+        .search-tabs {
+            display: flex;
+            height: 40px;
+            padding: 0 0 0 80px;
+
+            .search-items {
+                position: relative;
+
+                .leimu-icon {
+                    position: absolute;
+                    width: 100px;
+                    height: auto;
+                    top:-60px;
+                    left: 0;
+                    z-index: 9;
+                    animation: tabsIconAnimation 1s ease-out;
+                }
+
+                @keyframes tabsIconAnimation {
+                    0% {
+                        opacity: 0;
+                    }
+
+                    50% {
+                        opacity: 0.5;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                }
+                .baidu-search {
+                    position: relative;
+                    width: 100px;
+                    line-height: 40px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-align: center;
+                    color: #1296DB;
+                    cursor: pointer;
+                    font-family: monospace;
+                    z-index: 10;
+                }
+            }
+
+
+            .tabs-margin-left {
+                margin-left: 5px;
+            }
+        }
+    }
+    .search-zone {
         display: flex;
         align-items: center;
-        left: 10%;
-        top: 8%;
     }
 
     .search-input {
@@ -386,10 +465,14 @@ export default {
         opacity: 0.5;
         outline: none;
         text-align: center;
-        padding: 0 80px;
+        padding: 0 0 0 80px;
         position: relative;
         z-index: 9;
         font-size: 20px;
+    }
+
+    .go-new-tab {
+        padding: 0 80px 0 0;
     }
 
     .search-icon {
@@ -397,7 +480,15 @@ export default {
         height: 60px;
         position: absolute;
         left: 20px;
-        z-index: 10;;
+        z-index: 10;
+    }
+
+    .next-icon {
+        width: 60px;
+        height: 60px;
+        position: absolute;
+        right: 20px;
+        z-index: 10;
     }
 
     .icon-list {

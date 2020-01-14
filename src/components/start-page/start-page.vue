@@ -1,6 +1,6 @@
 <template>
     <div class="bg-wall">
-        <background-video :resource="soure"></background-video>
+        <background-video :class="{ 'bg-vague' : isVagueBg }" :resource="soure"></background-video>
         <form action="https://www.baidu.com/s" target="_blank" class="search-zone">
             <input type="image" alt="Submit" class="search-icon" @keyup.enter="submit" :src="(require('../../assets/iconfont/search-icon.png'))" >
             <input type="text" name="wd" class="search-input" autocomplete="off" />
@@ -74,7 +74,7 @@
             </div>
         </el-drawer>
         <!-- 登录弹框 -->
-        <el-dialog :visible.sync="loginWindow" title="登录" width="500px">
+        <!-- <el-dialog :visible.sync="loginWindow" title="登录" width="500px">
             <el-form label-width="80px">
                 <el-form-item label="账号">
                     <el-input type="text" v-model="userInfo.userAccount" autocomplete class="user-input" />
@@ -87,7 +87,18 @@
                     <el-button @click="loginWindow = false">取消</el-button>
                 </el-form-item>
             </el-form>
-        </el-dialog>
+        </el-dialog> -->
+
+        <div class="login-window">
+            <p class="user-accoutn">
+                <span class="login-label">ACCOUNT:</span>
+                <input type="text" placeholder="请输入账号" />
+            </p>
+            <p class="user-password">
+                <span class="login-label">PASSWORD:</span>
+                <input type="password" placeholder="请输入密码" />
+            </p>
+        </div>
 
         <!-- 注册弹框 -->
         <el-dialog :visible.sync="registerWindow" width="500px">
@@ -174,6 +185,10 @@ export default {
     computed: {
         'isShowlogin': function() {
             return Boolean(Object.keys(this.$store.getters.getUserInfo))
+        },
+
+        isVagueBg () {
+            return false
         }
     }, 
 
@@ -354,7 +369,7 @@ export default {
         overflow: auto !important;
     }
     .bg-wall {
-        position: relative;
+        position: fixed;
         width: 100%;
         height: 100%;
         left: 0;
@@ -443,5 +458,71 @@ export default {
 
     .user-input .el-input__inner {
         widows: 334px;
+    }
+
+    .bg-vague {
+        filter: blur(10px) contrast(.8);
+    }
+
+    .login-window {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 30%;
+        height: 300px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid black;
+        border-radius: 10px;
+        backdrop-filter: blur(10px) brightness(110%);
+        z-index: 1;
+
+        .login-label {
+            position: relative;
+            display: inline-block;
+            width: 100px;
+            margin-right: 20px;
+            text-align: right;
+            font-weight: 700;
+            color: #1296db;
+            margin-bottom: 30px;
+        }
+
+        .login-label::before {
+            content: '';
+            position: absolute;
+            background-image: url('../../accets/')
+        }
+
+    
+        input {
+            border: none;
+            background-color: transparent;
+            height: 30px;
+            color: #1296db;
+        }
+
+        ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
+			color: #1296db;
+            text-align: center;
+		}
+		::-moz-placeholder { /* Firefox 19+ */  
+			color: #1296db;
+            text-align: center;
+		}
+		:-ms-input-placeholder { /* IE 10+ */ 
+            color: #1296db;
+            text-align: center;
+		}
+
+		:-moz-placeholder { /* Firefox 18- */ 
+		    color: #1296db;
+            text-align: center;
+		}
     }
 </style>

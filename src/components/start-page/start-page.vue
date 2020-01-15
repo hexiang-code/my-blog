@@ -24,7 +24,7 @@
         </div>
         <div class="icon-list">
             <img title="登录" v-if="isShowlogin" @click="isShowLoginWindow = true" class="icon-item" src="../../assets/iconfont/login.png" alt="">
-            <img title="注册" v-if="isShowRegister"  @click="registerWindow = true" class="icon-item" src="../../assets/iconfont/register.png" alt="">
+            <img title="注册" v-if="isShowRegister"  @click="isShowRegisterWindow = true" class="icon-item" src="../../assets/iconfont/register.png" alt="">
             <img title="记事本" class="icon-item" @click="openNotepadList" src="../../assets/iconfont/txtEdit.png" alt="">
             <img title="书签" class="icon-item" @click="openBookmarkList" src="../../assets/iconfont/navigation.png" alt="">
         </div>
@@ -91,38 +91,25 @@
             </div>
         </el-drawer>
         <!-- 登录弹框 -->
-        <!-- <el-dialog :visible.sync="isShowLoginWindow" title="登录" width="500px">
-            <el-form label-width="80px">
-                <el-form-item label="账号">
-                    <el-input type="text" v-model="userInfo.userAccount" autocomplete class="user-input" />
-                </el-form-item>
-                <el-form-item label="密码">
-                    <el-input type="password" v-model="userInfo.userPassword" class="user-input" autocomplete="off" />
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="login">登录</el-button>
-                    <el-button @click="isShowLoginWindow = false">取消</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog> -->
-
-        <div class="login-window" :class="{ 'login-widow_open': isShowLoginWindow, 'login-window_closed': !isShowLoginWindow}">
-            <div class="login-input">
-                <p class="login-label">ACCOUNT:</p>
-                <input type="text" placeholder="请输入账号" />
-            </div>
-            <div class="login-input">
-                <p class="login-label">PASSWORD:</p>
-                <input type="password" placeholder="请输入密码" />
-            </div>
-            <div class="login-btn">
-                <button @click="login">confirm</button>
-                <button @click="isShowLoginWindow = false">cancel</button>
-            </div>
-        </div>
+        <window-utils :isShowWindow="isShowLoginWindow">
+            <template v-slot:windowContent>
+                <div class="login-input">
+                    <p class="login-label">ACCOUNT:</p>
+                    <input v-model="userInfo.userAccount" type="text" placeholder="请输入账号" />
+                </div>
+                <div class="login-input">
+                    <p class="login-label">PASSWORD:</p>
+                    <input v-model="userInfo.userPassword" type="password" placeholder="请输入密码" />
+                </div>
+                <div class="login-btn">
+                    <button @click="login">confirm</button>
+                    <button @click="isShowLoginWindow = false">cancel</button>
+                </div>
+            </template>
+        </window-utils>
 
         <!-- 注册弹框 -->
-        <el-dialog :visible.sync="registerWindow" width="500px">
+        <!-- <el-dialog :visible.sync="isShowRegisterWindow" width="500px">
             <el-form label-width="80px">
                 <el-form-item label="用户名">
                     <el-input type="text" v-model="registerUserInfo.userName" autocomplete class="user-input" />
@@ -138,19 +125,43 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="register">注册</el-button>
-                    <el-button @click="registerWindow = false">取消</el-button>
+                    <el-button @click="isShowRegisterWindow = false">取消</el-button>
                 </el-form-item>
             </el-form>
-        </el-dialog>
+        </el-dialog> -->
+        <window-utils :isShowWindow="isShowRegisterWindow">
+            <template v-slot:windowContent>
+                <div class="login-input">
+                    <p class="login-label">NAME:</p>
+                    <input v-model="registerUserInfo.userName" type="text" placeholder="请输用户名" />
+                </div>
+                <div class="login-input">
+                    <p class="login-label">ACCOUNT:</p>
+                    <input v-model="registerUserInfo.userAccount" type="text" placeholder="请输入账号" />
+                </div>
+                <div class="login-input">
+                    <p class="login-label">PASSWORD:</p>
+                    <input v-model="registerUserInfo.userPassword" type="password" placeholder="请输入密码" />
+                </div>
+                <div class="login-input">
+                    <p class="login-label">COMFIRM PWD:</p>
+                    <input v-model="registerUserInfo.userPasswordConfirm" type="password" placeholder="请确认密码" />
+                </div>
+                <div class="login-btn">
+                    <button @click="register">register</button>
+                    <button @click="isShowRegisterWindow = false">cancel</button>
+                </div>
+            </template>
+        </window-utils>
     </div>
 </template>
 
 <script>
 import BackgroundVideo from '../utils/background-video'
-import windowUtils from '../../utils/window-utils'
+import windowUtils from '../utils/vague-window-utils'
 import request from '../../utils/http'
 import cookieServe from '../../utils/cookie'
-import { VueEditor } from "vue2-editor";
+import { VueEditor } from "vue2-editor"
 import tabsConfig from '../../config/start-page'
 export default {
     data() {
@@ -171,7 +182,7 @@ export default {
             // isShowlogin: true,  // 是否展示登录按钮
             isShowRegister: true,  // 是否展示注册按钮
             isShowLoginWindow: false,  // 是否展示登录弹框
-            registerWindow: false,  // 是否展示注册弹框
+            isShowRegisterWindow: false,  // 是否展示注册弹框
             userInfo: {
                 userAccount: '',  // 账号
                 userPassword: '',  // 密码
@@ -206,6 +217,7 @@ export default {
     },
 
     created () {
+
     },
 
     computed: {
@@ -358,7 +370,7 @@ export default {
                 cookieServe.setCookie('token', res.token, 1)
                 this.$store.commit('setUserInfo', res.userData)
                 this.isShowLoginWindow = false
-                this.registerWindow = false
+                this.isShowRegisterWindow = false
             }).catch(e => {
                 this.$message.error(e.msg)
             })
@@ -374,7 +386,7 @@ export default {
                 let data = { userName, userAccount, userPassword }
                 request({url, method, data}).then(res => {
                     this.$message.success('创建用户成功')
-                    this.registerWindow = false
+                    this.isShowRegisterWindow = false
                     cookieServe.setCookie('token', res.data.data.token, 1)
                 }).catch(e => {
                     this.$message.error(e.msg)

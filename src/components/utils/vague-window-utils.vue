@@ -1,31 +1,40 @@
 <template>
-    <div class="login-window" :class="{ 'login-widow_open': isShowWindow, 'login-window_closed': !isShowWindow}">
-        <!-- <div class="login-input">
-            <p class="login-label">ACCOUNT:</p>
-            <input type="text" placeholder="请输入账号" />
-        </div>
-        <div class="login-input">
-            <p class="login-label">PASSWORD:</p>
-            <input type="password" placeholder="请输入密码" />
-        </div>
-        <div class="login-btn">
-            <button @click="login">confirm</button>
-            <button @click="isShowWindow = false">cancel</button>
-        </div> -->
-        <slot name="window-content"></slot>
+    <div v-if="isReady" class="login-window" 
+        :class="{ 'login-widow_open': isShowWindow, 'login-window_closed': !isShowWindow}"
+        :style="windowSizeText">
+        <slot name="windowContent"></slot>
     </div>
 </template>
 <script>
 export default {
     name: 'window-utils',
     props: {
-        isShowLogin: {
-            type: Boolean,
-            default: false
+        isShowWindow: Boolean,
+        width: { // 窗口宽度
+            type: String,
+            default: '30%'
+        },
+        height: { // 窗口高度
+            type: String,
+            default: ''
         }
     },
-    methods: {
-        
+
+    data () {
+        return {
+            isReady: false
+        }
+    },
+    computed: {
+        windowSizeText () {
+            return `width: ${this.width};${this.height ? 'height: '+ this.height : ''}`
+        }
+    },
+
+    watch: {
+        isShowWindow() {
+            this.isReady = true
+        }
     }
 }
 </script>
@@ -33,22 +42,19 @@ export default {
     .login-window {
         visibility: hidden;
         position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
         left: 0;
-        width: 30%;
-        height: 30%;
+        right: 0;
+        top: 30%;
+        padding: 20px;
         margin: auto;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        border: 1px solid black;
         border-radius: 10px;
         backdrop-filter: blur(10px) brightness(110%);
         z-index: 1;
-        transform: translateY(-100%);
+        // transform: translateY(-100%);
 
         .login-input {
             display: flex;

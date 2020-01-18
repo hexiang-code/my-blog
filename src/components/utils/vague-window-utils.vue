@@ -45,6 +45,7 @@ export default {
         left: 0;
         right: 0;
         top: 30%;
+        top: 50%;
         padding: 20px;
         margin: auto;
         display: flex;

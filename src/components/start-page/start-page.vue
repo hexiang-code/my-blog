@@ -90,9 +90,10 @@
                 </el-drawer>
             </div>
         </el-drawer>
+        
         <!-- 登录弹框 -->
-        <window-utils :isShowWindow="isShowLoginWindow">
-            <template v-slot:windowContent>
+        <window-utils :isShowWindow.sync="isShowLoginWindow" title="登录" @confirm="login">
+            <template>
                 <div class="login-input">
                     <p class="login-label">ACCOUNT:</p>
                     <input v-model="userInfo.userAccount" type="text" placeholder="请输入账号" />
@@ -101,36 +102,12 @@
                     <p class="login-label">PASSWORD:</p>
                     <input v-model="userInfo.userPassword" type="password" placeholder="请输入密码" />
                 </div>
-                <div class="login-btn">
-                    <button @click="login">confirm</button>
-                    <button @click="isShowLoginWindow = false">cancel</button>
-                </div>
             </template>
         </window-utils>
 
         <!-- 注册弹框 -->
-        <!-- <el-dialog :visible.sync="isShowRegisterWindow" width="500px">
-            <el-form label-width="80px">
-                <el-form-item label="用户名">
-                    <el-input type="text" v-model="registerUserInfo.userName" autocomplete class="user-input" />
-                </el-form-item>
-                <el-form-item label="账号">
-                    <el-input type="text" v-model="registerUserInfo.userAccount" autocomplete class="user-input" />
-                </el-form-item>
-                <el-form-item label="密码">
-                    <el-input type="password" v-model="registerUserInfo.userPassword" class="user-input" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="确认密码">
-                    <el-input type="password" v-model="registerUserInfo.userPasswordConfirm" class="user-input" autocomplete="off" />
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="register">注册</el-button>
-                    <el-button @click="isShowRegisterWindow = false">取消</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog> -->
-        <window-utils :isShowWindow="isShowRegisterWindow">
-            <template v-slot:windowContent>
+        <window-utils :isShowWindow.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
+            <template>
                 <div class="login-input">
                     <p class="login-label">NAME:</p>
                     <input v-model="registerUserInfo.userName" type="text" placeholder="请输用户名" />
@@ -147,10 +124,10 @@
                     <p class="login-label">COMFIRM PWD:</p>
                     <input v-model="registerUserInfo.userPasswordConfirm" type="password" placeholder="请确认密码" />
                 </div>
-                <div class="login-btn">
+                <!-- <div class="login-btn">
                     <button @click="register">register</button>
                     <button @click="isShowRegisterWindow = false">cancel</button>
-                </div>
+                </div> -->
             </template>
         </window-utils>
     </div>
@@ -571,5 +548,128 @@ export default {
 
     .bg-vague {
         filter: blur(10px) contrast(.8);
+    }
+
+    .login-input {
+        display: flex;
+        height: 60px;
+        align-items: center;
+    }
+    .login-label {
+        position: relative;
+        display: inline-block;
+        width: 140px;
+        margin-right: 40px;
+        text-align: right;
+        font-weight: 700;
+        color: #1296db;
+    }
+
+    .login-label::before {
+        content: '';
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        right: -30px;
+        top: -5px;
+        background-image: url('../../assets/status-icon/leimu-icon.png');
+        background-size: 30px 30px;
+    }
+
+
+    .login-input input {
+        height: 30px;
+        padding-left: 20px;
+        border: 1px solid #1296db;
+        color: #1296db;
+        background-color: transparent;
+    }
+
+    .login-btn {
+        width: 100%;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-btn button {
+        position: relative;
+        padding: 0;
+        margin: 0;
+        width: 100px;
+        height: 40px;
+        background-color: none;
+        text-transform: uppercase;
+        border: 4px solid #1296db;
+        background-color: transparent;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    
+    .login-btn button:nth-child(1) {
+        margin-right: 60px;
+        color: #1296db;
+    }
+
+    .login-btn button::after, .login-btn button::before {
+        content: '';
+        position: absolute;
+        width: 10px;
+        height: 4px;
+        background-color: #fff;
+    }
+
+    .login-btn button::after {
+        top: 32px;
+        right: 10px;
+    }
+
+    .login-btn button::before {
+        top: -4px;
+    }
+    
+    .login-btn button:hover::before {
+        animation: translateBefore 1s forwards;
+    }
+
+    .login-btn button:hover::after {
+        animation: translateAfter 1s forwards;
+    }
+
+    @keyframes translateBefore {
+        0% {
+            left: 0px;
+        }
+
+        100% {
+            left: 80px;
+            background-color: #1296db;
+        }
+    }
+
+    @keyframes translateAfter {
+        0% {
+            right: 10px;
+        }
+
+        100% {
+            right: 80px;
+            background-color: #1296db;
+        }
+    }
+
+    ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
+        color: #1296db;
+    }
+    ::-moz-placeholder { /* Firefox 19+ */  
+        color: #1296db;
+    }
+    :-ms-input-placeholder { /* IE 10+ */ 
+        color: #1296db;
+    }
+
+    :-moz-placeholder { /* Firefox 18- */ 
+        color: #1296db;
     }
 </style>

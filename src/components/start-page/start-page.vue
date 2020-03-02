@@ -1,6 +1,6 @@
 <template>
     <div class="bg-wall">
-        <background-video :resource="soure"></background-video>
+        <backgroundVideo :resource="soure" ></backgroundVideo>
         <div class="search-question">
             <div class="search-tabs">
                 <div class="search-items" @click="selectTabs('baiduSearch')">
@@ -92,7 +92,7 @@
         </el-drawer>
         
         <!-- 登录弹框 -->
-        <window-utils :isShowWindow.sync="isShowLoginWindow" title="登录" @confirm="login">
+        <windowUtils :isShowWindow.sync="isShowLoginWindow" title="登录" @confirm="login">
             <template>
                 <div class="login-input">
                     <p class="login-label">ACCOUNT:</p>
@@ -103,10 +103,10 @@
                     <input v-model="userInfo.userPassword" type="password" placeholder="请输入密码" />
                 </div>
             </template>
-        </window-utils>
+        </windowUtils>
 
         <!-- 注册弹框 -->
-        <window-utils :isShowWindow.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
+        <windowUtils :isShowWindow.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
             <template>
                 <div class="login-input">
                     <p class="login-label">NAME:</p>
@@ -129,13 +129,11 @@
                     <button @click="isShowRegisterWindow = false">cancel</button>
                 </div> -->
             </template>
-        </window-utils>
+        </windowUtils>
     </div>
 </template>
 
 <script>
-import BackgroundVideo from '../utils/background-video'
-import windowUtils from '../utils/vague-window-utils'
 import request from '../../utils/http'
 import cookieServe from '../../utils/cookie'
 import { VueEditor } from "vue2-editor"
@@ -188,9 +186,7 @@ export default {
     },
 
     components: {
-        'background-video': BackgroundVideo,
-        'vue-editor': VueEditor,
-        'window-utils': windowUtils
+        'vue-editor': VueEditor
     },
 
     created () {
@@ -635,28 +631,6 @@ export default {
 
     .login-btn button:hover::after {
         animation: translateAfter 1s forwards;
-    }
-
-    @keyframes translateBefore {
-        0% {
-            left: 0px;
-        }
-
-        100% {
-            left: 80px;
-            background-color: #1296db;
-        }
-    }
-
-    @keyframes translateAfter {
-        0% {
-            right: 10px;
-        }
-
-        100% {
-            right: 80px;
-            background-color: #1296db;
-        }
     }
 
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 

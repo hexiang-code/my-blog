@@ -194,8 +194,16 @@ export default {
     },
 
     computed: {
-        'isShowlogin': function() {
-            return Boolean(Object.keys(this.$store.getters.getUserInfo))
+        isShowlogin: {
+            get () {
+                let { userId } = this.$store.getters.getUserInfo
+                if (userId) return false
+                return true
+            },
+
+            set (value) {
+                return value
+            }
         },
 
         isVagueBg () {
@@ -344,6 +352,7 @@ export default {
                 this.$store.commit('setUserInfo', res.userData)
                 this.isShowLoginWindow = false
                 this.isShowRegisterWindow = false
+                this.isShowlogin = false
             }).catch(e => {
                 this.$message.error(e.msg)
             })

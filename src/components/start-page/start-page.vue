@@ -311,13 +311,10 @@ export default {
         selBookmarksFile () {
             let userInfo = this.$store.getters.getUserInfo
             this.selFile = this.$refs.bookmarksFileInput.files[0]
-            console.log(this.selFile)
             let url = 'bookmarks/uploadBookmarks',
                 data = new FormData(),
                 method = 'POST'
             data.append('file', this.selFile)
-            // data.append('userId', userInfo.userId)
-            data.append('userId', 1)
             request({url, method, data}).then(res => {
                 console.log(res)
             })
@@ -333,8 +330,7 @@ export default {
             let url = 'bookmarks/getBookMarksContent'
             let method = 'GET'
             request({url, method}).then(res =>{
-                let value = res
-                this.bookmark = value.bookmarksData.children
+                this.bookmark = res.bookmarksData
             })
         },
 

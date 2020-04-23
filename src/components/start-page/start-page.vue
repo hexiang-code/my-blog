@@ -30,29 +30,16 @@
         </div>
         
         <!-- 书签抽屉 -->
-        <el-drawer
-            title="书签列表"
-            :visible.sync="isShowBookmarkList"
-            size="20%"
-            :close-on-press-escape="true">
-            <div class="drawe-padding">
-                <el-input
-                    placeholder="找一找"
-                    v-model="filterText"
-                    class="bookmark-filter">
-                </el-input>
-                <input type="file" @change="selBookmarksFile" accept="html" ref="bookmarksFileInput"/>
-                <el-button @click="uploadBookmarks">提交</el-button>
-                <el-tree class="bookmarks-content" :data="bookmark" 
-                    :props="defaultProps" 
-                    @node-click="clickBookmark" 
-                    :highlight-current="true" 
-                    :accordion="true"
-                    :filter-node-method="filterNode"
-                    ref="bookmarks">
-                </el-tree>
-            </div>
-        </el-drawer>
+        <drawer :isShow.sync="isShowBookmarkList" :isShowModal="true">
+            <tree
+                :tree="{ 
+                    title: '我的书签',
+                    children: bookmark
+                }"
+                :isExpandAll="true"
+                @childNodeClick="openLink"
+            ></tree>
+        </drawer>
 
         <!-- 记事本抽屉 -->
         <el-drawer
@@ -212,13 +199,6 @@ export default {
     }, 
 
     mounted () {
-        // // 如果用户登录则请求书签和记事本列表
-        // if (this.$store.getters.getUserInfo.userId) {
-        //     // 请求书签列表
-        //     this.getBookmarksList()
-        //     // 请求记事本列表
-        //     this.getNotepadList()
-        // }
     },
 
    watch: {
@@ -231,6 +211,13 @@ export default {
     },
 
     methods: {
+
+        // 初始化请求数据
+        _initData () {
+            this.getNotepadList()
+            this.getBookmarksList()
+        },
+
         //点击书签
         clickBookmark(e) {
             if (e.href) {
@@ -325,6 +312,11 @@ export default {
 
         },
 
+        // 打开书签链接链接
+        openLink ({ href }) {
+            window.open(href)
+        },
+
         //请求书签内容
         getBookmarksList () {
             let url = 'bookmarks/getBookMarksContent'
@@ -349,6 +341,8 @@ export default {
                 this.isShowLoginWindow = false
                 this.isShowRegisterWindow = false
                 this.isShowlogin = false
+                // 登录成功后请求数据
+                this._initData()
             }).catch(e => {
                 this.$message.error(e.msg)
             })

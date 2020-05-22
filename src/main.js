@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 // 导入 element 组件库
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import 'codehe-ui/lib/vcolorpicker.css'
+import 'codehe-ui/lib/codeheUi.css'
 Vue.use(ElementUI);
 Vue.use(codeHeUI)
 Vue.use(Vuex)

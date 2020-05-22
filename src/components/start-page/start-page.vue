@@ -31,7 +31,7 @@
         </div>
         
         <!-- 书签抽屉 -->
-        <drawer :isShow.sync="isShowBookmarkList" :isShowModal="true">
+        <drawer title="厚积薄发" des="骐骥一跃不能十步，驽马十驾功在不舍。" :isShow.sync="isShowBookmarkList" :isShowModal="true">
             <div class="upload-file" v-if="bookmark && bookmark.length == 0">
                 <div class="upload-file__virtual-btn bookmarks-header__search"> 上传 </div>
                 <input class="upload-file__actual-btn" type="file" @change="selBookmarksFile" accept="html" ref="bookmarksFileInput"/>
@@ -210,7 +210,6 @@ export default {
     created () {
 
     },
-
     computed: {
         isShowlogin: {
             get () {
@@ -265,7 +264,7 @@ export default {
         getNotepadList() {
             let userInfo = this.$store.getters.getUserInfo
             if (!userInfo) {
-                this.$message.info('请登录')
+                this.$liveRem.showToast('我还不认识你呢，快去登录吧')
                 this.isShowLoginWindow = true
                 return
             }
@@ -294,6 +293,7 @@ export default {
                 id: notepadId,
             }
             request({url, method, params}).then(res => {
+                this.$liveRem.showToast('拿到记事本啦')
                 this.curNotepad = res
             })
         },
@@ -309,7 +309,7 @@ export default {
                 name: this.curNotepad.id
             }
             request({url, method, data}).then(res => {
-                console.log(res)
+                this.$liveRem.showToast('记事本更新完成啦')
             })
         }, 
 
@@ -334,7 +334,7 @@ export default {
                 method = 'POST'
             data.append('file', this.selFile)
             request({url, method, data}).then(res => {
-                console.log(res)
+                this.$liveRem.showToast('书签上传完成咯~')
             })
         },
 
@@ -354,6 +354,9 @@ export default {
             let method = 'GET'
             request({url, method}).then(res =>{
                 this.bookmark = res.bookmarksData
+                this.$liveRem.showToast('书签拿到啦, 快去学习吧')
+            }).catch(e => {
+                this.$liveRem.showToast('出问题了。。。快去看看请求吧')
             })
         },
 
@@ -366,7 +369,7 @@ export default {
                 userPassword: this.userInfo.userPassword
             }
             request({url, method, data}).then( res => {
-                this.$message.success('登录成功')
+                this.$liveRem.showToast('欢迎回家~')
                 cookieServe.setCookie('token', res.token, 1)
                 this.$store.commit('setUserInfo', res.userData)
                 this.isShowLoginWindow = false
@@ -375,7 +378,7 @@ export default {
                 // 登录成功后请求数据
                 this._initData()
             }).catch(e => {
-                this.$message.error(e.msg)
+                this.$liveRem.showToast(e.msg)
             })
         },
 
@@ -388,14 +391,14 @@ export default {
                 let method = 'POST'
                 let data = { userName, userAccount, userPassword }
                 request({url, method, data}).then(res => {
-                    this.$message.success('创建用户成功')
+                    this.$liveRem.showToast('欢迎加入我的大家庭！')
                     this.isShowRegisterWindow = false
                     cookieServe.setCookie('token', res.data.data.token, 1)
                 }).catch(e => {
-                    this.$message.error(e.msg)
+                    this.$liveRem.showToast("失败啦，稍后再试吧")
                 })
             } else {
-                this.$message.error('两次输入密码不一致，请重新输入')
+                this.$liveRem.showToast('两次输入密码不一致，请重新输入')
                 this.registerUserInfo.userPassword = ''
                 this.registerUserInfo.userPasswordConfirm = ''
             }
@@ -424,6 +427,7 @@ export default {
                 bookmarksId: treeItem.id
             }
             request({url, method, data}).then(res => {
+                this.$liveRem.showToast('又少了个书签呢~')
                 this.getBookmarksList()
             })
         },
@@ -446,6 +450,7 @@ export default {
                     }]
                 }
             request({ url, method, data}).then(res => {
+                this.$liveRem.showToast('修改好啦！')
                 this.getBookmarksList()
             })
         }

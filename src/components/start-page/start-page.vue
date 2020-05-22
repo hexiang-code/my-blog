@@ -102,36 +102,30 @@
         <!-- 登录弹框 -->
         <windowUtils :isShowWindow.sync="isShowLoginWindow" title="登录" @confirm="login">
             <template>
-                <div class="login-input">
-                    <p class="login-label">ACCOUNT:</p>
-                    <input v-model="userInfo.userAccount" type="text" placeholder="请输入账号" />
-                </div>
-                <div class="login-input">
-                    <p class="login-label">PASSWORD:</p>
-                    <input v-model="userInfo.userPassword" type="password" placeholder="请输入密码" />
-                </div>
+                <window-utils-item label="ACCOUNT" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
+                    <input class="login-input__input" v-model="registerUserInfo.userName" type="text" placeholder="请输用户名" />
+                </window-utils-item>
+                <window-utils-item label="PASSWORD" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
+                    <input class="login-input__input" v-model="userInfo.userPassword" type="password" placeholder="请输入密码" />
+                </window-utils-item>
             </template>
         </windowUtils>
 
         <!-- 注册弹框 -->
         <windowUtils :isShowWindow.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
             <template>
-                <div class="login-input">
-                    <p class="login-label">NAME:</p>
-                    <input v-model="registerUserInfo.userName" type="text" placeholder="请输用户名" />
-                </div>
-                <div class="login-input">
-                    <p class="login-label">ACCOUNT:</p>
-                    <input v-model="registerUserInfo.userAccount" type="text" placeholder="请输入账号" />
-                </div>
-                <div class="login-input">
-                    <p class="login-label">PASSWORD:</p>
-                    <input v-model="registerUserInfo.userPassword" type="password" placeholder="请输入密码" />
-                </div>
-                <div class="login-input">
-                    <p class="login-label">COMFIRM PWD:</p>
-                    <input v-model="registerUserInfo.userPasswordConfirm" type="password" placeholder="请确认密码" />
-                </div>
+                <window-utils-item label="NAME" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
+                    <input class="login-input__input" v-model="registerUserInfo.userName" type="text" placeholder="请输用户名" />
+                </window-utils-item>
+                <window-utils-item label="ACCOUNT" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
+                    <input class="login-input__input" v-model="registerUserInfo.userAccount" type="text" placeholder="请输入账号" />
+                </window-utils-item>
+                <window-utils-item label="PASSWORD" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
+                    <input class="login-input__input" v-model="registerUserInfo.userPassword" type="password" placeholder="请输入密码" />
+                </window-utils-item>
+                <window-utils-item label="COMFIRM PWD" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
+                    <input class="login-input__input" v-model="registerUserInfo.userPasswordConfirm" type="password" placeholder="请确认密码" />
+                </window-utils-item>
             </template>
         </windowUtils>
 
@@ -376,7 +370,7 @@ export default {
                 this.isShowRegisterWindow = false
                 this.isShowlogin = false
                 // 登录成功后请求数据
-                this._initData()
+                // this._initData()
             }).catch(e => {
                 this.$liveRem.showToast(e.msg)
             })

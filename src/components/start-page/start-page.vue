@@ -103,7 +103,7 @@
         <windowUtils :isShowWindow.sync="isShowLoginWindow" title="登录" @confirm="login">
             <template>
                 <window-utils-item label="ACCOUNT" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
-                    <input class="login-input__input" v-model="registerUserInfo.userName" type="text" placeholder="请输用户名" />
+                    <input class="login-input__input" v-model="userInfo.userAccount" type="text" placeholder="请输用户名" />
                 </window-utils-item>
                 <window-utils-item label="PASSWORD" :label-icon="require('../../assets/status-icon/leimu-icon.png')">
                     <input class="login-input__input" v-model="userInfo.userPassword" type="password" placeholder="请输入密码" />
@@ -236,11 +236,6 @@ export default {
         videoAlready () {
             this.isLoadAnimation = false
         },
-        // 初始化请求数据
-        _initData () {
-            this.getNotepadList()
-            this.getBookmarksList()
-        },
 
         //点击书签
         clickBookmark(e) {
@@ -302,7 +297,7 @@ export default {
                 content: this.curNotepad.content,
                 name: this.curNotepad.id
             }
-            request({url, method, data}).then(res => {
+            request({url, method, data}).then(() => {
                 this.$liveRem.showToast('记事本更新完成啦')
             })
         }, 
@@ -321,13 +316,13 @@ export default {
 
         // 用户选择书签文件
         selBookmarksFile () {
-            let userInfo = this.$store.getters.getUserInfo
+            // let userInfo = this.$store.getters.getUserInfo
             this.selFile = this.$refs.bookmarksFileInput.files[0]
             let url = 'bookmarks/uploadBookmarks',
                 data = new FormData(),
                 method = 'POST'
             data.append('file', this.selFile)
-            request({url, method, data}).then(res => {
+            request({url, method, data}).then(() => {
                 this.$liveRem.showToast('书签上传完成咯~')
             })
         },
@@ -349,7 +344,7 @@ export default {
             request({url, method}).then(res =>{
                 this.bookmark = res.bookmarksData
                 this.$liveRem.showToast('书签拿到啦, 快去学习吧')
-            }).catch(e => {
+            }).catch(() => {
                 this.$liveRem.showToast('出问题了。。。快去看看请求吧')
             })
         },
@@ -369,8 +364,6 @@ export default {
                 this.isShowLoginWindow = false
                 this.isShowRegisterWindow = false
                 this.isShowlogin = false
-                // 登录成功后请求数据
-                // this._initData()
             }).catch(e => {
                 this.$liveRem.showToast(e.msg)
             })
@@ -388,7 +381,7 @@ export default {
                     this.$liveRem.showToast('欢迎加入我的大家庭！')
                     this.isShowRegisterWindow = false
                     cookieServe.setCookie('token', res.data.data.token, 1)
-                }).catch(e => {
+                }).catch(() => {
                     this.$liveRem.showToast("失败啦，稍后再试吧")
                 })
             } else {
@@ -420,7 +413,7 @@ export default {
             let data = {
                 bookmarksId: treeItem.id
             }
-            request({url, method, data}).then(res => {
+            request({url, method, data}).then(() => {
                 this.$liveRem.showToast('又少了个书签呢~')
                 this.getBookmarksList()
             })
@@ -443,7 +436,7 @@ export default {
                         id: this.curSelBookmark.id
                     }]
                 }
-            request({ url, method, data}).then(res => {
+            request({ url, method, data}).then(() => {
                 this.$liveRem.showToast('修改好啦！')
                 this.getBookmarksList()
             })

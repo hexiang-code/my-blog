@@ -145,6 +145,7 @@ import request from '../../utils/http'
 import cookieServe from '../../utils/cookie'
 import { VueEditor } from "vue2-editor"
 import tabsConfig from '../../config/start-page'
+import axios from 'axios'
 export default {
     data() {
         return {
@@ -202,7 +203,6 @@ export default {
     },
 
     created () {
-
     },
     computed: {
         isShowlogin: {
@@ -358,7 +358,7 @@ export default {
                 userPassword: this.userInfo.userPassword
             }
             request({url, method, data}).then( res => {
-                this.$socket.emit('login', 'Bearer '+ res.token)
+                this.$socket.emit('login', cookieServe.getAuthorization())
                 cookieServe.setCookie('token', res.token, 1)
                 this.$store.commit('setUserInfo', res.userData)
                 this.isShowLoginWindow = false

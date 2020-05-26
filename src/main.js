@@ -12,9 +12,10 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'codehe-ui/lib/codeheUi.css'
 import VueSocketIo from 'vue-socket.io'
+import cookieServe from './utils/cookie'
 Vue.use(new VueSocketIo({
-  debug: true,
-  connection: 'ws://localhost:3000'
+  debug: false,
+  connection: 'ws://api.hexiangzone.cn'
 }))
 Vue.use(ElementUI);
 Vue.use(codeHeUI)
@@ -23,7 +24,9 @@ new Vue({
   router,
   store,
   render: h => h(App),
-  created: () => {
-    store.dispatch('setCurLoginUserInfo')
+  mounted() {
+    store.dispatch('setCurLoginUserInfo').then(() => {
+      this.$socket.emit('login', cookieServe.getAuthorization())
+    })
   }
 }).$mount('#app')

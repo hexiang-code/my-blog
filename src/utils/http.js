@@ -6,11 +6,14 @@ const baseUrl = 'http://api.hexiangzone.cn/api'
 const request = axios.create({
     baseURL: baseUrl,
     imeout: 3000,
-    withCredentials: true,
-    headers: {
-        Authorization:'Bearer ' + cookieServer.getCookie('token')
-    }
+    withCredentials: true
 })  
+
+// request 拦截器
+request.interceptors.request.use(config => {
+    config.headers['Authorization'] = cookieServer.getAuthorization()
+    return config
+})
 
 // response 拦截器
 request.interceptors.response.use( response => {

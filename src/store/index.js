@@ -21,16 +21,21 @@ const store = new Vuex.Store({
     },
     actions: {
         // 获取当前登录的用户信息
-        setCurLoginUserInfo ({commit, state}) {
-            if (cookieServe.getCookie('token')) {
-                let url = 'user/getCurLoginUserInfo'
-                let method = 'GET'
-                request({url, method}).then(res => {
-                    commit('setUserInfo', res.userInfo)
-                })
-            } else {
-                console.log('用户暂未登录')
-            }
+        setCurLoginUserInfo ({commit}) {
+            return new Promise((resolve, reject) => {
+                if (cookieServe.getCookie('token')) {
+                    let url = 'user/getCurLoginUserInfo'
+                    let method = 'GET'
+                    request({url, method}).then(res => {
+                        commit('setUserInfo', res.userInfo)
+                        resolve()
+                    })
+                } else {
+                    console.log('用户暂未登录')
+                    reject()
+                }
+            })
+
         }
     }
 })

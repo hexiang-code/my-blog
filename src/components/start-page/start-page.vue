@@ -358,7 +358,7 @@ export default {
                 userPassword: this.userInfo.userPassword
             }
             request({url, method, data}).then( res => {
-                this.$liveRem.showToast('欢迎回家~')
+                this.$socket.emit('login', 'Bearer '+ res.token)
                 cookieServe.setCookie('token', res.token, 1)
                 this.$store.commit('setUserInfo', res.userData)
                 this.isShowLoginWindow = false

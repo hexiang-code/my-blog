@@ -1,10 +1,9 @@
 import axios from 'axios'
 import cookieServer from './cookie'
-// const baseUrl = 'http://localhost:3000/api/'
-const baseUrl = 'http://api.hexiangzone.cn/api'
+import { httpBaseUrl } from '../config/envConfig'
 
 const request = axios.create({
-    baseURL: baseUrl,
+    baseURL: httpBaseUrl,
     imeout: 3000,
     withCredentials: true
 })  

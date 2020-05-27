@@ -64,20 +64,20 @@ export default {
     },
   
     mounted() {
-        let loading = Loading.service({
-            fullscreen: true,
-            text: '准备中'
-        })
-        setTimeout(() => {
-            loading.close()
-            this.$confirm('准备就绪，请点击确定按钮开始', '简历准备好啦', {
-                confirmButtonText: '确定',
-                center: true
-            }).then(()=>{
-                this.getClassName();
-                this.getStyleText();
-            })
-        }, 2000);
+        // let loading = Loading.service({
+        //     fullscreen: true,
+        //     text: '准备中'
+        // })
+        // setTimeout(() => {
+        //     loading.close()
+        //     this.$confirm('准备就绪，请点击确定按钮开始', '简历准备好啦', {
+        //         confirmButtonText: '确定',
+        //         center: true
+        //     }).then(()=>{
+        //         this.getClassName();
+        //         this.getStyleText();
+        //     })
+        // }, 2000);
     },
 
     methods: {

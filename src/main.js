@@ -13,9 +13,10 @@ import 'element-ui/lib/theme-chalk/index.css';
 import 'codehe-ui/lib/codeheUi.css'
 import VueSocketIo from 'vue-socket.io'
 import cookieServe from './utils/cookie'
+import { wsBaseUrl } from './config/envConfig'
 Vue.use(new VueSocketIo({
   debug: false,
-  connection: 'ws://api.hexiangzone.cn'
+  connection: wsBaseUrl
 }))
 Vue.use(ElementUI);
 Vue.use(codeHeUI)

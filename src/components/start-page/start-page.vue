@@ -358,8 +358,8 @@ export default {
                 userPassword: this.userInfo.userPassword
             }
             request({url, method, data}).then( res => {
-                this.$socket.emit('login', cookieServe.getAuthorization())
                 cookieServe.setCookie('token', res.token, 1)
+                this.$socket.emit('login', cookieServe.getAuthorization())
                 this.$store.commit('setUserInfo', res.userData)
                 this.isShowLoginWindow = false
                 this.isShowRegisterWindow = false

@@ -145,7 +145,6 @@ import request from '../../utils/http'
 import cookieServe from '../../utils/cookie'
 import { VueEditor } from "vue2-editor"
 import tabsConfig from '../../config/start-page'
-import axios from 'axios'
 export default {
     data() {
         return {
@@ -204,6 +203,7 @@ export default {
 
     created () {
     },
+    
     computed: {
         isShowlogin: {
             get () {
@@ -253,7 +253,7 @@ export default {
         getNotepadList() {
             let userInfo = this.$store.getters.getUserInfo
             if (!userInfo) {
-                this.$liveRem.showToast('我还不认识你呢，快去登录吧')
+                this.$liveRem.showToast({text: '我还不认识你呢，快去登录吧', type: 'lovely' })
                 this.isShowLoginWindow = true
                 return
             }
@@ -282,7 +282,7 @@ export default {
                 id: notepadId,
             }
             request({url, method, params}).then(res => {
-                this.$liveRem.showToast('拿到记事本啦')
+                this.$liveRem.showToast({ text: '拿到记事本啦', type: 'success' })
                 this.curNotepad = res
             })
         },
@@ -298,7 +298,7 @@ export default {
                 name: this.curNotepad.id
             }
             request({url, method, data}).then(() => {
-                this.$liveRem.showToast('记事本更新完成啦')
+                this.$liveRem.showToast({ text: '记事本更新完成啦', type: 'success' })
             })
         }, 
 
@@ -323,7 +323,7 @@ export default {
                 method = 'POST'
             data.append('file', this.selFile)
             request({url, method, data}).then(() => {
-                this.$liveRem.showToast('书签上传完成咯~')
+                this.$liveRem.showToast({ text: '书签上传完成咯~', type: 'success'})
             })
         },
 
@@ -343,9 +343,7 @@ export default {
             let method = 'GET'
             request({url, method}).then(res =>{
                 this.bookmark = res.bookmarksData
-                this.$liveRem.showToast('书签拿到啦, 快去学习吧')
-            }).catch(() => {
-                this.$liveRem.showToast('出问题了。。。快去看看请求吧')
+                this.$liveRem.showToast({ text: '书签拿到啦, 快去学习吧', type: 'success' })
             })
         },
 
@@ -364,8 +362,6 @@ export default {
                 this.isShowLoginWindow = false
                 this.isShowRegisterWindow = false
                 this.isShowlogin = false
-            }).catch(e => {
-                this.$liveRem.showToast(e.msg)
             })
         },
 
@@ -378,14 +374,14 @@ export default {
                 let method = 'POST'
                 let data = { userName, userAccount, userPassword }
                 request({url, method, data}).then(res => {
-                    this.$liveRem.showToast('欢迎加入我的大家庭！')
+                    this.$liveRem.showToast({ text: '欢迎加入我的大家庭！', type: 'lovely' })
                     this.isShowRegisterWindow = false
                     cookieServe.setCookie('token', res.data.data.token, 1)
                 }).catch(() => {
-                    this.$liveRem.showToast("失败啦，稍后再试吧")
+                    this.$liveRem.showToast({ text: "失败啦，稍后再试吧", type: 'error' })
                 })
             } else {
-                this.$liveRem.showToast('两次输入密码不一致，请重新输入')
+                this.$liveRem.showToast({ text: '两次输入密码不一致，请重新输入', type: 'error' })
                 this.registerUserInfo.userPassword = ''
                 this.registerUserInfo.userPasswordConfirm = ''
             }
@@ -414,7 +410,7 @@ export default {
                 bookmarksId: treeItem.id
             }
             request({url, method, data}).then(() => {
-                this.$liveRem.showToast('又少了个书签呢~')
+                this.$liveRem.showToast({ text: '又少了个书签呢~', type: 'error'})
                 this.getBookmarksList()
             })
         },
@@ -437,7 +433,7 @@ export default {
                     }]
                 }
             request({ url, method, data}).then(() => {
-                this.$liveRem.showToast('修改好啦！')
+                this.$liveRem.showToast({ text: '修改好啦！', type: 'success' })
                 this.getBookmarksList()
             })
         }
@@ -446,6 +442,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    @import '../../config/_globalStyle.scss';
     .el-drawer {
         overflow: auto !important;
     }
@@ -507,7 +504,7 @@ export default {
                     font-size: 18px;
                     font-weight: bold;
                     text-align: center;
-                    color: #1296DB;
+                    color: $leimu-color;
                     cursor: pointer;
                     font-family: monospace;
                     z-index: 10;
@@ -621,7 +618,7 @@ export default {
         margin-right: 40px;
         text-align: right;
         font-weight: 700;
-        color: #1296db;
+        color: $leimu-color;
     }
 
     .login-label::before {
@@ -638,8 +635,8 @@ export default {
     .login-input__input {
         height: 30px;
         padding-left: 20px;
-        border: 1px solid #1296db;
-        color: #1296db;
+        border: 1px solid $leimu-color;
+        color: $leimu-color;
         background-color: transparent;
     }
 
@@ -659,7 +656,7 @@ export default {
         height: 40px;
         background-color: none;
         text-transform: uppercase;
-        border: 4px solid #1296db;
+        border: 4px solid $leimu-color;
         background-color: transparent;
         color: #ffffff;
         cursor: pointer;
@@ -667,7 +664,7 @@ export default {
     
     .login-btn button:nth-child(1) {
         margin-right: 60px;
-        color: #1296db;
+        color: $leimu-color;
     }
 
     .login-btn button::after, .login-btn button::before {
@@ -696,24 +693,24 @@ export default {
     }
 
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */ 
-        color: #1296db;
+        color: $leimu-color;
     }
 
     ::-moz-placeholder { /* Firefox 19+ */  
-        color: #1296db;
+        color: $leimu-color;
     }
 
     :-ms-input-placeholder { /* IE 10+ */ 
-        color: #1296db;
+        color: $leimu-color;
     }
 
     :-moz-placeholder { /* Firefox 18- */ 
-        color: #1296db;
+        color: $leimu-color;
     }
 
     .marks-operation {
         text-align: right;
-        color: #1296db;
+        color: $leimu-color;
         font-size: 12px;
         margin-left: 20px;
 
@@ -738,7 +735,7 @@ export default {
         width: 200px;
         height: 30px;
         margin-right: 20px;
-        border: 1px solid #1296db;
+        border: 1px solid $leimu-color;
         font-size: 14px;
         text-align: center;
     }
@@ -750,8 +747,8 @@ export default {
         text-align: center;
         line-height: 40px;
         /* border-radius: 15px; */
-        /* background-color: #1296db; */
-        color: #1296db;
+        /* background-color: $leimu-color; */
+        color: $leimu-color;
     }
 
     .bookmarks-header__search-icon {
@@ -770,7 +767,7 @@ export default {
         left: 0;
         bottom: 0;
         right: 0;
-        border: 2px solid #1296db;
+        border: 2px solid $leimu-color;
         animation: search-animation 1.5s infinite linear;
     }
 
@@ -781,7 +778,7 @@ export default {
         left: 0;
         bottom: 0;
         right: 0;
-        border: 2px solid #1296db;
+        border: 2px solid $leimu-color;
         animation: search-animation 1s .5s linear infinite reverse;
     }
 

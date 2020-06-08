@@ -2,45 +2,52 @@ import Vue from 'vue';
 import Router from 'vue-router';
 Vue.use(Router);
 
-//引入组件区域
-import Index from '@/components/index';
-import MainPage from '@/components/mainPage/mainPage';
-import Instruction from '@/components/self-instruction/index';
-import Login from '@/components/login/index';
-import StartPage from '@/components/start-page/start-page'
-
-export const routerList = [
+const routerList =  [
     {
         path: '/',
-        redirect: '/index'
+        redirect: '/mainPage'
     },
     {
-        path: '/instruction',
-        component: Instruction
-    },
-    {
-        path: '/login',
-        component: Login
-    },
-    {   
-        path: '/index',
-        component: Index,
+        path: '/mainPage',
+        name: 'mainPage',
+        component: () => import('../components/index.vue'),
         children: [
             {
-                path: '/',
-                redirect: '/startPage'
+                path: '/mainPage',
+                redirect: '/mainPage/notes'
             },
             {
-                path: '/mainPage',
-                component: MainPage,
-                name: 'mainPage'
+                path: 'mainPage',
+                name: 'mainPage',
+                component: () => import('../components/mainPage/mainPage.vue')
+            },
+            {
+                path: 'notes',
+                name: 'notes',
+                component: () => import('../components/notes/index.vue'),
+                children: [
+                    {
+                        path: '/notes',
+                        redirect: '/notes/index'
+                    },
+                    {
+                        path: 'index',
+                        name: 'index',
+                        component: () => import('../components/notes/index.vue')
+                    },
+                    {
+                        path: 'editNotes',
+                        name: 'editNotes',
+                        component: () => import('../components/notes/edit-note.vue')
+                    }
+                ]
             }
         ]
     },
     {
         path: '/startPage',
-        component: StartPage,
-        name: 'startPage'
+        name: 'startPage',
+        component: () => import('../components/start-page/start-page.vue')
     }
 ]
 

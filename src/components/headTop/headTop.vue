@@ -1,7 +1,7 @@
 <template>
     <div class="head-top-zone">
         <div class="nav-list">
-            <div :class="['nav-item', selectedNav === index ? 'selected' : '']" v-for="(item,index) in firstNavConfig" :key="index" @click="clickNav(index)">{{item.title}}</div>
+            <div :class="['nav-item', selectedNav === index ? 'selected' : '']" v-for="(item,index) in firstNavConfig" :key="index" @click="clickNav(index, item.name)">{{item.title}}</div>
         </div>
     </div>
 </template>
@@ -18,14 +18,17 @@ export default {
     created() {
 
     },
+
     methods:{
-        clickNav(index) {
+        clickNav(index, name) {
             this.selectedNav = index;
+            this.$router.push({name})
         }
     }
 }
 </script>
 <style lang='scss' scoped>
+    @import '../../config/_globalStyle.scss';
     .head-top-zone /deep/ {
         height: 120px;
         position: relative;
@@ -57,14 +60,14 @@ export default {
             }
             
             .nav-item:hover {
-                background: #ffc001;
+                background: $leimu-color;
                 color: #ffffff;
             }
         }
 
 
         .selected {
-            background: #ffc001;
+            background: $leimu-color;
             color: #ffffff;
         }
     }

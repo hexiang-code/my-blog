@@ -1,16 +1,20 @@
 //一级导航配置
 const firstNavConfig = [
     {
-        title:'我的空间',
-        link: ''
+        title: '工作空间',
+        name: 'startPage'
     },
     {
-        title: '我的项目',
-        link: ''
-    } , 
+        title:'我的笔记',
+        name: 'notes'
+    },
+    {
+        title:'我的空间',
+        name: 'mainPage'
+    },
     {
         title: '管理后台',
-        link: ''
+        name: ''
     }
 ]
 

@@ -13,13 +13,16 @@
         "center_y":-0.05,
         "width":2.0
 	},
-	"hit_areas_custom":{
-        "head_x":[-0.3, 1.12],
-        "head_y":[0.26, 0.56],
-        "body_x":[-0.41, 0.58],
-        "body_y":[0.46, -1.12]
-    },
-
+	"hit_areas": [
+		{
+			"name": "head",
+			"id": "D_REF.PT_HEAD"
+		},
+		{
+			"name": "body",
+			"id": "D_REF.PT_BODY"
+		}
+	],
 	"motions": {
 		"idle": [{
 			"file": "motions/Live2D_remu_idle.mtn"

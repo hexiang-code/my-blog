@@ -34,6 +34,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+    @import '../../config/_globalStyle';
     .foot-zone {
         width: 100%;
         height: 200px;
@@ -51,7 +52,7 @@ export default {
             .font-right {
                 margin: 0;
                 font-size: 20px;
-                color: #ffc908;
+                color: $leimu-color;
                 margin-left: 100px;
             }
         }
@@ -69,15 +70,13 @@ export default {
 
             .person-info {
                 color: #ffffff;
-                display: flex;
-                align-content: space-between;
-                width: 500px;
+                width: 300px;
                 height: 70px;
                 margin-top: 20px;
                 
                 p{
                     display: flex;
-                    flex-wrap: wrap;
+                    justify-content: space-between;
                 }
             }
         }

@@ -638,6 +638,7 @@ export default {
         border: 1px solid $leimu-color;
         color: $leimu-color;
         background-color: transparent;
+        outline: none;
     }
 
     .login-btn {

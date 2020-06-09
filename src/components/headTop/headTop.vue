@@ -10,8 +10,13 @@ import firstNavConfig from '../../config/firstNavConfig'
 export default {
     data(){
         return{
-            firstNavConfig: firstNavConfig,  //一级导航配置
-            selectedNav: 0,  //选中的一级导航
+            firstNavConfig: firstNavConfig //一级导航配置
+        }
+    },
+
+    computed: {
+        selectedNav () {
+            return this.firstNavConfig.findIndex(item => item.name == this.$route.name)
         }
     },
 

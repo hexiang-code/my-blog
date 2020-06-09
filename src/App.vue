@@ -36,7 +36,6 @@ export default {
       Object.keys(lovelyRemind).forEach(item => {
         this.sockets.listener.subscribe(item, res => {
           window.focus()
-          console.log(res, 'remind')
           this.$liveRem.showToast({text: res})
         })
       })

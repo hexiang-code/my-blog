@@ -31,7 +31,6 @@ new Vue({
     store.dispatch('setCurLoginUserInfo').then(() => {
       this.$socket.emit('login', cookieServe.getAuthorization())
     }).catch(() => {
-      console.log(this.$liveRem)
       this.$liveRem.showToast({text: '还没登录哦', type: 'lovely'})
     })
   }

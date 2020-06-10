@@ -1,26 +1,24 @@
 <script>
 import request from '../../utils/http.js'
 export default {
-  props: {
-    parentId: {
-      type: Number,
-      require: true,
-      default: 0
-    },
-    // 是否新建文件
-    isCreate: {
-      type: Number,
-      default: 1
-    }
-  },
-
   data () {
     return {
       htmlContent: '', // html文本
       mdContent: '', // md文本
-      title: '' // 文章标题
+      title: '', // 文章标题
+      catalogId: '', // 目录id
+      editInitContent: '' // 编辑文章时，初始内容
     }
   },
+
+  created () {
+    this.catalogId = this.$route.query && this.$route.query.catalogId
+    this.notesId = this.$route.query && this.$route.query.notesId
+    if (this.notesId && this.catalogId) {
+      this.getNotesContent(this.notesId)
+    }
+  },
+
   render () {
     return (
       <div class="edit-notes">
@@ -33,7 +31,7 @@ export default {
             <div class="upload-btn" onClick={this.upload}>上传</div>
           </div>
         </div>
-        <mavon-editor onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
+        <mavon-editor value={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
       </div>
     )
   },
@@ -43,6 +41,20 @@ export default {
     getInputText (mdContent, htmlContent) {
       this.mdContent = mdContent
       this.htmlContent = htmlContent
+    },
+
+    // 编辑时请求笔记内容
+    getNotesContent (notesId) {
+      request({
+        url: 'notes/getNotesContent',
+        method: 'GET',
+        params: {
+          notesId,
+          type: 2
+        }
+      }).then(res => {
+        this.editInitContent = res.content
+      })
     },
 
     // 上传图片
@@ -64,7 +76,7 @@ export default {
         this.$liveRem.showToast({ text: '文章标题必填哦', type: 'error' })
         return
       }
-      if (typeof this.parentId == 'undefined') {
+      if (typeof this.catalogId == 'undefined') {
         this.$liveRem.showToast({ text: '文章必须得有归属哦', type: 'error' })
         return
       }
@@ -74,7 +86,7 @@ export default {
         name: this.title,
         mdContent: this.mdContent,
         htmlContent: this.htmlContent,
-        pid: this.parentId
+        pid: this.catalogId
       }
       request({url, method, data: params}).then(() => {
         this.$liveRem.showToast({ text: '保存好啦', type: 'sccuess' })

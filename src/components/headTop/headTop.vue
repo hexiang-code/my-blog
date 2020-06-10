@@ -16,7 +16,7 @@ export default {
 
     computed: {
         selectedNav () {
-            return this.firstNavConfig.findIndex(item => item.name == this.$route.name)
+            return this.firstNavConfig.findIndex(item => this.$route.path.indexOf(item.name) > -1)
         }
     },
 
@@ -35,15 +35,15 @@ export default {
 <style lang='scss' scoped>
     @import '../../config/_globalStyle.scss';
     .head-top-zone /deep/ {
-        height: 120px;
+        height: 80px;
         position: relative;
         top: 0;
         width: 100%;
-        line-height: 120px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
         z-index: 10;
+        box-shadow: 0 0 4px 0 rgba(0, 0, 0, .05);
 
         .nav-list {
             position: relative;

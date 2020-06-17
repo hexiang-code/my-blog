@@ -23,7 +23,7 @@
     </div>
 </template>
 <script>
-import bottomNavArr from '../../config/firstNavConfig';
+import bottomNavArr from '../../config/js/firstNavConfig';
 
 export default {
    data() {
@@ -34,7 +34,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-    @import '../../config/_globalStyle';
+    @import '../../config/css/_globalStyle';
     .foot-zone {
         width: 100%;
         height: 200px;

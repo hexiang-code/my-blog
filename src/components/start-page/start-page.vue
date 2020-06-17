@@ -144,7 +144,7 @@
 import request from '../../utils/http'
 import cookieServe from '../../utils/cookie'
 import { VueEditor } from "vue2-editor"
-import tabsConfig from '../../config/start-page'
+import tabsConfig from '../../config/js/start-page'
 export default {
     data() {
         return {
@@ -442,7 +442,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    @import '../../config/_globalStyle.scss';
+    @import '../../config/css/_globalStyle.scss';
     .el-drawer {
         overflow: auto !important;
     }

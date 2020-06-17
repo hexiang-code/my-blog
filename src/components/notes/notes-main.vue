@@ -6,7 +6,8 @@ export default {
       notesCatalog: [], // 目录
       notesList: [], // 列表
       addCatalogWindow: false, // 新增目录弹框
-      addCatalogText: '' // 目录
+      addCatalogText: '', // 目录
+      updateCatalogId: '' // 修改目录id
     }
   },
   created () {
@@ -15,15 +16,20 @@ export default {
   render () {
     return (
       <div class="notes-body">
-        <window-utils isShowWindow_sync={this.addCatalogWindow} title='新增目录' onConfirm={() => this.addCatalog()}>
+        <window-utils isShowWindow={this.addCatalogWindow} {...{on:{'update:isShowWindow': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
           <window-utils-item label="目录名">
             <input slot="default" class="catalog-input" vModel={this.addCatalogText} type="text" placeholder="请输目录名" />
           </window-utils-item>
         </window-utils>
         <div class="notes-left">
           <div class="notes-catalog">
-            {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
-            <a class="add-catalog" onClick={() => this.addCatalogWindow = true}>新增目录</a>
+            <div class="catalog-list">
+              {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
+            </div>
+            <div class="add-catalog">
+              <a onClick={() => this.addCatalogWindow = true}>新增目录</a>
+              <i class="iconfont notes-icon">&#xe612;</i>
+            </div>
           </div>
         </div>
         <div class="notes-right">
@@ -36,13 +42,32 @@ export default {
     )
   },
   methods: {
+    closeWindow(val) {
+      this.addCatalogWindow = val
+    },
     // 创建目录
     createNotesCatalog () {
       return this.notesCatalog.map(item => {
         return (
           <div class="catalog-item">
-            <a class="catalog-title">{item.name}</a>
-            <a onClick={() => this.goEditNotes(item.id)}>新增博文</a>
+            <div class="catalog-title" onClick={() => this.getNotesList(item.id)}>
+              {item.name}
+            </div>
+            <div class="catalog-btn">
+              <div>
+                <i class="iconfont notes-icon">&#xe658;</i>
+                {item.notesNumber > 0 ? item.notesNumber + '篇' : '暂无'}
+              </div>
+              <div>
+                <i class="iconfont notes-icon">&#xe612;</i>
+                <a onClick={() => this.goEditNotes(item.id)}>新增博文</a>
+              </div>
+              <div>
+                <i class="iconfont notes-icon">&#xe62e;</i>
+                <a onClick={() => this.updateCatalog(item)}>修改目录</a>
+              </div>
+            </div>
+            
           </div>
         )
       })
@@ -52,7 +77,21 @@ export default {
     createNotesList () {
       return this.notesList.map(item => {
         return (
-          <a class="list-item" onClick={() => this.goDetail(item.id)}>{item.name}</a>
+          <div class="list-item">
+            <div class="notes-item">
+              <a onClick={() => this.goDetail(item.id)}>{item.name}</a>
+            </div>
+            <div class="notes-info">
+              <span>
+                <i class="iconfont notes-icon" title="文章阅读量">&#xe64c;</i>
+                888
+              </span>
+              <span>
+                <i class="iconfont notes-icon" title="文章收藏量">&#xe6dc;</i>
+                100
+              </span>
+            </div>
+          </div>
         )
       })
     },
@@ -97,13 +136,62 @@ export default {
       }).then(res => {
         this.notesList = res
       })
+    },
+
+    // 新增笔记目录
+    addCatalog () {
+      if (!this.addCatalogText) {
+        this.$liveRem.showToast({text: '目录名字必填哦', type: 'error'})
+      }
+      let notesInfo = {
+        name: this.addCatalogText,
+        pid: 0,
+        mdContent: '',
+        htmlContent: '',
+        type: 1
+      }
+      request({
+        url: 'notes/uploadNotes',
+        method: 'POST',
+        data: {notesInfo}
+      }).then(() => {
+          this.$liveRem.showToast({text: '目录建好啦', type: 'success'})
+          this.getNotesCatalog()
+      })
+    },
+
+    /**
+     * 更新目录
+     * @param {Object} catalog
+     * @param {Number} type  0: 删除目录, 1：修改目录
+     */
+    updateCatalog (catalog, type) {
+      let { id, name } = catalog
+      if (type == 1) {
+        this.addCatalogWindow = true
+        this.addCatalogText = name
+        return
+      }
+      if (type == 0) {
+        request({
+          url: 'notes/updateNotes',
+          method: 'POST',
+          data: {
+            id,
+            disabled: 1
+          }
+        }).then(() => {
+          this.$liveRem.showToast({text: '又少了个目录哦', type: 'sad'})
+          this.getNotesCatalog()
+        })
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  @import '../../config/_globalStyle.scss';
+  @import '../../config/css/_globalStyle.scss';
   .notes-body {
     display: flex;
     width: 1000px;
@@ -116,38 +204,66 @@ export default {
 
       .notes-catalog {
         position: relative;
-        display: flex;
-        flex-direction: column;
-        background-color: #fff;
-        max-height: 300px;
-        padding: 20px 20px 40px 20px;
-        // border: 1px solid $leimu-color;
+        .catalog-list {
+          position: relative;
+          top: 20px;
+          display: flex;
+          flex-direction: column;
+          background-color: #fff;
+          max-height: 500px;
+          padding: 20px 20px 20px 20px;
+          overflow-y: auto;
+        }
 
         .add-catalog {
           position: absolute;
-          right: 0;
-          bottom: 0px;
+          left: 0;
+          top: 0;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          padding: 10px 0 0 10px;
+          width: 100%;
           font-size: 12px;
+          background-color: #fff;
           cursor: pointer;
         } 
 
         .catalog-item {
           display: flex;
+          flex-direction: column;
           justify-content: space-between;
+          padding: 5px;
+          margin-bottom: 10px;
 
           .catalog-title {
             box-sizing: border-box;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding: 5px;
-            color: $leimu-color;
+            font-weight: bold; 
             font-size: 16px;
             cursor: pointer;
           }
 
-          .catalog-add {
-            font-size: 12px;
-            cursor: pointer;
+          .catalog-title:hover {
+            color: $leimu-color;
+          }
+
+          .catalog-btn {
+            margin-top: 5px;
+            display: flex;
+            justify-content: flex-end;
+            background-color: #FBFBFB;
+
+            div {
+              display: flex;
+              align-items: center;
+              height: 16px;
+              margin-right: 10px;
+              font-weight: 300;
+              font-size: 12px;
+              cursor: pointer;
+            }
           }
         }
         
@@ -167,11 +283,25 @@ export default {
         box-sizing: border-box;
 
         .list-item {
-          display: flex;
-          flex-direction: column;
-          color: $leimu-color;
-          cursor: pointer;
-          font-size: 16px;
+          .notes-info {
+            margin-top: 10px;
+            span {
+              margin-right: 10px;
+              font-weight: 100;
+            }
+          }
+
+          .notes-item {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+          }
+
+          .notes-item:hover {
+            color: $leimu-color;
+          }
         }
       }
     }

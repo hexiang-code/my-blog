@@ -6,7 +6,7 @@ const firstNavConfig = [
     },
     {
         title:'我的笔记',
-        name: 'notes'
+        name: 'notesMain'
     },
     {
         title:'我的空间',

@@ -12,9 +12,11 @@ import 'element-ui/lib/theme-chalk/index.css';
 import 'codehe-ui/lib/codeheUi.css'
 import VueSocketIo from 'vue-socket.io'
 import cookieServe from './utils/cookie'
-import { wsBaseUrl } from './config/envConfig'
+import { wsBaseUrl } from './config/js/envConfig'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import './config/css/baseIcon.scss'
+import './config/css/globalStyle.scss'
 Vue.use(new VueSocketIo({
   debug: false,
   connection: wsBaseUrl

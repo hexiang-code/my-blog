@@ -31,7 +31,7 @@
 
 </template>
 <script>
-import {pictureArr, photoList}  from '../../config/mainPagePicture';
+import {pictureArr, photoList}  from '../../config/js/mainPagePicture';
 import PhotoUtils  from '../utils/photo-utils/photo-utils';
 export default {
     data() {

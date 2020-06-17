@@ -6,7 +6,7 @@
     </div>
 </template>
 <script>
-import firstNavConfig from '../../config/firstNavConfig'
+import firstNavConfig from '../../config/js/firstNavConfig'
 export default {
     data(){
         return{
@@ -15,8 +15,14 @@ export default {
     },
 
     computed: {
-        selectedNav () {
-            return this.firstNavConfig.findIndex(item => this.$route.path.indexOf(item.name) > -1)
+        selectedNav: {
+            get() {
+                return this.firstNavConfig.findIndex(item => this.$route.path.indexOf(item.name) > -1)
+            },
+
+            set (val) {
+                return val
+            }
         }
     },
 
@@ -33,7 +39,7 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
-    @import '../../config/_globalStyle.scss';
+    @import '../../config/css/_globalStyle.scss';
     .head-top-zone /deep/ {
         height: 80px;
         position: relative;

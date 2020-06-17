@@ -25,13 +25,13 @@ export default {
         <div class="edit-header">
           <div class="notes-title">
             标题
-            <input class="notes-title-input"></input>
+            <input vModel={this.title} class="notes-title-input"></input>
           </div>
           <div class="operation-btn">
             <div class="upload-btn" onClick={this.upload}>上传</div>
           </div>
         </div>
-        <mavon-editor value={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
+        <mavon-editor vModel={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
       </div>
     )
   },
@@ -54,6 +54,7 @@ export default {
         }
       }).then(res => {
         this.editInitContent = res.content
+        this.title = res.name
       })
     },
 
@@ -72,7 +73,7 @@ export default {
 
     // 上传文章文章
     upload () {
-      if (!this.name) {
+      if (!this.title) {
         this.$liveRem.showToast({ text: '文章标题必填哦', type: 'error' })
         return
       }
@@ -80,15 +81,15 @@ export default {
         this.$liveRem.showToast({ text: '文章必须得有归属哦', type: 'error' })
         return
       }
-      let url = 'uploadNotes'
+      let url = 'notes/uploadNotes'
       let method = 'POST'
-      let params = {
+      let notesInfo = {
         name: this.title,
         mdContent: this.mdContent,
         htmlContent: this.htmlContent,
         pid: this.catalogId
       }
-      request({url, method, data: params}).then(() => {
+      request({url, method, data: {notesInfo}}).then(() => {
         this.$liveRem.showToast({ text: '保存好啦', type: 'sccuess' })
       })
     }
@@ -97,7 +98,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '../../config/_globalStyle.scss';
+  @import '../../config/css/_globalStyle.scss';
   .edit-notes {
     position: relative;
     padding: 20px;

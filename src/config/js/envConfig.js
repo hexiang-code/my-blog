@@ -6,7 +6,7 @@ if (process.env.NODE_ENV == 'development') {
 
 if (process.env.NODE_ENV == 'production') {
   httpBaseUrl = 'https://api.hexiangzone.cn/api'
-  wsBaseUrl = 'ws://api.hexiangzone.cn'
+  wsBaseUrl = 'wss://api.hexiangzone.cn'
 }
 
 export { wsBaseUrl, httpBaseUrl } 

@@ -5,7 +5,7 @@ if (process.env.NODE_ENV == 'development') {
 }
 
 if (process.env.NODE_ENV == 'production') {
-  httpBaseUrl = 'http://api.hexiangzone.cn/api'
+  httpBaseUrl = 'https://api.hexiangzone.cn/api'
   wsBaseUrl = 'ws://api.hexiangzone.cn'
 }
 

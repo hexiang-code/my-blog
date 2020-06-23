@@ -8,20 +8,29 @@
             <div :class="{ 'selected' : item.type == curNav.type}">{{item.name}}</div>
         </div>
       </div>
+      <!-- 哔哩哔哩搜索 -->
+      <!-- https://search.bilibili.com/all?keyword=asmr&from_source=nav_search_new -->
       <form
-        action="https://www.baidu.com/s"
+        :action="curNav.action"
         target="_blank"
         class="search-zone"
+        ref="searchForm"
       >
         <i class="iconfont start-page-icon search-icon" @keyup.enter="submit">&#xe6e6;</i>
         <input
           type="text"
           placeholder="你想要的，这里都有"
-          name="wd"
+          :name="curNav.formName"
           class="search-input"
           autocomplete="off"
+          v-model="searchText"
+          @blur="suggestList = []"
+          @focus="getSearchSuggestList(searchText)"
         />
         <i class="iconfont start-page-icon logo" v-html="curNav.icon"></i>
+        <ul class="search-suggest" v-show="suggestList && suggestList.length > 0">
+          <li v-for="item in suggestList" class="sug-item" :key="item" @mousedown.prevent @click.capture="selSugItem(item)">{{item}}</li>
+        </ul>
       </form>
     </div>
     <div class="icon-list">
@@ -55,6 +64,12 @@
         @click="openBookmarkList"
         class="iconfont start-page-icon icon-item"
       >&#xe646;</i>
+      <i
+        title="退出登录"
+        v-if="!isShowlogin"
+        @click="logout"
+        class="iconfont start-page-icon icon-item"
+      >&#xe677;</i>
     </div>
 
     <!-- 书签抽屉 -->
@@ -88,10 +103,10 @@
       </div>
       <div class="bookmarks-body__content">
         <tree
-          :tree="{ 
-                        title: '我的书签',
-                        children: bookmark
-                    }"
+          :tree="{
+                title: '我的书签',
+                children: bookmark
+            }"
           :isExpandAll="true"
           :isShowCheckBox="isShowCheckBox"
           @childNodeClick="openLink"
@@ -235,10 +250,11 @@
 </template>
 
 <script>
-import request from "../../utils/http";
-import cookieServe from "../../utils/cookie";
-import { VueEditor } from "vue2-editor";
-import { tabsConfig, navgation } from "../../config/js/start-page";
+import request from "../../utils/http"
+import cookieServe from "../../utils/cookie"
+import { VueEditor } from "vue2-editor"
+import { tabsConfig, navgation } from "../../config/js/start-page"
+import jsonp from 'jsonp'
 export default {
   data() {
     return {
@@ -288,7 +304,9 @@ export default {
       isShowCheckBox: false, // 是否展示复选框
       marksFilterVal: "", // 书签过滤关键字
       isShowBookmarksWindow: false, // 是否展示书签弹框
-      curSelBookmark: {} // 当前选中的书签
+      curSelBookmark: {}, // 当前选中的书签
+      suggestList: [], // 搜索建议列表
+      searchText: '' // 搜索关键字
     };
   },
 
@@ -296,7 +314,8 @@ export default {
     "vue-editor": VueEditor
   },
 
-  created() {},
+  created() {
+  },
 
   computed: {
     isShowlogin: {
@@ -320,8 +339,13 @@ export default {
     filterText(val) {
       this.$refs.bookmarks.filter(val);
     },
+
     notepadFilterText(val) {
       this.$refs.notepadList.filter(val);
+    },
+
+    searchText (val) {
+      this.getSearchSuggestList(val)
     }
   },
 
@@ -449,11 +473,16 @@ export default {
 
     // 登录
     login() {
-      let url = "user/login";
-      let method = "POST";
+      let { userAccount, userPassword } = this.userInfo
+      if (!userAccount || !userPassword) {
+        this.$liveRem.showToast({text: '不要调皮, 要输入账号密码才能登陆'})
+        return
+      }
+      let url = "user/login"
+      let method = "POST"
       let data = {
-        userAccount: this.userInfo.userAccount,
-        userPassword: this.userInfo.userPassword
+        userAccount: userAccount,
+        userPassword: userPassword
       };
       request({ url, method, data }).then(res => {
         cookieServe.setCookie("token", res.token, 1);
@@ -463,6 +492,12 @@ export default {
         this.isShowRegisterWindow = false;
         this.isShowlogin = false;
       });
+    },
+
+    // 退出登录
+    logout () {
+      cookieServe.clear('token')
+      this.isShowlogin = true
     },
 
     // 注册密码
@@ -554,6 +589,52 @@ export default {
         this.$liveRem.showToast({ text: "修改好啦！", type: "success" });
         this.getBookmarksList();
       });
+    },
+
+    /**
+     * 搜索关键字联想
+     * @param {String} val 搜索关键字
+     *
+     */
+    getSearchSuggestList (val) {
+      if (val) {
+        const { type } = this.curNav
+        switch (type) {
+          case 'baidu':
+            this.baiduSuggest(val)
+            return
+          case 'bilibili':
+            this.biliWebsitSuggest(val)
+        }
+      }
+    },
+
+    // 百度关键字联想
+    baiduSuggest (val) {
+      jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=' + val)
+      window.baidu = {
+        sug: data => this.suggestList = data.s.slice(0, 5)
+      }
+    },
+
+    // b站关键字联想
+    biliWebsitSuggest (val) {
+      request({
+        url: 'proxy/searchSug',
+        params: {
+          keywords: val,
+          type: 'bilibili'
+        }
+      }).then(res => {
+        this.suggestList = res
+      })
+    },
+
+    // 搜索
+    async selSugItem (val) {
+      this.searchText = val
+      await this.$nextTick()
+      this.$refs.searchForm.submit()
     }
   }
 };
@@ -588,6 +669,7 @@ export default {
   margin: 0 auto;
   width: 30%;
   height: 300px;
+  overflow-x: hidden;
 
   .search-tabs {
     display: flex;
@@ -619,6 +701,27 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
+
+  .search-suggest {
+    position: absolute;
+    top: 62px;
+    left: 80px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid $leimu-color;
+
+    .sug-item {
+      padding: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .sug-item:hover {
+      background-color: $leimu-color;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
 }
 
 .search-input {

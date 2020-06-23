@@ -22,16 +22,20 @@ class CookieServer {
  getCookie (key) {
     let cookie = document.cookie
     let paramsArr = cookie.split(';')
-    // paramsArr.forEach(item => {
-    //     item = item.split('=')
-    // })
-    // paramsArr = paramsArr.map(item => {
-    //     let cookiesItem = item.trim()
-    //     return cookiesItem.split('=')
-    // })
     paramsArr = paramsArr.map(item => item.trim().split('='))
     let paramMap = new Map(paramsArr)
     return paramMap.get(key)
+ }
+
+ /**
+  * 清除cookie
+  * 
+  * @param {Sttring} key 
+  * 
+  * @memberOf CookieServer
+  */
+ clear (key) {
+   this.setCookie(key, '', 0)
  }
 
  // 获取授权信息

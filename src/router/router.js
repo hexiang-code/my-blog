@@ -5,11 +5,11 @@ Vue.use(Router);
 const routerList =  [
     {
         path: '/',
-        redirect: '/mainPage'
+        redirect: '/index'
     },
     {
-        path: '/mainPage',
-        name: 'mainPage',
+        path: '/index',
+        name: 'index',
         component: () => import('../components/index.vue'),
         children: [
             {

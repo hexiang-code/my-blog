@@ -125,32 +125,43 @@
     <!-- 记事本抽屉 -->
     <drawer title="记事本列表" :isShow.sync="isShowNotepadList">
       <div class="drawe-padding">
-        <el-input placeholder="找一找" v-model="notepadFilterText" class="bookmark-filter"></el-input>
-        <el-tree
+        <div class="bookmarks-header">
+          <input
+            class="bookmarks-header__input"
+            type="text"
+            placeholder="关键字查询"
+            v-model="notepadFilterText"
+          />
+          <div class="bookmarks-header__search" @click="filterNotepad">
+            search
+            <i class="iconfont start-page-icon bookmarks-header__search-icon" @keyup.enter="submit">&#xe6e6;</i>
+          </div>
+        </div>
+        <tree
           class="bookmarks-content"
-          :data="notepadList"
-          :props="notepadProps"
-          @node-click="clickNotepadList"
-          :highlight-current="true"
-          :accordion="true"
-          :filter-node-method="filterNode"
-          ref="notepadList"
-          size="30%"
-        ></el-tree>
-        <el-drawer
+          :tree=" {
+            title: '我的记事本',
+            children: notepadList
+          }"
+          :isExpandAll="true"
+          :renderKey="{
+            label: 'name'
+          }"
+          @childNodeClick="clickNotepadList"
+          ref="notepad"
+        ></tree>
+        <drawer
           :title="curNotepad.name"
-          :append-to-body="true"
-          :visible.sync="isShowNotepadContent"
-          :close-on-press-escape="true"
+          :isShow.sync="isShowNotepadContent"
         >
           <div class="drawe-padding">
             <vue-editor v-model="curNotepad.content"></vue-editor>
             <div slot="footer" class="dialog-footer">
-              <el-button @click="notepadWindow = false">取消</el-button>
-              <el-button type="primary" @click="updateNotepadContent">修改</el-button>
+              <button @click="notepadWindow = false">取消</button>
+              <button type="primary" @click="updateNotepadContent">修改</button>
             </div>
           </div>
-        </el-drawer>
+        </drawer>
       </div>
     </drawer>
 
@@ -336,14 +347,6 @@ export default {
   },
 
   watch: {
-    filterText(val) {
-      this.$refs.bookmarks.filter(val);
-    },
-
-    notepadFilterText(val) {
-      this.$refs.notepadList.filter(val);
-    },
-
     searchText (val) {
       this.getSearchSuggestList(val)
     }
@@ -553,6 +556,10 @@ export default {
       this.$refs.bookmarks.filterNode(this.marksFilterVal);
     },
 
+    filterNotepad () {
+      this.$refs.notepad.filterNode(this.notepadFilterText)
+    },
+
     // 删除书签
     deleteMarks(treeItem) {
       let url = "bookmarks/deleteBookmarks";
@@ -642,9 +649,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../config/css/_globalStyle.scss";
-.el-drawer {
-  overflow: auto !important;
-}
 .bg-wall {
   position: fixed;
   width: 100%;
@@ -654,10 +658,18 @@ export default {
   overflow: hidden;
 }
 
-.drawe-padding {
+.drawe-padding /deep/{
   padding: 20px;
   overflow: auto;
   height: 100%;
+
+  .main__content_right {
+    width: 50%;
+  }
+
+  .tree-main__body {
+    margin-top: 20px;
+  }
 }
 
 .search-question /deep/ {
@@ -814,29 +826,11 @@ export default {
   transform: scale(1.2);
 }
 
-.bookmark-filter {
-  width: 200px;
-  margin-bottom: 20px;
-}
-
-.bookmark-filter .el-input__inner {
-  height: 30px;
-  line-height: 30px;
-  width: 100px;
-}
 
 .bookmarks-content {
   width: 480px;
   max-height: 600px;
   overflow: auto;
-}
-
-.user-input {
-  width: 334px;
-}
-
-.user-input .el-input__inner {
-  widows: 334px;
 }
 
 .bg-vague {
@@ -962,6 +956,7 @@ export default {
   border: 1px solid $leimu-color;
   font-size: 14px;
   text-align: center;
+  outline: none;
 
   &::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
@@ -993,6 +988,7 @@ export default {
   /* border-radius: 15px; */
   /* background-color: $leimu-color; */
   color: $leimu-color;
+  cursor: pointer;
 }
 
 .bookmarks-header__search-icon {

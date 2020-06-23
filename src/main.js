@@ -6,9 +6,6 @@ import Vuex from 'vuex'
 import store from './store/index'
 import codeHeUI from 'codehe-ui'
 Vue.config.productionTip = false
-// 导入 element 组件库
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
 import 'codehe-ui/lib/codeheUi.css'
 import VueSocketIo from 'vue-socket.io'
 import cookieServe from './utils/cookie'
@@ -21,7 +18,7 @@ Vue.use(new VueSocketIo({
   debug: false,
   connection: wsBaseUrl
 }))
-Vue.use(ElementUI);
+// Vue.use(ElementUI);
 Vue.use(codeHeUI)
 Vue.use(Vuex)
 Vue.use(mavonEditor)

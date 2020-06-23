@@ -633,7 +633,7 @@ export default {
           type: 'bilibili'
         }
       }).then(res => {
-        this.suggestList = res
+        this.suggestList = res.slice(0, 5)
       })
     },
 

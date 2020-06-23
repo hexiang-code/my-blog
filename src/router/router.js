@@ -13,8 +13,8 @@ const routerList =  [
         component: () => import('../components/index.vue'),
         children: [
             {
-                path: '/mainPage',
-                redirect: '/mainPage/notes'
+                path: '/index',
+                redirect: '/index/notes'
             },
             {
                 path: 'mainPage',
@@ -27,7 +27,7 @@ const routerList =  [
                 component: () => import('../components/notes/index.vue'),
                 children: [
                     {
-                        path: '/mainPage/notes',
+                        path: '/index/notes',
                         redirect: 'notesMain'
                     },
                     {
@@ -39,7 +39,7 @@ const routerList =  [
                         path: 'editNotes',
                         name: 'editNotes',
                         component: () => import('../components/notes/edit-note.vue')
-                    }, 
+                    },
                     {
                         path: 'notesDetail',
                         name: 'notesDetail',

@@ -1,5 +1,6 @@
 <script>
 import request from '../../utils/http'
+import { debounce } from '../../utils/utils'
 export default {
   data () {
     return {
@@ -7,7 +8,8 @@ export default {
       notesList: [], // 列表
       addCatalogWindow: false, // 新增目录弹框
       addCatalogText: '', // 目录
-      updateCatalogId: '' // 修改目录id
+      updateCatalogId: '', // 修改目录id
+      curSelCatalog: {} // 当前选中的目录
     }
   },
   created () {
@@ -42,15 +44,12 @@ export default {
     )
   },
   methods: {
-    closeWindow(val) {
-      this.addCatalogWindow = val
-    },
     // 创建目录
     createNotesCatalog () {
       return this.notesCatalog.map(item => {
         return (
           <div class="catalog-item">
-            <div class="catalog-title" onClick={() => this.getNotesList(item.id)}>
+            <div class={this.curSelCatalog.id === item.id ? 'catalog-title catalog_selected' : 'catalog-title'} onClick={() => this.selCatalog(item)}>
               {item.name}
             </div>
             <div class="catalog-btn">
@@ -64,10 +63,10 @@ export default {
               </div>
               <div>
                 <i class="iconfont notes-icon">&#xe62e;</i>
-                <a onClick={() => this.updateCatalog(item)}>修改目录</a>
+                <a onClick={() => this.modifyCatalog(item, 1)} onDblclick ={() => this.modifyCatalog(item, 2)}>修改目录</a>
               </div>
             </div>
-            
+
           </div>
         )
       })
@@ -96,6 +95,9 @@ export default {
       })
     },
 
+    closeWindow(val) {
+      this.addCatalogWindow = val
+    },
     // 进入详情
     goDetail (notesId) {
       this.$router.push({
@@ -106,6 +108,12 @@ export default {
       })
     },
 
+    // 选择目录
+    selCatalog (item) {
+      this.curSelCatalog = item
+      this.getNotesList(item.id)
+    },
+
     // 进入编辑页面
     goEditNotes (catalogId) {
       this.$router.push({
@@ -113,7 +121,7 @@ export default {
         query: { catalogId }
       })
     },
-    
+
     // 获取笔记目录
     getNotesCatalog () {
       request({
@@ -122,7 +130,8 @@ export default {
       }).then(res => {
         this.notesCatalog = res
         if (this.notesCatalog && this.notesCatalog.length > 0) {
-          this.getNotesList(this.notesCatalog[0].id)
+          this.curSelCatalog = this.notesCatalog[0]
+          this.getNotesList(this.curSelCatalog.id)
         }
       })
     },
@@ -185,7 +194,13 @@ export default {
           this.getNotesCatalog()
         })
       }
-    }
+    },
+
+    // 删除目录
+    modifyCatalog: debounce((item, type) => {
+      console.log(item, type)
+      console.log(this)
+    }, 300)
   }
 }
 </script>
@@ -227,7 +242,7 @@ export default {
           font-size: 12px;
           background-color: #fff;
           cursor: pointer;
-        } 
+        }
 
         .catalog-item {
           display: flex;
@@ -240,9 +255,13 @@ export default {
             box-sizing: border-box;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-weight: bold; 
             font-size: 16px;
             cursor: pointer;
+          }
+
+          .catalog_selected {
+            color: $leimu-color;
+            font-weight: bold;
           }
 
           .catalog-title:hover {
@@ -266,7 +285,7 @@ export default {
             }
           }
         }
-        
+
       }
     }
 
@@ -283,6 +302,7 @@ export default {
         box-sizing: border-box;
 
         .list-item {
+          padding-bottom: 20px;
           .notes-info {
             margin-top: 10px;
             span {
@@ -314,6 +334,10 @@ export default {
       background-color: transparent;
       outline: none;
     }
+
+    .window-utils {
+      background-color: #000;
+    }
   }
-  
+
 </style>

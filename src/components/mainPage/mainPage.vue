@@ -1,3 +1,3 @@
 <template>
-  <h3>开发中</h3>
+  <h1>开发中</h1>
 </template>

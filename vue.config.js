@@ -3,19 +3,19 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 module.exports = {
   productionSourceMap: false,
-    configureWebpack: config =>{
-        if (process.env.NODE_ENV === 'production'){
-            return {
-                plugins: [
-                    new CompressionWebpackPlugin({
-                        filename: '[path].gz[query]',
-                        algorithm: 'gzip',
-                        test: productionGzipExtensions,
-                        threshold: 2048,
-                        minRatio: 0.8
-                    })
-                ]
-            }
-        }
-    }
+  configureWebpack: () => {
+      if (process.env.NODE_ENV === 'production'){
+          return {
+              plugins: [
+                  new CompressionWebpackPlugin({
+                      filename: '[path].gz[query]',
+                      algorithm: 'gzip',
+                      test: productionGzipExtensions,
+                      threshold: 2048,
+                      minRatio: 0.8
+                  })
+              ]
+          }
+      }
+  }
 };

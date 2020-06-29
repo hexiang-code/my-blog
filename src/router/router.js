@@ -5,7 +5,7 @@ Vue.use(Router);
 const routerList =  [
     {
         path: '/',
-        redirect: '/index'
+        redirect: '/startPage'
     },
     {
         path: '/index',

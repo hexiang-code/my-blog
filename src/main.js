@@ -14,11 +14,12 @@ import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import './config/css/baseIcon.scss'
 import './config/css/globalStyle.scss'
+import directives from './utils/directives'
+Vue.use(directives)
 Vue.use(new VueSocketIo({
   debug: false,
   connection: wsBaseUrl
 }))
-// Vue.use(ElementUI);
 Vue.use(codeHeUI)
 Vue.use(Vuex)
 Vue.use(mavonEditor)
@@ -28,7 +29,10 @@ new Vue({
   render: h => h(App),
   mounted() {
     store.dispatch('setCurLoginUserInfo').then(() => {
-      this.$socket.emit('login', cookieServe.getAuthorization())
+      if (store.getters.getCurMode === 'visitor')
+        this.$liveRem.showToast({text: '您当前采用访客模式访问本网站，您可以查看主人部分信息，但是不可以提交任何内容哟！', time: 10000})
+      if (store.getters.getCurMode === 'user')
+        this.$socket.emit('login', cookieServe.getAuthorization())
     }).catch(() => {
       this.$liveRem.showToast({text: '还没登录哦', type: 'lovely'})
     })

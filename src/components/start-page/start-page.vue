@@ -1,6 +1,6 @@
 <template>
   <div class="bg-wall">
-    <backgroundVideo :resource="soure" @videoAlready="videoAlready"></backgroundVideo>
+    <backgroundVideo :resource="soure" :poster="startPagePoster" @posterLoaded="videoAlready"></backgroundVideo>
     <load-animation :isShow.sync="isLoadAnimation"></load-animation>
     <div class="search-question">
       <div class="search-tabs">
@@ -36,13 +36,11 @@
     <div class="icon-list">
       <i
         title="进入新世界"
-        v-if="!isShowlogin"
         @click="$router.push({name: 'mainPage'})"
         class="iconfont start-page-icon icon-item"
       >&#xe60d;</i>
       <i
         title="登录"
-        v-if="isShowlogin"
         @click="isShowLoginWindow = true"
         class="iconfont start-page-icon icon-item"
       >&#xe662;</i>
@@ -66,7 +64,7 @@
       >&#xe646;</i>
       <i
         title="退出登录"
-        v-if="!isShowlogin"
+        v-if="isLogin"
         @click="logout"
         class="iconfont start-page-icon icon-item"
       >&#xe677;</i>
@@ -114,8 +112,8 @@
         >
           <template #operation="treeItem">
             <div class="marks-operation">
-              <span class="modify-btn" @click="modifyBookmarks(treeItem)">修改</span>
-              <span class="delete-btn" @dblclick="deleteMarks(treeItem)">删除</span>
+              <span v-visitor class="modify-btn" @click="modifyBookmarks(treeItem)">修改</span>
+              <span v-visitor class="delete-btn" title="双击删除" @dblclick="deleteMarks(treeItem)">删除</span>
             </div>
           </template>
         </tree>
@@ -283,7 +281,6 @@ export default {
       notepadFilterText: "", // 记事本搜索关键字
       soure: require("../../assets/start-background-video.mp4"), //动态壁纸资源
       test: "百度一下",
-      // isShowlogin: true,  // 是否展示登录按钮
       isShowRegister: true, // 是否展示注册按钮
       isShowLoginWindow: false, // 是否展示登录弹框
       isShowRegisterWindow: false, // 是否展示注册弹框
@@ -317,7 +314,8 @@ export default {
       isShowBookmarksWindow: false, // 是否展示书签弹框
       curSelBookmark: {}, // 当前选中的书签
       suggestList: [], // 搜索建议列表
-      searchText: '' // 搜索关键字
+      searchText: '', // 搜索关键字
+      startPagePoster: require('../../assets/startBg.png') // 首页背景海报
     };
   },
 
@@ -325,24 +323,9 @@ export default {
     "vue-editor": VueEditor
   },
 
-  created() {
-  },
-
   computed: {
-    isShowlogin: {
-      get() {
-        let { userId } = this.$store.getters.getUserInfo;
-        if (userId) return false;
-        return true;
-      },
-
-      set(value) {
-        return value;
-      }
-    },
-
-    isVagueBg() {
-      return false;
+    isLogin () {
+      return this.$store.getters.getMode === 'user' && this.$store.getters.getUserInfo && this.$store.getters.getUserInfo.userId
     }
   },
 
@@ -488,19 +471,17 @@ export default {
         userPassword: userPassword
       };
       request({ url, method, data }).then(res => {
-        cookieServe.setCookie("token", res.token, 1);
+        // cookieServe.setCookie("token", res.token, 1);
         this.$socket.emit("login", cookieServe.getAuthorization());
         this.$store.commit("setUserInfo", res.userData);
         this.isShowLoginWindow = false;
         this.isShowRegisterWindow = false;
-        this.isShowlogin = false;
       });
     },
 
     // 退出登录
     logout () {
       cookieServe.clear('token')
-      this.isShowlogin = true
     },
 
     // 注册密码

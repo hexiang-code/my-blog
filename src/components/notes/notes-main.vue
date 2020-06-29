@@ -14,6 +14,9 @@ export default {
   },
   created () {
     this.getNotesCatalog()
+    this.modifyCatalog = debounce(function(item, type) {
+                          this.updateCatalog(item, type)
+                        }, 300, this)
   },
   render () {
     return (
@@ -57,11 +60,11 @@ export default {
                 <i class="iconfont notes-icon">&#xe658;</i>
                 {item.notesNumber > 0 ? item.notesNumber + '篇' : '暂无'}
               </div>
-              <div>
+              <div vVisitor>
                 <i class="iconfont notes-icon">&#xe612;</i>
                 <a onClick={() => this.goEditNotes(item.id)}>新增博文</a>
               </div>
-              <div>
+              <div vVisitor>
                 <i class="iconfont notes-icon">&#xe62e;</i>
                 <a onClick={() => this.modifyCatalog(item, 1)} onDblclick ={() => this.modifyCatalog(item, 2)}>修改目录</a>
               </div>
@@ -172,7 +175,7 @@ export default {
     /**
      * 更新目录
      * @param {Object} catalog
-     * @param {Number} type  0: 删除目录, 1：修改目录
+     * @param {Number} type  2: 删除目录, 1：修改目录
      */
     updateCatalog (catalog, type) {
       let { id, name } = catalog
@@ -181,7 +184,7 @@ export default {
         this.addCatalogText = name
         return
       }
-      if (type == 0) {
+      if (type == 2) {
         request({
           url: 'notes/updateNotes',
           method: 'POST',
@@ -196,11 +199,6 @@ export default {
       }
     },
 
-    // 删除目录
-    modifyCatalog: debounce((item, type) => {
-      console.log(item, type)
-      console.log(this)
-    }, 300)
   }
 }
 </script>

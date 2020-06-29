@@ -29,19 +29,21 @@ class CookieServer {
 
  /**
   * 清除cookie
-  * 
-  * @param {Sttring} key 
-  * 
+  *
+  * @param {Sttring} key
+  *
   * @memberOf CookieServer
   */
  clear (key) {
    this.setCookie(key, '', 0)
  }
 
- // 获取授权信息
- getAuthorization() {
-    return `Bearer ${this.getCookie('token')}`
- }
+  // 获取授权信息
+  getAuthorization() {
+    let token = this.getCookie('token')
+    if (token) return `Bearer ${token}`
+    else return ''
+  }
 }
 
 export default new CookieServer()

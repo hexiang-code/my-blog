@@ -43,8 +43,11 @@ export default {
 }
 </script>
 
-<style>
-  #app {
+<style scoped lang="scss">
+  #app /deep/{
     height: 100%;
+    .message {
+      max-height: 100px;
+    }
   }
 </style>

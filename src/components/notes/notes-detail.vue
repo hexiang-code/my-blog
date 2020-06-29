@@ -11,7 +11,7 @@ export default {
   render () {
     return (
       <div>
-        <a onClick={() => this.$router.push({path: 'editNotes', query: {notesId: this.notesId, catalogId: this.notesDetail.pid}})}>编辑</a>
+        <a vVisitor onClick={() => this.$router.push({path: 'editNotes', query: {notesId: this.notesId, catalogId: this.notesDetail.pid}})}>编辑</a>
         <div class="notes-detail" domPropsInnerHTML={this.notesDetail.htmlContent}></div>
       </div>
     )

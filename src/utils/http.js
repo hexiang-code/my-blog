@@ -12,7 +12,8 @@ const request = axios.create({
 
 // request 拦截器
 request.interceptors.request.use(config => {
-    config.headers['Authorization'] = cookieServer.getAuthorization()
+    let author = cookieServer.getAuthorization()
+    if (author) config.headers['Authorization'] = author
     config.cancelToken = new axios.CancelToken(c => {
       if (store.getters.getCurMode === 'visitor' && config.method === 'post') {
         let index = urlWhiteList.findIndex(item => item === config.url)

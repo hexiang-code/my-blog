@@ -1,21 +1,23 @@
 <template>
   <div id="app">
     <router-view />
-    <live-rem ref="rem" @liveRemTalk="liveRemCommunication" :welcomeBack="welcomeBack"></live-rem>
+    <live-rem :manualLoad="true" ref="rem" @liveRemTalk="liveRemCommunication" :welcomeBack="welcomeBack"></live-rem>
   </div>
 </template>
 
 <script>
 import lovelyRemind from './utils/lovelyRemind'
 import Vue from 'vue'
+import eventBus from './utils/eventBus'
 export default {
   name: 'app',
   data () {
     return {
       welcomeBack: {
         audioSrc: '/live-model/rem/sound/lemm_welcome-back.mp3',
-        text: '你回来啦'
-      }
+        text: '你回来啦',
+      },
+      liveRemVisiable: false // 展示liveRem
     }
   },
   mounted () {
@@ -24,6 +26,9 @@ export default {
       Vue.prototype.$liveRem = liveRem
       this.lovelyRemind()
     }
+    eventBus.$on('videoAlready', async () => {
+      liveRem.initLiveRem()
+    })
   },
 
   methods: {

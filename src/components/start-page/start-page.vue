@@ -265,6 +265,7 @@ import cookieServe from "../../utils/cookie"
 import { VueEditor } from "vue2-editor"
 import { tabsConfig, navgation } from "../../config/js/start-page"
 import jsonp from 'jsonp'
+import eventBus from '../../utils/eventBus'
 export default {
   data() {
     return {
@@ -340,6 +341,7 @@ export default {
     // 视频加载完成回调
     videoAlready() {
       this.isLoadAnimation = false;
+      eventBus.$emit('videoAlready')
     },
 
     //点击书签

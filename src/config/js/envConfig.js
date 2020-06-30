@@ -9,4 +9,4 @@ if (process.env.NODE_ENV == 'production') {
   wsBaseUrl = 'wss://api.hexiangzone.cn'
 }
 
-export { wsBaseUrl, httpBaseUrl } 
+export { wsBaseUrl, httpBaseUrl }

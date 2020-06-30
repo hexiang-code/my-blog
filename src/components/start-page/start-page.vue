@@ -41,6 +41,7 @@
       >&#xe60d;</i>
       <i
         title="登录"
+        v-if="!isLogin"
         @click="isShowLoginWindow = true"
         class="iconfont start-page-icon icon-item"
       >&#xe662;</i>
@@ -325,7 +326,7 @@ export default {
 
   computed: {
     isLogin () {
-      return this.$store.getters.getMode === 'user' && this.$store.getters.getUserInfo && this.$store.getters.getUserInfo.userId
+      return this.$store.getters.getCurMode === 'user' && this.$store.getters.getUserInfo && this.$store.getters.getUserInfo.userId
     }
   },
 

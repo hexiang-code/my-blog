@@ -6,7 +6,7 @@ import store from '../store'
 import { urlWhiteList } from './httpsUrlConfig'
 const request = axios.create({
     baseURL: httpBaseUrl,
-    imeout: 3000,
+    timeout: 3000,
     withCredentials: true
 })
 

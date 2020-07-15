@@ -6,7 +6,7 @@ const firstNavConfig = [
     },
     {
         title:'我的笔记',
-        name: 'notesMain'
+        name: 'notes'
     },
     {
         title:'我的空间',
@@ -14,7 +14,7 @@ const firstNavConfig = [
     },
     {
         title: '管理后台',
-        name: ''
+        name: 'managerPage'
     }
 ]
 

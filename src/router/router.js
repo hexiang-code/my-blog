@@ -46,6 +46,11 @@ const routerList =  [
                         component: () => import('../components/notes/notes-detail')
                     }
                 ]
+            },
+            {
+              path: 'managerPage',
+              name: 'managerPage',
+              component: () => import('../components/manager-page/manager-page.vue')
             }
         ]
     },

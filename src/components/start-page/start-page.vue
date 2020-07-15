@@ -1,6 +1,6 @@
 <template>
   <div class="bg-wall">
-    <backgroundVideo :resource="soure" :poster="startPagePoster" @posterLoaded="videoAlready"></backgroundVideo>
+    <backgroundVideo :resource="bgVideo" :poster="startPagePoster" @posterLoaded="videoAlready"></backgroundVideo>
     <load-animation :isShow.sync="isLoadAnimation"></load-animation>
     <div class="search-question">
       <div class="search-tabs">
@@ -281,7 +281,6 @@ export default {
       },
       filterText: "", // 书签搜索关键字
       notepadFilterText: "", // 记事本搜索关键字
-      soure: require("../../assets/start-background-video.mp4"), //动态壁纸资源
       test: "百度一下",
       isShowRegister: true, // 是否展示注册按钮
       isShowLoginWindow: false, // 是否展示登录弹框
@@ -316,8 +315,7 @@ export default {
       isShowBookmarksWindow: false, // 是否展示书签弹框
       curSelBookmark: {}, // 当前选中的书签
       suggestList: [], // 搜索建议列表
-      searchText: '', // 搜索关键字
-      startPagePoster: require('../../assets/startBg.png') // 首页背景海报
+      searchText: '' // 搜索关键字
     };
   },
 
@@ -328,6 +326,16 @@ export default {
   computed: {
     isLogin () {
       return this.$store.getters.getCurMode === 'user' && this.$store.getters.getUserInfo && this.$store.getters.getUserInfo.userId
+    },
+    // 启动页海报
+    startPagePoster () {
+      let userDesignSetting  = this.$store.getters.getUserDesignSetting
+      return userDesignSetting.startSetting.poster || require('../../assets/startBg.png')
+    },
+    // 动态壁纸
+    bgVideo () {
+      let userDesignSetting  = this.$store.getters.getUserDesignSetting
+      return userDesignSetting.startSetting.bgVideo || require("../../assets/start-background-video.mp4")
     }
   },
 
@@ -475,8 +483,9 @@ export default {
       };
       request({ url, method, data }).then(res => {
         // cookieServe.setCookie("token", res.token, 1);
-        this.$socket.emit("login", cookieServe.getAuthorization());
-        this.$store.commit("setUserInfo", res.userData);
+        this.$socket.emit("login", cookieServe.getAuthorization())
+        this.$store.commit("setUserInfo", res.userData)
+        this.$store.dispatch('setCurLoginUserInfo')
         this.isShowLoginWindow = false;
         this.isShowRegisterWindow = false;
       });
@@ -678,7 +687,7 @@ export default {
       font-size: 18px;
       font-weight: bold;
       text-align: center;
-      color: $leimu-color;
+      color: $theme-color;
       cursor: pointer;
       font-family: monospace;
       z-index: 10;
@@ -704,7 +713,7 @@ export default {
     left: 80px;
     width: 100%;
     background-color: #fff;
-    border: 1px solid $leimu-color;
+    border: 1px solid $theme-color;
 
     .sug-item {
       padding: 5px;
@@ -713,7 +722,7 @@ export default {
     }
 
     .sug-item:hover {
-      background-color: $leimu-color;
+      background-color: $theme-color;
       color: #fff;
       cursor: pointer;
     }
@@ -734,25 +743,25 @@ export default {
 
   &::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
-    color: $leimu-color;
+    color: $theme-color;
     font-size: 16px;
   }
 
   &::-moz-placeholder {
     /* Firefox 19+ */
-    color: $leimu-color;
+    color: $theme-color;
     font-size: 16px;
   }
 
   &:-ms-input-placeholder {
     /* IE 10+ */
-    color: $leimu-color;
+    color: $theme-color;
     font-size: 16px;
   }
 
   &:-moz-placeholder {
     /* Firefox 18- */
-    color: $leimu-color;
+    color: $theme-color;
     font-size: 16px;
   }
 }
@@ -834,7 +843,7 @@ export default {
   margin-right: 40px;
   text-align: right;
   font-weight: 700;
-  color: $leimu-color;
+  color: $theme-color;
 }
 
 .login-label::before {
@@ -851,8 +860,8 @@ export default {
 .login-input__input {
   height: 30px;
   padding-left: 20px;
-  border: 1px solid $leimu-color;
-  color: $leimu-color;
+  border: 1px solid $theme-color;
+  color: $theme-color;
   background-color: transparent;
   outline: none;
 }
@@ -873,7 +882,7 @@ export default {
   height: 40px;
   background-color: none;
   text-transform: uppercase;
-  border: 4px solid $leimu-color;
+  border: 4px solid $theme-color;
   background-color: transparent;
   color: #ffffff;
   cursor: pointer;
@@ -881,7 +890,7 @@ export default {
 
 .login-btn button:nth-child(1) {
   margin-right: 60px;
-  color: $leimu-color;
+  color: $theme-color;
 }
 
 .login-btn button::after,
@@ -912,7 +921,7 @@ export default {
 
 .marks-operation {
   text-align: right;
-  color: $leimu-color;
+  color: $theme-color;
   font-size: 12px;
   margin-left: 20px;
 
@@ -937,29 +946,29 @@ export default {
   width: 200px;
   height: 30px;
   margin-right: 20px;
-  border: 1px solid $leimu-color;
+  border: 1px solid $theme-color;
   font-size: 14px;
   text-align: center;
   outline: none;
 
   &::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
-    color: $leimu-color;
+    color: $theme-color;
   }
 
   &::-moz-placeholder {
     /* Firefox 19+ */
-    color: $leimu-color;
+    color: $theme-color;
   }
 
   &:-ms-input-placeholder {
     /* IE 10+ */
-    color: $leimu-color;
+    color: $theme-color;
   }
 
   &:-moz-placeholder {
     /* Firefox 18- */
-    color: $leimu-color;
+    color: $theme-color;
   }
 }
 
@@ -970,8 +979,8 @@ export default {
   text-align: center;
   line-height: 40px;
   /* border-radius: 15px; */
-  /* background-color: $leimu-color; */
-  color: $leimu-color;
+  /* background-color: $theme-color; */
+  color: $theme-color;
   cursor: pointer;
 }
 
@@ -992,7 +1001,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  border: 2px solid $leimu-color;
+  border: 2px solid $theme-color;
   animation: search-animation 1.5s infinite linear;
 }
 
@@ -1003,7 +1012,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  border: 2px solid $leimu-color;
+  border: 2px solid $theme-color;
   animation: search-animation 1s 0.5s linear infinite reverse;
 }
 

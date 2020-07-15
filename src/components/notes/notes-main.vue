@@ -206,10 +206,12 @@ export default {
 <style lang="scss" scoped>
   @import '../../config/css/_globalStyle.scss';
   .notes-body {
+    position: relative;
     display: flex;
     width: 1000px;
     margin: 0 auto;
     height: 100%;
+    z-index: 10;
 
     .notes-left {
       width: 300px;
@@ -217,12 +219,13 @@ export default {
 
       .notes-catalog {
         position: relative;
+        background-color: rgba($color: #fff, $alpha: $opacity);
+        padding-top: 20px;
+
         .catalog-list {
           position: relative;
-          top: 20px;
           display: flex;
           flex-direction: column;
-          background-color: #fff;
           max-height: 500px;
           padding: 20px 20px 20px 20px;
           overflow-y: auto;
@@ -238,7 +241,6 @@ export default {
           padding: 10px 0 0 10px;
           width: 100%;
           font-size: 12px;
-          background-color: #fff;
           cursor: pointer;
         }
 
@@ -258,19 +260,18 @@ export default {
           }
 
           .catalog_selected {
-            color: $leimu-color;
+            color: $theme-color;
             font-weight: bold;
           }
 
           .catalog-title:hover {
-            color: $leimu-color;
+            color: $theme-color;
           }
 
           .catalog-btn {
             margin-top: 5px;
             display: flex;
             justify-content: flex-end;
-            background-color: #FBFBFB;
 
             div {
               display: flex;
@@ -291,11 +292,12 @@ export default {
       flex: 1;
       margin-left: 10px;
       margin-top: 10px;
+      min-height: 100vh;
 
       .notes-list {
         flex: 1;
         padding: 20px;
-        background-color: #fff;
+        background-color: rgba($color: #fff, $alpha: $opacity);
         height: 100%;
         box-sizing: border-box;
 
@@ -318,7 +320,7 @@ export default {
           }
 
           .notes-item:hover {
-            color: $leimu-color;
+            color: $theme-color;
           }
         }
       }
@@ -327,8 +329,8 @@ export default {
     .catalog-input {
       height: 30px;
       padding-left: 20px;
-      border: 1px solid $leimu-color;
-      color: $leimu-color;
+      border: 1px solid $theme-color;
+      color: $theme-color;
       background-color: transparent;
       outline: none;
     }

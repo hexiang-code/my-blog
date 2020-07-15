@@ -35,7 +35,7 @@ export default {
       </div>
     )
   },
-  
+
   methods: {
     // 获取用户输入文本
     getInputText (mdContent, htmlContent) {
@@ -99,12 +99,17 @@ export default {
 
 <style lang="scss" scoped>
   @import '../../config/css/_globalStyle.scss';
-  .edit-notes {
+  .edit-notes /deep/{
     position: relative;
     padding: 20px;
 
     .v-note-wrapper {
       min-height: 800px;
+      background-color: rgba($color: #fff, $alpha: $opacity);
+
+      // .v-show-content, .v-show-content-html {
+      //   background-color: rgba($color: #fff, $alpha: $opacity)!important;
+      // }
     }
 
     .edit-header {
@@ -114,8 +119,8 @@ export default {
       margin-bottom: 20px;
       padding: 0 10px;
       height: 60px;
-      background-color: #f5f5f5;
-      
+      background-color: rgba($color: #fff, $alpha: $opacity);
+
       .notes-title {
         display: flex;
         align-items: center;
@@ -146,7 +151,7 @@ export default {
           height: 30px;
           line-height: 30px;
           text-align: center;
-          background-color: $leimu-color;
+          background-color: $theme-color;
           color: #fff;
           cursor: pointer;
         }

@@ -13,14 +13,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../config/css/_globalStyle.scss';
   .notes-main {
     position: relative;
     padding: 10px;
-    height: 100vh;
+    z-index: 9;
+    min-height: 100vh;
 
     .canvas-bg {
       position: absolute;
-      background-color: #f5f6f7;
+      z-index: 9;
     }
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view />
-    <live-rem :manualLoad="true" ref="rem" @liveRemTalk="liveRemCommunication" :welcomeBack="welcomeBack"></live-rem>
+    <live-rem :manualLoad="manualLoad" ref="rem" @liveRemTalk="liveRemCommunication" :welcomeBack="welcomeBack"></live-rem>
   </div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
         audioSrc: '/live-model/rem/sound/lemm_welcome-back.mp3',
         text: '你回来啦',
       },
-      liveRemVisiable: false // 展示liveRem
+      manualLoad: false // 是否手动加载蕾姆
     }
   },
   mounted () {
@@ -26,9 +26,9 @@ export default {
       Vue.prototype.$liveRem = liveRem
       this.lovelyRemind()
     }
-    eventBus.$on('videoAlready', async () => {
-      liveRem.initLiveRem()
-    })
+    // eventBus.$on('videoAlready', async () => {
+    //   liveRem.initLiveRem()
+    // })
   },
 
   methods: {

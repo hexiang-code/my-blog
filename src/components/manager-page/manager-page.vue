@@ -21,7 +21,8 @@ export default {
         }
       ],
       albumVisibel: false, // 相册开关
-      imageApplayType: '' // 图片应用类型
+      imageApplayType: '', // 图片应用类型
+      inputLabelIcon: require('../../assets/status-icon/leimu-icon.png')
     }
   },
 
@@ -94,16 +95,16 @@ export default {
                 <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
                 个人信息
               </p>
-              <window-utils-item label="QQ">
+              <window-utils-item label="QQ" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.QQ} />
               </window-utils-item>
-              <window-utils-item label="微信">
+              <window-utils-item label="微信" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.wechat} />
               </window-utils-item>
-              <window-utils-item label="地址">
+              <window-utils-item label="地址" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.address} />
               </window-utils-item>
-              <window-utils-item label="邮箱">
+              <window-utils-item label="邮箱" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.email} />
               </window-utils-item>
             </div>

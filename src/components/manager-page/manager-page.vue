@@ -146,7 +146,8 @@ export default {
                 'update:visible': val => this.albumVisibel = val,
                 'fileChange': this.uploadFile,
                 'confirm': this.confirmSelImage,
-                'update:current-page': val => this.imageCurPage = val
+                'update:current-page': val => this.imageCurPage = val,
+                'deleteImage': this.deleteImage
               }
             }
           }>
@@ -264,6 +265,19 @@ export default {
         case 'stratVideo':
           return dynamicStyle('stratVideo', image.resourceUrl)
       }
+    },
+
+    // 删除图片
+    deleteImage (imageList) {
+      let idArray = imageList.map(item => item.id)
+      request({
+        url: 'assets/deleteImage',
+        method: 'POST',
+        data: { ids: idArray.join() }
+      }).then(() => {
+        this.$liveRem.showToast({text: '删除成功！'})
+        this.getImageList()
+      })
     },
 
     /**

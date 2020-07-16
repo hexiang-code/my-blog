@@ -8,7 +8,6 @@
 <script>
 import lovelyRemind from './utils/lovelyRemind'
 import Vue from 'vue'
-import eventBus from './utils/eventBus'
 export default {
   name: 'app',
   data () {

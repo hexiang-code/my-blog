@@ -300,6 +300,7 @@ export default {
         background-color: rgba($color: #fff, $alpha: $opacity);
         height: 100%;
         box-sizing: border-box;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
 
         .list-item {
           padding-bottom: 20px;

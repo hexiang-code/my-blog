@@ -24,16 +24,13 @@ const routerList =  [
             {
                 path: 'notes',
                 name: 'notes',
+                redirect: '/index/notes/notesMain',
                 component: () => import('../components/notes/index.vue'),
                 children: [
                     {
-                        path: '/index/notes',
-                        redirect: 'notesMain'
-                    },
-                    {
-                        path: 'notesMain',
-                        name: 'notesMain',
-                        component: () => import('../components/notes/notes-main.vue')
+                      path: 'notesMain',
+                      name: 'notesMain',
+                      component: () => import('../components/notes/notes-main.vue')
                     },
                     {
                         path: 'editNotes',
@@ -62,7 +59,7 @@ const routerList =  [
 ]
 
 export default new Router({
-    mode: 'hash',
+    mode: 'history',
     routes: routerList
 })
 

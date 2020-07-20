@@ -20,6 +20,11 @@ export default {
   },
 
   render () {
+    let attrs = {
+      previewBackground: 'transparent', // 预览框背景颜色
+      toolbarsBackground: 'transparent', // 工具栏背景颜色
+      ishljs: true,
+    }
     return (
       <div class="edit-notes">
         <div class="edit-header">
@@ -31,7 +36,7 @@ export default {
             <div class="upload-btn" onClick={this.upload}>上传</div>
           </div>
         </div>
-        <mavon-editor vModel={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
+        <mavon-editor { ...{attrs} } vModel={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
       </div>
     )
   },
@@ -41,6 +46,7 @@ export default {
     getInputText (mdContent, htmlContent) {
       this.mdContent = mdContent
       this.htmlContent = htmlContent
+      this.$liveRem.showToast({text: '暂存成功，别忘了提交哟~', type: 'lovely'})
     },
 
     // 编辑时请求笔记内容
@@ -91,6 +97,7 @@ export default {
       }
       request({url, method, data: {notesInfo}}).then(() => {
         this.$liveRem.showToast({ text: '保存好啦', type: 'sccuess' })
+        this.$router.back()
       })
     }
   }
@@ -102,6 +109,7 @@ export default {
   .edit-notes /deep/{
     position: relative;
     padding: 20px;
+    z-index: 10;
 
     .v-note-wrapper {
       min-height: 800px;
@@ -143,6 +151,7 @@ export default {
           border: 1px solid #f3f3f3;
         }
       }
+
       .operation-btn {
         display: flex;
         margin-left: 30px;
@@ -158,6 +167,22 @@ export default {
 
         .upload-btn:active {
           transform: scale(.95)
+        }
+      }
+    }
+
+    .content-input-wrapper  {
+      background-color: transparent!important;
+
+      .content-input {
+        background-color: transparent!important;
+
+        .auto-textarea-block {
+          background-color: transparent!important;
+        }
+
+        .no-border {
+          background-color: transparent!important;
         }
       }
     }

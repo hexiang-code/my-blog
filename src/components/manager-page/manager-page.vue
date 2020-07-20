@@ -395,6 +395,7 @@ export default {
             display: flex;
             justify-content: space-around;
             padding-top: 25px;
+            list-style: none;
             .color-item {
               position: relative;
               width: 20px;

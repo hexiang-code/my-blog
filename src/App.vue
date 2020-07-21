@@ -53,5 +53,9 @@ export default {
     .message {
       max-height: 100px;
     }
+
+    .menu-list {
+      left: 120px;
+    }
   }
 </style>

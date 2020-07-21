@@ -116,7 +116,7 @@ export default {
 
       .person-info {
         color: #ffffff;
-        width: 300px;
+        min-width: 350px;
         height: 70px;
         margin-top: 20px;
 

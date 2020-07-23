@@ -1,6 +1,7 @@
 <script>
 import request from '../../utils/http'
 import { throttle } from '../../utils/utils'
+import { externalLink } from '../../config/js/mavonEditorConfig'
 export default {
   data () {
     return {
@@ -49,7 +50,8 @@ export default {
         readmodel: true, // 沉浸式阅读
         preview: true, // 预览
         help: true // 帮助
-      }
+      },
+      externalLink,
     }
     return (
       <div class="notes-info">

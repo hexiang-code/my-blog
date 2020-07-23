@@ -1,5 +1,6 @@
 <script>
 import request from '../../utils/http.js'
+import { externalLink } from '../../config/js/mavonEditorConfig'
 export default {
   data () {
     return {
@@ -24,6 +25,7 @@ export default {
       previewBackground: 'transparent', // 预览框背景颜色
       toolbarsBackground: 'transparent', // 工具栏背景颜色
       ishljs: true,
+      externalLink
     }
     return (
       <div class="edit-notes">

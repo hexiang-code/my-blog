@@ -140,6 +140,7 @@ export default {
           imageList={this.imageList}
           classList={this.imageClassList}
           visible={this.albumVisibel}
+          accept='image/jpeg,image/png,video/mp4,image/gif'
           {...{
             on:
               {
@@ -337,10 +338,12 @@ export default {
   @import '../../config/css/_globalStyle.scss';
   .main /deep/{
     padding: 20px 20% 20px 20%;
-    // opacity: $opacity;
+    min-width: 350px;
+
     .design-class {
       padding: 10px 10px 10px 20px;
       background-color: rgba($color: #fff, $alpha: $opacity);
+
       .title {
         position: relative;
         display: flex;
@@ -380,6 +383,7 @@ export default {
       .manager {
         display: flex;
         justify-content: space-around;
+        flex-wrap: wrap;
         margin-top: 10px;
         font-size: 12px;
 
@@ -387,9 +391,10 @@ export default {
           padding: 10px;
           display: flex;
           flex-direction: column;
-          width: 300px;
+          min-width: 300px;
           border: 1px solid $theme-color;
           border-radius: 5px;
+          margin: 0 20px 20px 0;
 
           .colors {
             display: flex;
@@ -488,7 +493,6 @@ export default {
         }
 
         .footer-manager {
-          margin-left: 20px;
 
           input {
             display: inline-block;
@@ -524,7 +528,6 @@ export default {
         }
 
         .start-manager {
-          margin-left: 20px;
 
           .start-video {
             margin-top: 10px;

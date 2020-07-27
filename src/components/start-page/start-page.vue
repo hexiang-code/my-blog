@@ -122,7 +122,7 @@
     </drawer>
 
     <!-- 记事本抽屉 -->
-    <drawer title="记事本列表" :isShow.sync="isShowNotepadList">
+    <drawer title="记事本列表" :isShow.sync="isShowNotepadList" v-visitor>
       <div class="drawe-padding">
         <div class="bookmarks-header">
           <input
@@ -345,7 +345,21 @@ export default {
     }
   },
 
+  created () {
+    this.getAllData()
+  },
+
   methods: {
+    // 获取启动页所有数据
+    getAllData () {
+      request({
+        url: 'startPage/getAll'
+      }).then(res => {
+        this.notepadList = res.notepadList
+        this.bookmark = res.bookmarksList
+      })
+    },
+
     // 视频加载完成回调
     videoAlready() {
       this.isLoadAnimation = false;
@@ -365,24 +379,24 @@ export default {
     },
 
     // 请求记事本列表
-    getNotepadList() {
-      let userInfo = this.$store.getters.getUserInfo;
-      if (!userInfo) {
-        this.$liveRem.showToast({
-          text: "我还不认识你呢，快去登录吧",
-          type: "lovely"
-        });
-        this.isShowLoginWindow = true;
-        return;
-      }
-      let url = "notepad/getNotepadCatalog";
-      let method = "GET";
-      request({ url, method, params: { userId: userInfo.userId } }).then(
-        res => {
-          this.notepadList = res;
-        }
-      );
-    },
+    // getNotepadList() {
+    //   let userInfo = this.$store.getters.getUserInfo;
+    //   if (!userInfo) {
+    //     this.$liveRem.showToast({
+    //       text: "我还不认识你呢，快去登录吧",
+    //       type: "lovely"
+    //     });
+    //     this.isShowLoginWindow = true;
+    //     return;
+    //   }
+    //   let url = "notepad/getNotepadCatalog";
+    //   let method = "GET";
+    //   request({ url, method, params: { userId: userInfo.userId } }).then(
+    //     res => {
+    //       this.notepadList = res;
+    //     }
+    //   );
+    // },
 
     // 点击记事本文件
     clickNotepadList(e) {
@@ -425,13 +439,11 @@ export default {
     // 展示记事本列表回调函数
     openNotepadList() {
       this.isShowNotepadList = true;
-      this.getNotepadList();
     },
 
     // 展示书签内容的回调函数
     openBookmarkList() {
-      this.isShowBookmarkList = true;
-      this.getBookmarksList();
+      this.isShowBookmarkList = true
     },
 
     // 用户选择书签文件
@@ -447,26 +459,23 @@ export default {
       });
     },
 
-    // 上传文件
-    uploadBookmarks() {},
-
     // 打开书签链接链接
     openLink({ href }) {
       window.open(href);
     },
 
     //请求书签内容
-    getBookmarksList() {
-      let url = "bookmarks/getBookMarksContent";
-      let method = "GET";
-      request({ url, method }).then(res => {
-        this.bookmark = res.bookmarksData;
-        this.$liveRem.showToast({
-          text: "书签拿到啦, 快去学习吧",
-          type: "success"
-        });
-      });
-    },
+    // getBookmarksList() {
+    //   let url = "bookmarks/getBookMarksContent"
+    //   let method = "GET"
+    //   request({ url, method }).then(res => {
+    //     this.bookmark = res.bookmarksData;
+    //     this.$liveRem.showToast({
+    //       text: "书签拿到啦, 快去学习吧",
+    //       type: "success"
+    //     })
+    //   })
+    // },
 
     // 登录
     login() {
@@ -560,9 +569,9 @@ export default {
       let data = {
         bookmarksId: treeItem.id
       };
-      request({ url, method, data }).then(() => {
+      request({ url, method, data }).then(res => {
         this.$liveRem.showToast({ text: "又少了个书签呢~", type: "error" });
-        this.getBookmarksList();
+        this.bookmark = res.bookmarksList
       });
     },
 
@@ -585,9 +594,9 @@ export default {
             }
           ]
         };
-      request({ url, method, data }).then(() => {
+      request({ url, method, data }).then(res => {
         this.$liveRem.showToast({ text: "修改好啦！", type: "success" });
-        this.getBookmarksList();
+        this.bookmark = res.bookmarksList
       });
     },
 

@@ -501,8 +501,10 @@ export default {
     },
 
     // 退出登录
-    logout () {
+    async logout () {
       cookieServe.clear('token')
+      this.$liveRem.showToast({text: '成功登出已为您切换访客模式，期待下次再见'})
+      await this.$store.dispatch("setCurLoginUserInfo")
     },
 
     // 注册密码

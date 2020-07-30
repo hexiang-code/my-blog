@@ -2,6 +2,7 @@
 const colorArray = ["#91bef0","#33B5E5","#0099CC","#AA66CC","#9933CC","#99CC00","#669900","#FFBB33","#FF8800","#FF4444","#CC0000"]
 const bgColorArray = ["#f5f6f7", "#2f3136"]
 import { dynamicStyle } from '../../config/js/dynamicSetting'
+import { debounce } from '../../utils/utils'
 import request from '../../utils/http'
 export default {
   data () {
@@ -135,6 +136,14 @@ export default {
               </div>
             </div>
           </div>
+          <p class="title">
+            部署应用
+          </p>
+          <div class="manager deploy-manager">
+            <div class="deploy-btn" onClick={() => this.deployProject(1)}>部署前台</div>
+            <div class="deploy-btn" onClick={() => this.deployProject(2)}>部署后台</div>
+            <div class="deploy-btn" onClick={() => this.deployProject(0)}>全部部署</div>
+          </div>
         </div>
         <hx-album
           imageList={this.imageList}
@@ -211,6 +220,7 @@ export default {
 
   created () {
     this.getImageList(1)
+    this.deployProject = debounce(this._deployProject, 300)
   },
 
   methods: {
@@ -329,6 +339,64 @@ export default {
         this.$liveRem.showToast({text: '全局应用成功了哟', type: 'smail'})
         this.$store.dispatch('setCurLoginUserInfo')
       })
+    },
+
+
+    /**
+     * 部署项目
+     * @param {Number} type 1: 部署前台 2: 部署后台 0: 全部部署
+     * @param {Number} isDbClick 1: 双击 2: 单击
+     */
+    _deployProject (type, isDbClick) {
+      if (isDbClick) {
+        this.postDeployRequest(type)
+      } else {
+        let message = `确认部署${type == 1 ? '前端' : type == 0 ? '所有' : '后台'}项目?`
+        this.$liveRem.showConfirm({message}).then(() => {
+          this.postDeployRequest(type)
+        })
+      }
+    },
+
+    /**
+     * 发送部署请求
+     * @param {Number} type 1: 部署前台 2: 部署后台 0: 全部部署
+     */
+    postDeployRequest (type) {
+      request.defaults.timeout = 30000
+      request({
+        url: 'manager/deployProject',
+        method: 'POST',
+        data: {
+          type
+        }
+      }).then(res => {
+        let {
+          vueEnd: {
+            vue, vueRedeployTimes
+          } = {},
+          nodeEnd: {
+            nodeRedeployTimes,
+            node
+          } = {}
+        } = res
+        let text = ''
+        switch (type) {
+          case 1:
+            text = vue && `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes}`
+            break
+          case 2:
+            text =  node && `后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+            break
+          case 0:
+            text = vue && node && `前台部署成功,部署节点为${vue.committerName},提交者为${vue.authorName},部署重试次数${vueRedeployTimes} +
+                    后台部署成功,部署节点为${node.committerName},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+            break
+          default:
+            break
+        }
+        this.$liveRem.showToast({text, time: 10000})
+      })
     }
   }
 }
@@ -341,7 +409,7 @@ export default {
     min-width: 350px;
 
     .design-class {
-      padding: 10px 10px 10px 20px;
+      padding: 20px;
       background-color: rgba($color: #fff, $alpha: $opacity);
 
       .title {
@@ -540,6 +608,22 @@ export default {
               margin-right: 10px;
             }
           }
+        }
+      }
+
+      .deploy-manager {
+        justify-content: flex-start;
+
+        .deploy-btn {
+          width: 80px;
+          height: 30px;
+          margin-right: 20px;
+          line-height: 30px;
+          text-align: center;
+          font-size: 14px;
+          border-radius: 5px;
+          background-color: $theme-color;
+          color: #fff;
         }
       }
 

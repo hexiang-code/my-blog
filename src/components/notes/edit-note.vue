@@ -35,7 +35,7 @@ export default {
             <input vModel={this.title} class="notes-title-input"></input>
           </div>
           <div class="operation-btn">
-            <div class="upload-btn" onClick={this.upload}>上传</div>
+            <div class="upload-btn" onClick={this.upload}>{this.notesId ? '更新' : '上传'}</div>
           </div>
         </div>
         <mavon-editor { ...{attrs} } vModel={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
@@ -89,7 +89,7 @@ export default {
         this.$liveRem.showToast({ text: '文章必须得有归属哦', type: 'error' })
         return
       }
-      let url = 'notes/uploadNotes'
+      let url = this.notesId ? 'notes/updateNotes' : 'notes/uploadNotes'
       let method = 'POST'
       let notesInfo = {
         name: this.title,
@@ -97,6 +97,7 @@ export default {
         htmlContent: this.htmlContent,
         pid: this.catalogId
       }
+      if (this.notesId) notesInfo.id = this.notesId
       request({url, method, data: {notesInfo}}).then(() => {
         this.$liveRem.showToast({ text: '保存好啦', type: 'sccuess' })
         this.$router.back()

@@ -136,13 +136,13 @@ export default {
               </div>
             </div>
           </div>
-          <p class="title">
+          <p class="title" vVisitor>
             部署应用
           </p>
-          <div class="manager deploy-manager">
-            <div class="deploy-btn" onClick={() => this.deployProject(1)}>部署前台</div>
-            <div class="deploy-btn" onClick={() => this.deployProject(2)}>部署后台</div>
-            <div class="deploy-btn" onClick={() => this.deployProject(0)}>全部部署</div>
+          <div class="manager deploy-manager" vVisitor>
+            <div class="deploy-btn" onClick={() => this.deployProject(1)} onDblclick={() => this.deployProject(1, true)}>部署前台</div>
+            <div class="deploy-btn" onClick={() => this.deployProject(2)} onDblclick={() => this.deployProject(2, true)}>部署后台</div>
+            <div class="deploy-btn" onClick={() => this.deployProject(0)} onDblclick={() => this.deployProject(0, true)}>全部部署</div>
           </div>
         </div>
         <hx-album
@@ -345,9 +345,9 @@ export default {
     /**
      * 部署项目
      * @param {Number} type 1: 部署前台 2: 部署后台 0: 全部部署
-     * @param {Number} isDbClick 1: 双击 2: 单击
+     * @param {Boolean} isDbClick true: 双击 false: 单击
      */
-    _deployProject (type, isDbClick) {
+    _deployProject (type, isDbClick = false) {
       if (isDbClick) {
         this.postDeployRequest(type)
       } else {

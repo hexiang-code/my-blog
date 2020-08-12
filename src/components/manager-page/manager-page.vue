@@ -1,6 +1,48 @@
 <script>
 const colorArray = ["#91bef0","#33B5E5","#0099CC","#AA66CC","#9933CC","#99CC00","#669900","#FFBB33","#FF8800","#FF4444","#CC0000"]
 const bgColorArray = ["#f5f6f7", "#2f3136"]
+const hardwareTitle = [
+  {
+    props: 'cpuTemp',
+    label: 'cpu温度'
+  },
+  {
+    props: 'cpuUseage',
+    label: 'cpu使用率'
+  },
+  {
+    props: 'cpuMaxClocks',
+    label: 'cpu最大频率'
+  },
+  {
+    props: 'cpuPowers',
+    label: 'cpu功耗'
+  },
+  {
+    props: 'diskTemp',
+    label: '硬盘温度'
+  },
+  {
+    props: 'diskUseage',
+    label: '硬盘使用率'
+  },
+  {
+    props: 'ssdDiskTemp',
+    label: '固态硬盘温度'
+  },
+  {
+    props: 'ssdDiskUseage',
+    label: '固态硬盘使用率'
+  },
+  {
+    props: 'memUseage',
+    label: '内存使用率'
+  },
+  {
+    props: 'createdAt',
+    label: '创建时间'
+  }
+]
 import { dynamicStyle } from '../../config/js/dynamicSetting'
 import { debounce } from '../../utils/utils'
 import request from '../../utils/http'
@@ -23,7 +65,15 @@ export default {
       ],
       albumVisibel: false, // 相册开关
       imageApplayType: '', // 图片应用类型
-      inputLabelIcon: require('../../assets/status-icon/leimu-icon.png')
+      inputLabelIcon: require('../../assets/status-icon/leimu-icon.png'),
+      hardwareList: [], // 硬件信息数组
+      hardwareTitle, // 硬件信息表格标题数组
+      timesArray: [], // 查询硬件监控列表时间段
+      hardwareTotal: 0, // 硬件信息总数
+      hardawrePageSize: 10, // 单位页数据
+      hardwareCurPage: 1, // 当前页
+      fileType: 1, // 相册类型 1: 图片 2: 视频
+      hardwareSort: 'id=ASC' // 硬件信息排序方式
     }
   },
 
@@ -144,6 +194,36 @@ export default {
             <div class="deploy-btn" onClick={() => this.deployProject(2)} onDblclick={() => this.deployProject(2, true)}>部署后台</div>
             <div class="deploy-btn" onClick={() => this.deployProject(0)} onDblclick={() => this.deployProject(0, true)}>全部部署</div>
           </div>
+          <p class="title" vVisitor>
+            硬件监控
+          </p>
+          <div class="manager hardware-manager" vVisitor>
+            <div class="hardware-manager__filter">
+              <hx-date-picker onSelectComplete={this.dateSeleteComplete}></hx-date-picker>
+            </div>
+            <div class="hardware-manager__table">
+              <hx-table tableData={this.hardwareList} {...{
+                on: {
+                  'sort-change': this.hardwareSortChange
+                }
+              }}>
+                {
+                  this.hardwareTitle.map(item => {
+                    return (
+                      <hx-table-column prop={item.props} label={item.label} sortable={true}></hx-table-column>
+                    )
+                  })
+                }
+              </hx-table>
+              <div class="hardware-manager__bottom">
+                <hx-pagination {...{
+                  on: {
+                    'current-change': this.hardwarePagerChange
+                  }
+                }} total={this.hardwareTotal} page-size={this.hardawrePageSize} current-page={this.hardwareCurPage}></hx-pagination>
+              </div>
+            </div>
+          </div>
         </div>
         <hx-album
           imageList={this.imageList}
@@ -161,7 +241,11 @@ export default {
               }
             }
           }>
-            <hx-pagination slot="pagination" currentPage={this.imageCurPage} total={this.imageTotal}></hx-pagination>
+            <hx-pagination {...{
+              on: {
+                'current-change': this.albumPagerChange
+              }
+            }} slot="pagination" currentPage={this.imageCurPage} total={this.imageTotal}></hx-pagination>
           </hx-album>
       </div>
     )
@@ -221,6 +305,7 @@ export default {
   created () {
     this.getImageList(1)
     this.deployProject = debounce(this._deployProject, 300)
+    this.getHardwareList()
   },
 
   methods: {
@@ -296,10 +381,13 @@ export default {
      * @param {type} 1: 图片 2: 视频
      */
     getImageList (type = 1) {
+      this.fileType = type
       request({
         url: 'assets/getImageList',
         params: {
-          type: type == 1 ? 'image' : 'video'
+          type: type == 1 ? 'image' : 'video',
+          pageSize: this.imageTotal,
+          curPage: this.imageCurPage,
         }
       }).then(res => {
         this.imageList = res.rows
@@ -397,6 +485,47 @@ export default {
         }
         this.$liveRem.showToast({text, time: 10000})
       })
+    },
+
+    // 获取硬件信息列表
+    getHardwareList () {
+      request({
+        url: 'manager/getHardwareList',
+        method: 'GET',
+        params: {
+          timesArray: JSON.stringify(this.timesArray),
+          soft: this.hardwareSort,
+          pageSize: this.hardawrePageSize,
+          curPage: this.hardwareCurPage
+        }
+      }).then(res => {
+        this.hardwareList = res.rows
+        this.hardwareTotal = res.count
+      })
+    },
+
+    // 选择日期完成
+    dateSeleteComplete (val) {
+      this.timesArray = val
+      this.getHardwareList()
+    },
+
+    // 硬件信息表格切换分页
+    hardwarePagerChange (val) {
+      this.hardwareCurPage = val
+      this.getHardwareList()
+    },
+
+    // 相册分页切换
+    albumPagerChange (val) {
+      this.imageCurPage = val
+      this.getImageList(this.fileType)
+    },
+
+    // 硬件信息表格排序
+    hardwareSortChange (props, sort) {
+      this.hardwareSort = `${props}=${sort}`
+      this.getHardwareList()
     }
   }
 }
@@ -613,6 +742,7 @@ export default {
 
       .deploy-manager {
         justify-content: flex-start;
+        padding-bottom: 20px;
 
         .deploy-btn {
           width: 80px;
@@ -627,6 +757,50 @@ export default {
         }
       }
 
+      .hardware-manager {
+        position: relative;
+
+        .hardware-manager__filter {
+          position: relative;
+          width: 100%;
+          justify-content: flex-start;
+          display: flex;
+          padding-bottom: 24px;
+
+          .date-pick {
+            position: relative;
+            z-index: 1;
+            background-color: #fff;
+
+            .date-pick__container {
+              background-color: #fff;
+            }
+
+            .date-picker__dialog {
+              background-color: #fff;
+            }
+          }
+        }
+
+        .hardware-manager__table {
+          position: relative;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+
+          .table-container {
+            position: relative;
+          }
+          .table-container .table {
+            font-size: 12px;
+          }
+
+          .hardware-manager__bottom {
+            margin-top: 10px;
+          }
+        }
+      }
     }
   }
 </style>

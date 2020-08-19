@@ -31,7 +31,7 @@ request.interceptors.response.use(response => {
     if (response.data.status) {
       return response.data.data
     } else {
-      let text = response.data.message || '出错了，蕾姆马上就去排查。。。'
+      let text = response.data.msg || '出错了，蕾姆马上就去排查。。。'
       Vue.prototype.$liveRem.showToast({text})
       return Promise.reject(response.data)
     }

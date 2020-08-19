@@ -59,7 +59,6 @@ export default {
         <div class="notes-content">
           <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
         </div>
-
       </div>
     )
   },
@@ -172,10 +171,13 @@ export default {
       }
     }
 
-
-
-
+    .markdown-body h1 a:before, .markdown-body h2 a:before, .markdown-body h3 a:before,
+    .markdown-body h4 a:before, .markdown-body h5 a:before, .markdown-body h6 a:before {
+      content: '';
+      display: block;
+      margin-top: -80px;
+      height: 80px;
+      visibility: hidden;
+    }
   }
-
-
 </style>

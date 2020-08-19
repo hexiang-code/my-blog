@@ -303,6 +303,7 @@ export default {
   },
 
   created () {
+    console.log('创建managerPage')
     this.getImageList(1)
     this.deployProject = debounce(this._deployProject, 300)
     this.getHardwareList()
@@ -451,7 +452,7 @@ export default {
      * @param {Number} type 1: 部署前台 2: 部署后台 0: 全部部署
      */
     postDeployRequest (type) {
-      request.defaults.timeout = 30000
+      request.defaults.timeout = 60000
       request({
         url: 'manager/deployProject',
         method: 'POST',
@@ -569,6 +570,7 @@ export default {
             border: none;
             color: #fff;
             margin-right: 10px;
+            border-radius: 6px;
           }
 
           button:nth-child(2) {

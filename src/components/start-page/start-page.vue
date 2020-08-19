@@ -77,7 +77,7 @@
       des="骐骥一跃不能十步，驽马十驾功在不舍。"
       :isShow.sync="isShowBookmarkList"
       :isShowModal="true"
-    >
+     >
       <div class="upload-file" v-if="bookmark && bookmark.length == 0">
         <div class="upload-file__virtual-btn bookmarks-header__search">上传</div>
         <input
@@ -94,10 +94,11 @@
           type="text"
           placeholder="关键字查询"
           v-model="marksFilterVal"
+          @keyup.enter="filterMarks"
         />
         <div class="bookmarks-header__search" @click="filterMarks">
           search
-          <i class="iconfont start-page-icon bookmarks-header__search-icon" @keyup.enter="submit">&#xe6e6;</i>
+          <i class="iconfont start-page-icon bookmarks-header__search-icon">&#xe6e6;</i>
         </div>
       </div>
       <div class="bookmarks-body__content">
@@ -130,10 +131,11 @@
             type="text"
             placeholder="关键字查询"
             v-model="notepadFilterText"
+            @keyup.enter="filterNotepad"
           />
           <div class="bookmarks-header__search" @click="filterNotepad">
             search
-            <i class="iconfont start-page-icon bookmarks-header__search-icon" @keyup.enter="submit">&#xe6e6;</i>
+            <i class="iconfont start-page-icon bookmarks-header__search-icon">&#xe6e6;</i>
           </div>
         </div>
         <tree
@@ -154,11 +156,11 @@
           :isShow.sync="isShowNotepadContent"
         >
           <div class="drawe-padding">
-            <vue-editor v-model="curNotepad.content"></vue-editor>
-            <div slot="footer" class="dialog-footer">
+            <div class="dialog-footer">
               <button @click="notepadWindow = false">取消</button>
               <button type="primary" @click="updateNotepadContent">修改</button>
             </div>
+            <vue-editor v-model="curNotepad.content"></vue-editor>
           </div>
         </drawer>
       </div>
@@ -426,19 +428,18 @@ export default {
       let method = "POST";
       let url = "notepad/updateNotepadContent";
       let data = {
-        userId: this.$store.getters.userInfo.userId,
         id: this.curNotepad.id,
         content: this.curNotepad.content,
         name: this.curNotepad.id
-      };
+      }
       request({ url, method, data }).then(() => {
-        this.$liveRem.showToast({ text: "记事本更新完成啦", type: "success" });
-      });
+        this.$liveRem.showToast({ text: "记事本更新完成啦", type: "success" })
+      })
     },
 
     // 展示记事本列表回调函数
     openNotepadList() {
-      this.isShowNotepadList = true;
+      this.isShowNotepadList = true
     },
 
     // 展示书签内容的回调函数
@@ -674,6 +675,21 @@ export default {
   .tree-main__body {
     margin-top: 20px;
   }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+
+    button {
+      padding: 5px;
+      background-color: $theme-color;
+      border: none;
+      color: #fff;
+      margin-right: 10px;
+      border-radius: 6px;
+    }
+  }
 }
 
 .search-question /deep/ {
@@ -695,16 +711,17 @@ export default {
       position: relative;
       width: 80px;
       line-height: 40px;
-      font-size: 18px;
+      font-size: 14px;
       font-weight: bold;
       text-align: center;
-      color: $theme-color;
+      color: #fff;
       cursor: pointer;
       font-family: monospace;
       z-index: 10;
 
       .selected {
-        color: #fff;
+        color: $theme-color;
+        font-size: 20px;
       }
     }
 

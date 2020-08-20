@@ -104,14 +104,20 @@
       <div class="bookmarks-body__content">
         <tree
           :tree="{
-                title: '我的书签',
-                children: bookmark
-            }"
-          :isExpandAll="true"
+            title: '我的书签',
+            children: bookmark
+          }"
+          :isExpandAll="bookmarkExpand"
           :isShowCheckBox="isShowCheckBox"
           @childNodeClick="openLink"
           ref="bookmarks"
-        >
+         >
+          <template #header>
+            <div class="bookmarks-body__header">
+              子叶节点展开：
+              <hx-switch v-model="bookmarkExpand" :active-color="themeColor" inactive-color="#dcdfe6"></hx-switch>
+            </div>
+          </template>
           <template #operation="treeItem">
             <div class="marks-operation">
               <span v-visitor class="modify-btn" @click="modifyBookmarks(treeItem)">修改</span>
@@ -123,7 +129,7 @@
     </drawer>
 
     <!-- 记事本抽屉 -->
-    <drawer title="记事本列表" :isShow.sync="isShowNotepadList" v-visitor>
+    <drawer title="记事本" des="好记性不如烂笔头" :isShow.sync="isShowNotepadList" v-visitor>
       <div class="drawe-padding">
         <div class="bookmarks-header">
           <input
@@ -139,7 +145,7 @@
           </div>
         </div>
         <tree
-          class="bookmarks-content"
+          class="notepad-content"
           :tree=" {
             title: '我的记事本',
             children: notepadList
@@ -150,14 +156,23 @@
           }"
           @childNodeClick="clickNotepadList"
           ref="notepad"
-        ></tree>
+         >
+          <template #header>
+            <div class="notepad-content__header">
+              <span @click="notepadDialogVisible = !notepadDialogVisible">
+                添加
+                <i class="iconfont middle-icon">&#xe60a;</i>
+              </span>
+            </div>
+          </template>
+        </tree>
         <drawer
           :title="curNotepad.name"
           :isShow.sync="isShowNotepadContent"
         >
           <div class="drawe-padding">
             <div class="dialog-footer">
-              <button @click="notepadWindow = false">取消</button>
+              <button @click="isShowNotepadContent = false">取消</button>
               <button type="primary" @click="updateNotepadContent">修改</button>
             </div>
             <vue-editor v-model="curNotepad.content"></vue-editor>
@@ -244,6 +259,7 @@
       </template>
     </windowUtils>
 
+    <!-- 修改书签弹框 -->
     <window-utils :isShowWindow.sync="isShowBookmarksWindow" title="修改书签" @confirm="modifyConfirm">
       <window-utils-item
         label="书签"
@@ -256,6 +272,16 @@
         :label-icon="require('../../assets/status-icon/leimu-icon.png')"
       >
         <input class="login-input__input" type="text" v-model="curSelBookmark.href" />
+      </window-utils-item>
+    </window-utils>
+
+    <!-- 记事本对话框 -->
+    <window-utils :isShowWindow.sync="notepadDialogVisible" title="新增记事本" @confirm="addNotepadComfirm">
+      <window-utils-item
+        label="记事本名称"
+        :label-icon="require('../../assets/status-icon/leimu-icon.png')"
+      >
+        <input class="login-input__input" type="text" v-model="curNotepad.name" />
       </window-utils-item>
     </window-utils>
   </div>
@@ -317,7 +343,9 @@ export default {
       isShowBookmarksWindow: false, // 是否展示书签弹框
       curSelBookmark: {}, // 当前选中的书签
       suggestList: [], // 搜索建议列表
-      searchText: '' // 搜索关键字
+      searchText: '', // 搜索关键字
+      bookmarkExpand: false, // 书签子叶展开
+      notepadDialogVisible: false // 记事本对话框开关
     };
   },
 
@@ -338,6 +366,12 @@ export default {
     bgVideo () {
       let userDesignSetting  = this.$store.getters.getUserDesignSetting
       return userDesignSetting.startSetting.bgVideo || require("../../assets/start-background-video.mp4")
+    },
+
+    // 主题色
+    themeColor () {
+      let userDesignSetting  = this.$store.getters.getUserDesignSetting
+      return userDesignSetting.themeSetting.themeColor || '#000'
     }
   },
 
@@ -426,11 +460,11 @@ export default {
     // 更新记事本内容
     updateNotepadContent() {
       let method = "POST";
-      let url = "notepad/updateNotepadContent";
+      let url = "notepad/updateNotepadContent"
       let data = {
         id: this.curNotepad.id,
         content: this.curNotepad.content,
-        name: this.curNotepad.id
+        name: this.curNotepad.name
       }
       request({ url, method, data }).then(() => {
         this.$liveRem.showToast({ text: "记事本更新完成啦", type: "success" })
@@ -578,6 +612,7 @@ export default {
       });
     },
 
+    // 修改书签
     modifyBookmarks(treeItem) {
       this.curSelBookmark = treeItem;
       this.isShowBookmarksWindow = true;
@@ -647,6 +682,28 @@ export default {
       this.searchText = val
       await this.$nextTick()
       this.$refs.searchForm.submit()
+    },
+
+    // 确认新增记事本
+    addNotepadComfirm () {
+      if (this.curNotepad.name) {
+        request({
+          url: 'notepad/createNotepad',
+          method: 'POST',
+          data: {
+            name: this.curNotepad.name
+          }
+        }).then(() => {
+          this.$liveRem.showToast({text: '又多了个记事本哟~', type: 'lovely'})
+          this.getAllData()
+        }).catch(() => {
+          this.curNotepad = {
+            content: "",
+            id: "",
+            name: ""
+          }
+        })
+      }
     }
   }
 };
@@ -848,10 +905,29 @@ export default {
 }
 
 
-.bookmarks-content {
-  width: 480px;
+.notepad-content {
+  padding-top: 24px;
   max-height: 600px;
   overflow: auto;
+
+  .notepad-content__header {
+    display: flex;
+    justify-content: flex-end;
+    color: $theme-color;
+    span {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 12px;
+      cursor: pointer;
+
+      i {
+        width: 16px;
+        height: 16px;
+        margin-left: 6px;
+        font-size: 16px;
+      }
+    }
+  }
 }
 
 .bg-vague {
@@ -1019,7 +1095,12 @@ export default {
 }
 
 .bookmarks-body__content {
-  padding-bottom: 100px;
+  padding: 24px 0 100px;
+}
+
+.bookmarks-body__header {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .bookmarks-header__search:after {

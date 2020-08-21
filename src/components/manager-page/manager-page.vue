@@ -199,7 +199,7 @@ export default {
           </p>
           <div class="manager hardware-manager" vVisitor>
             <div class="hardware-manager__filter">
-              <hx-date-picker onSelectComplete={this.dateSeleteComplete}></hx-date-picker>
+              <hx-date-picker onSelectComplete={this.dateSeleteComplete} value={this.timesArray}></hx-date-picker>
             </div>
             <div class="hardware-manager__table">
               <hx-table tableData={this.hardwareList} {...{
@@ -502,6 +502,7 @@ export default {
       }).then(res => {
         this.hardwareList = res.rows
         this.hardwareTotal = res.count
+        this.timesArray = res.timesArray
       })
     },
 

@@ -721,9 +721,10 @@ export default {
 }
 
 .drawe-padding /deep/{
-  padding: 20px;
+  padding: 20px 20px 100px 20px;
   overflow: auto;
   height: 100%;
+  box-sizing: border-box;
 
   .main__content_right {
     width: 50%;

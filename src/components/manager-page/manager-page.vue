@@ -88,11 +88,11 @@ export default {
                 <button onClick = { () => this.updateUserSetting()}>永久应用</button>
               </div>
           </p>
-          <div class="manager">
-            <div class="color-manager">
+          <transition-group name="design" appear tag="div" class="manager">
+            <div class="color-manager" key="colorManager">
               <p class="step-title">
-               <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
-               选择主题色
+                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
+                选择主题色
               </p>
               <ul class="colors">
                 { this.colorArray.map(item => {
@@ -104,8 +104,8 @@ export default {
                 }) }
               </ul>
               <p class="step-title">
-               <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
-               选择背景色
+                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
+                选择背景色
               </p>
               <div class="background-setting">
                 <div class="left">
@@ -134,7 +134,7 @@ export default {
               <div></div>
             </div>
 
-            <div class="footer-manager color-manager">
+            <div class="footer-manager color-manager" key="footerManager">
               <p class="step-title">
                 <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
                 个性签名
@@ -160,7 +160,7 @@ export default {
               </window-utils-item>
             </div>
 
-            <div class="start-manager color-manager">
+            <div class="start-manager color-manager" key="startManager">
               <p class="step-title">
                 <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
                 首页海报
@@ -185,7 +185,7 @@ export default {
                 }}>选择文件</button>
               </div>
             </div>
-          </div>
+          </transition-group>
           <p class="title" vVisitor>
             部署应用
           </p>
@@ -197,11 +197,11 @@ export default {
           <p class="title" vVisitor>
             硬件监控
           </p>
-          <div class="manager hardware-manager" vVisitor>
-            <div class="hardware-manager__filter">
+          <transition-group class="manager hardware-manager" tag="div" appear name="hardware" vVisitor>
+            <div class="hardware-manager__filter" key="filter">
               <hx-date-picker onSelectComplete={this.dateSeleteComplete} value={this.timesArray}></hx-date-picker>
             </div>
-            <div class="hardware-manager__table">
+            <div class="hardware-manager__table" key="table">
               <hx-table tableData={this.hardwareList} {...{
                 on: {
                   'sort-change': this.hardwareSortChange
@@ -223,7 +223,7 @@ export default {
                 }} total={this.hardwareTotal} page-size={this.hardawrePageSize} current-page={this.hardwareCurPage}></hx-pagination>
               </div>
             </div>
-          </div>
+          </transition-group>
         </div>
         <hx-album
           imageList={this.imageList}
@@ -542,6 +542,7 @@ export default {
     .design-class {
       padding: 20px;
       background-color: rgba($color: #fff, $alpha: $opacity);
+      overflow: hidden;
 
       .title {
         position: relative;
@@ -804,6 +805,14 @@ export default {
           }
         }
       }
+    }
+
+    .design-enter-active {
+      animation: open-translate-right 1.5s forwards;
+    }
+
+    .hardware-enter-active {
+      animation: open-translate-bottom 1.5s forwards;
     }
   }
 </style>

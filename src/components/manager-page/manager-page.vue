@@ -542,7 +542,7 @@ export default {
     .design-class {
       padding: 20px;
       background-color: rgba($color: #fff, $alpha: $opacity);
-      overflow: hidden;
+      // overflow: hidden;
 
       .title {
         position: relative;

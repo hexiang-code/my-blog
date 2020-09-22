@@ -68,6 +68,7 @@ export default {
 
     // 上传图片
     uploadImage (filename, imageFile) {
+      request.defaults.timeout = 60000
       let data = new FormData()
       data.append('file', imageFile)
       request({

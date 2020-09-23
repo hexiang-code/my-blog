@@ -758,6 +758,7 @@ export default {
           border-radius: 5px;
           background-color: $theme-color;
           color: #fff;
+          cursor: pointer;
         }
       }
 

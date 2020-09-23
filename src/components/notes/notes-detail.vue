@@ -2,11 +2,12 @@
 import request from '../../utils/http'
 import { throttle } from '../../utils/utils'
 import { externalLink } from '../../config/js/mavonEditorConfig'
+let intersectionIo // dom观察器
 export default {
   data () {
     return {
       notesId: '',
-      notesDetail: {}
+      notesDetail: {},
     }
   },
   watch: {
@@ -23,6 +24,8 @@ export default {
               item.innerText = root.firstChild.textContent
               item.setAttribute('href', `#${nodeAttr}`)
               item.removeAttribute('id')
+              // 目录随内容高亮
+              this.notesCatalogObserve(nodeAttr)
             }
             if (item.nodeType == 3) {
               root.firstChild.removeChild(item)
@@ -69,10 +72,21 @@ export default {
       let cssText = `transform: translateY(${document.documentElement.scrollTop}px); transition: .3s;`
       this.$refs.notesCatalog.style.cssText = cssText
     })
+    intersectionIo = new IntersectionObserver(entries => {
+      for(let entry of entries) {
+        if (entry.intersectionRatio > 0.5) {
+          this.highLightCatalog(entry.target.getAttribute('id'))
+          return
+        }
+      }
+    }, {
+      entries: [0, 0.5, 0.75, 1]
+    })
   },
 
   destroyed () {
     document.onscroll = null
+    intersectionIo.disconnect()
   },
 
   methods: {
@@ -86,8 +100,30 @@ export default {
       })
     },
 
+    // 编辑笔记
     editNotes () {
       this.$router.push({path: 'editNotes', query: {notesId: this.notesId, catalogId: this.notesDetail.pid}})
+    },
+
+    //目录随内容高亮
+    async notesCatalogObserve (id) {
+      await this.$nextTick()
+      intersectionIo.observe(document.getElementById(id))
+    },
+
+    // 高亮笔记目录
+    highLightCatalog (id) {
+      let catalogs = this.$refs.notesCatalog.childNodes
+      for (let catalog of catalogs) {
+        for (let child of catalog.childNodes) {
+          if (child.tagName === 'A' && child.getAttribute('href') === `#${id}`) {
+            this.$refs.notesCatalog.scrollTo(0, Math.floor(catalog.offsetTop / 2))
+            catalog.classList.add('catalog-select')
+          } else {
+            catalog.classList.remove('catalog-select')
+          }
+        }
+      }
     }
   }
 }
@@ -107,7 +143,7 @@ export default {
     .notes-catalog {
       position: relative;
       width: 300px;
-      max-height: 500px;
+      max-height: 800px;
       margin-right: 10px;
       padding: 20px 0;
       overflow-y: auto;
@@ -178,6 +214,15 @@ export default {
       margin-top: -80px;
       height: 80px;
       visibility: hidden;
+    }
+
+    .catalog-select {
+      margin: 0 20px !important;
+      background-color: $theme-color;
+    }
+
+    .catalog-select a {
+      color: #fff !important;
     }
   }
 </style>

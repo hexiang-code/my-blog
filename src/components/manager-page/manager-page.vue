@@ -303,7 +303,6 @@ export default {
   },
 
   created () {
-    console.log('创建managerPage')
     this.getImageList(1)
     this.deployProject = debounce(this._deployProject, 300)
     this.getHardwareList()

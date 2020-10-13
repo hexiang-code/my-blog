@@ -76,7 +76,10 @@ export default {
         data,
         method: 'POST'
       }).then(res => {
-        this.$refs['mavonEditor'].$img2Url(filename, res)
+        res.forEach(item => {
+          this.$refs['mavonEditor'].$img2Url(filename, item)
+        })
+
       })
     },
 

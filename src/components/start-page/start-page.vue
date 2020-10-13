@@ -355,7 +355,7 @@ export default {
 
   computed: {
     isLogin () {
-      return this.$store.getters.getCurMode === 'user' && this.$store.getters.getUserInfo && this.$store.getters.getUserInfo.userId
+      return this.$store.getters.getCurMode !== 'visitor' && this.$store.getters.getUserInfo && this.$store.getters.getUserInfo.userId
     },
     // 启动页海报
     startPagePoster () {

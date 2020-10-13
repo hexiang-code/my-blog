@@ -495,7 +495,7 @@ export default {
         method: 'GET',
         params: {
           timesArray: JSON.stringify(this.timesArray),
-          soft: this.hardwareSort,
+          sort: this.hardwareSort,
           pageSize: this.hardawrePageSize,
           curPage: this.hardwareCurPage
         }

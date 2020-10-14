@@ -380,6 +380,7 @@ export default {
 
     // 图片分类切换
     classChange (classId) {
+      this.imageCurPage = 1
       this.getImageList(classId)
     },
 

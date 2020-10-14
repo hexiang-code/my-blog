@@ -53,10 +53,11 @@ export default {
       bgColorArray, // 背景色数组
       imageList: [], // 图片列表
       imageCurPage: 1, // 图片列表当前页
+      imageListPageSize: 10, // 图片列表页数据数量
       imageClassList: [
         {
           id: 1,
-          className: '图片'
+          className: '图片',
         },
         {
           id: 2,
@@ -237,7 +238,8 @@ export default {
                 'fileChange': this.uploadFile,
                 'confirm': this.confirmSelImage,
                 'update:current-page': val => this.imageCurPage = val,
-                'deleteImage': this.deleteImage
+                'deleteImage': this.deleteImage,
+                'classChange': this.classChange
               }
             }
           }>
@@ -245,7 +247,7 @@ export default {
               on: {
                 'current-change': this.albumPagerChange
               }
-            }} slot="pagination" currentPage={this.imageCurPage} total={this.imageTotal}></hx-pagination>
+            }} slot="pagination" current-page={this.imageCurPage} page-size={this.imageListPageSize} total={this.imageTotal}></hx-pagination>
           </hx-album>
       </div>
     )
@@ -376,8 +378,14 @@ export default {
       })
     },
 
+    // 图片分类切换
+    classChange (classId) {
+      this.getImageList(classId)
+    },
+
     /**
      * 请求图片列表
+     * 下次更新图片列表功能优化 不在用type == 1, 2作为请求参数
      * @param {type} 1: 图片 2: 视频
      */
     getImageList (type = 1) {
@@ -386,7 +394,7 @@ export default {
         url: 'assets/getImageList',
         params: {
           type: type == 1 ? 'image' : 'video',
-          pageSize: this.imageTotal,
+          pageSize: this.imageListPageSize,
           curPage: this.imageCurPage,
         }
       }).then(res => {

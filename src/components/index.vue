@@ -24,13 +24,16 @@ export default {
   @import '../config/css/_globalStyle.scss';
   .my-blog {
     height: 100%;
-
+    background: $background no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     .container {
       position: relative;
       padding-top: 80px;
-      background: $background;
       min-height: 100vh;
-      background-attachment: fixed;
+      // background: $background no-repeat;
+      // background-size: cover;
+      // background-attachment: fixed;
     }
   }
 </style>

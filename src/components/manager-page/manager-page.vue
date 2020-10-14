@@ -486,8 +486,8 @@ export default {
             text =  node && `后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
             break
           case 0:
-            text = vue && node && `前台部署成功,部署节点为${vue.committerName},提交者为${vue.authorName},部署重试次数${vueRedeployTimes} +
-                    后台部署成功,部署节点为${node.committerName},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+            text = vue && node && `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes} +
+                    后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
             break
           default:
             break

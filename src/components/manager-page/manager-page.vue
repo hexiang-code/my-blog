@@ -480,14 +480,62 @@ export default {
         let text = ''
         switch (type) {
           case 1:
-            text = vue && `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes}`
+            text = vue &&
+                  // `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes}`
+                  (
+                    <span>
+                      前台部署成功,部署节点为：
+                      <B class="deploy-title">{`${vue.subject}`}</B>
+                      <br/>
+                      提交者为：
+                      <B class="deploy-title">{`${vue.authorName}`}</B>
+                      <br/>
+                      部署重试次数：
+                      <B class="deploy-title">{`${vueRedeployTimes}`}</B>
+                    </span>
+                  )
             break
           case 2:
-            text =  node && `后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+            text =  node &&
+                    // `后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+                    (
+                      <span>
+                        后台部署成功,部署节点为：
+                        <B class="deploy-title">{`${node.subject}`}</B>
+                        <br/>
+                        提交者为：
+                        <B class="deploy-title">{`${node.authorName}`}</B>
+                        <br/>
+                        部署重试次数：
+                        <B class="deploy-title">{`${nodeRedeployTimes}`}</B>
+                      </span>
+                    )
             break
           case 0:
-            text = vue && node && `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes} +
-                    后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+            text = vue && node &&
+                    // `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes} +
+                    // 后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
+                    (
+                      <span>
+                        前台部署成功,部署节点为：
+                        <B class="deploy-title">{`${vue.subject}`}</B>
+                        <br/>
+                        提交者为：
+                        <B class="deploy-title">{`${vue.authorName}`}</B>
+                        <br/>
+                        部署重试次数：
+                        <B class="deploy-title">{`${vueRedeployTimes}`}</B>
+                        <br/>
+                        后台部署成功,部署节点为：
+                        <B class="deploy-title">{`${node.subject}`}</B>
+                        <br/>
+                        提交者为：
+                        <B class="deploy-title">{`${node.authorName}`}</B>
+                        <br/>
+                        部署重试次数：
+                        <B class="deploy-title">{`${nodeRedeployTimes}`}</B>
+                      </span>
+                    )
             break
           default:
             break
@@ -823,5 +871,10 @@ export default {
     .hardware-enter-active {
       animation: open-translate-bottom 1.5s forwards;
     }
+  }
+
+  .deploy-title {
+    font-size: 14px;
+    color: $theme-color;
   }
 </style>

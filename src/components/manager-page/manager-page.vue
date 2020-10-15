@@ -484,7 +484,8 @@ export default {
                   // `前台部署成功,部署节点为${vue.subject},提交者为${vue.authorName},部署重试次数${vueRedeployTimes}`
                   (
                     <span>
-                      前台部署成功,部署节点为：
+                      前台部署成功<br/>
+                      部署节点为：
                       <B class="deploy-title">{`${vue.subject}`}</B>
                       <br/>
                       提交者为：
@@ -500,7 +501,8 @@ export default {
                     // `后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
                     (
                       <span>
-                        后台部署成功,部署节点为：
+                        后台部署成功<br/>
+                        部署节点为：
                         <B class="deploy-title">{`${node.subject}`}</B>
                         <br/>
                         提交者为：
@@ -517,7 +519,8 @@ export default {
                     // 后台部署成功,部署节点为${node.subject},提交者为${node.authorName},部署重试次数${nodeRedeployTimes}`
                     (
                       <span>
-                        前台部署成功,部署节点为：
+                        前台部署成功<br/>
+                        部署节点为：
                         <B class="deploy-title">{`${vue.subject}`}</B>
                         <br/>
                         提交者为：

@@ -147,18 +147,18 @@ export default {
                 <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
                 个人信息
               </p>
-              <window-utils-item label="QQ" labelIcon={this.inputLabelIcon}>
+              <hx-form-item label="QQ" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.QQ} />
-              </window-utils-item>
-              <window-utils-item label="微信" labelIcon={this.inputLabelIcon}>
+              </hx-form-item>
+              <hx-form-item label="微信" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.wechat} />
-              </window-utils-item>
-              <window-utils-item label="地址" labelIcon={this.inputLabelIcon}>
+              </hx-form-item>
+              <hx-form-item label="地址" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.address} />
-              </window-utils-item>
-              <window-utils-item label="邮箱" labelIcon={this.inputLabelIcon}>
+              </hx-form-item>
+              <hx-form-item label="邮箱" labelIcon={this.inputLabelIcon}>
                 <input vModel={this.userDesignSetting.footerSetting.personalInfo.email} />
-              </window-utils-item>
+              </hx-form-item>
             </div>
 
             <div class="start-manager color-manager" key="startManager">

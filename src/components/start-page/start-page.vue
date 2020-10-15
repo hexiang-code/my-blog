@@ -182,9 +182,9 @@
     </drawer>
 
     <!-- 登录弹框 -->
-    <windowUtils :isShowWindow.sync="isShowLoginWindow" title="登录" @confirm="login">
+    <hx-dialog :dialogVisiable.sync="isShowLoginWindow" :isCurtain="false" title="登录" @confirm="login">
       <template>
-        <window-utils-item
+        <hx-form-item
           label="ACCOUNT"
           :label-icon="require('../../assets/status-icon/leimu-icon.png')"
         >
@@ -194,8 +194,8 @@
             type="text"
             placeholder="请输用户名"
           />
-        </window-utils-item>
-        <window-utils-item
+        </hx-form-item>
+        <hx-form-item
           label="PASSWORD"
           :label-icon="require('../../assets/status-icon/leimu-icon.png')"
         >
@@ -205,14 +205,14 @@
             type="password"
             placeholder="请输入密码"
           />
-        </window-utils-item>
+        </hx-form-item>
       </template>
-    </windowUtils>
+    </hx-dialog>
 
     <!-- 注册弹框 -->
-    <windowUtils :isShowWindow.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
+    <hx-dialog :dialogVisiable.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
       <template>
-        <window-utils-item
+        <hx-form-item
           label="NAME"
           :label-icon="require('../../assets/status-icon/leimu-icon.png')"
         >
@@ -222,8 +222,8 @@
             type="text"
             placeholder="请输用户名"
           />
-        </window-utils-item>
-        <window-utils-item
+        </hx-form-item>
+        <hx-form-item
           label="ACCOUNT"
           :label-icon="require('../../assets/status-icon/leimu-icon.png')"
         >
@@ -233,8 +233,8 @@
             type="text"
             placeholder="请输入账号"
           />
-        </window-utils-item>
-        <window-utils-item
+        </hx-form-item>
+        <hx-form-item
           label="PASSWORD"
           :label-icon="require('../../assets/status-icon/leimu-icon.png')"
         >
@@ -244,8 +244,8 @@
             type="password"
             placeholder="请输入密码"
           />
-        </window-utils-item>
-        <window-utils-item
+        </hx-form-item>
+        <hx-form-item
           label="COMFIRM PWD"
           :label-icon="require('../../assets/status-icon/leimu-icon.png')"
         >
@@ -255,35 +255,35 @@
             type="password"
             placeholder="请确认密码"
           />
-        </window-utils-item>
+        </hx-form-item>
       </template>
-    </windowUtils>
+    </hx-dialog>
 
     <!-- 修改书签弹框 -->
-    <window-utils :isShowWindow.sync="isShowBookmarksWindow" title="修改书签" @confirm="modifyConfirm">
-      <window-utils-item
+    <hx-dialog :dialogVisiable.sync="isShowBookmarksWindow" title="修改书签" @confirm="modifyConfirm">
+      <hx-form-item
         label="书签"
         :label-icon="require('../../assets/status-icon/leimu-icon.png')"
       >
         <input class="login-input__input" type="text" v-model="curSelBookmark.label" />
-      </window-utils-item>
-      <window-utils-item
+      </hx-form-item>
+      <hx-form-item
         label="链接"
         :label-icon="require('../../assets/status-icon/leimu-icon.png')"
       >
         <input class="login-input__input" type="text" v-model="curSelBookmark.href" />
-      </window-utils-item>
-    </window-utils>
+      </hx-form-item>
+    </hx-dialog>
 
     <!-- 记事本对话框 -->
-    <window-utils :isShowWindow.sync="notepadDialogVisible" title="新增记事本" @confirm="addNotepadComfirm">
-      <window-utils-item
+    <hx-dialog :dialogVisiable.sync="notepadDialogVisible" title="新增记事本" @confirm="addNotepadComfirm">
+      <hx-form-item
         label="记事本名称"
         :label-icon="require('../../assets/status-icon/leimu-icon.png')"
       >
         <input class="login-input__input" type="text" v-model="curNotepad.name" />
-      </window-utils-item>
-    </window-utils>
+      </hx-form-item>
+    </hx-dialog>
   </div>
 </template>
 

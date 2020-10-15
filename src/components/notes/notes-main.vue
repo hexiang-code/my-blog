@@ -21,11 +21,11 @@ export default {
   render () {
     return (
       <div class="notes-body">
-        <window-utils isShowWindow={this.addCatalogWindow} {...{on:{'update:isShowWindow': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
-          <window-utils-item label="目录名">
+        <hx-dialog isShowWindow={this.addCatalogWindow} {...{on:{'update:dialogVisiable': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
+          <hx-form-item label="目录名">
             <input slot="default" class="catalog-input" vModel={this.addCatalogText} type="text" placeholder="请输目录名" />
-          </window-utils-item>
-        </window-utils>
+          </hx-form-item>
+        </hx-dialog>
         <div class="notes-left">
           <div class="notes-catalog">
             <div class="catalog-list">
@@ -336,7 +336,7 @@ export default {
       outline: none;
     }
 
-    .window-utils {
+    .hx-dialog {
       background-color: #000;
     }
   }

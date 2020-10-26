@@ -21,7 +21,7 @@ export default {
     min-height: 100vh;
 
     .canvas-bg {
-      position: absolute;
+      position: fixed;
       z-index: 9;
     }
   }

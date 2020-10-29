@@ -202,12 +202,14 @@ export default {
             <div class="hardware-manager__filter" key="filter">
               <hx-date-picker onSelectComplete={this.dateSeleteComplete} value={this.timesArray}></hx-date-picker>
             </div>
-            <div class="hardware-manager__table" key="table">
+            <div class="hardware-manager__table" key="table" >
               <hx-table tableData={this.hardwareList} {...{
-                on: {
-                  'sort-change': this.hardwareSortChange
-                }
-              }}>
+                  on: {
+                    'sort-change': this.hardwareSortChange
+                  }
+                }}
+                ref="hardwareList"
+              >
                 {
                   this.hardwareTitle.map(item => {
                     return (
@@ -218,10 +220,16 @@ export default {
               </hx-table>
               <div class="hardware-manager__bottom">
                 <hx-pagination {...{
-                  on: {
-                    'current-change': this.hardwarePagerChange
-                  }
-                }} total={this.hardwareTotal} page-size={this.hardawrePageSize} current-page={this.hardwareCurPage}></hx-pagination>
+                    on: {
+                      'current-change': this.hardwarePagerChange
+                    }
+
+                  }}
+                  ref="pagination"
+                  total={this.hardwareTotal}
+                  page-size={this.hardawrePageSize}
+                  current-page={this.hardwareCurPage}>
+                </hx-pagination>
               </div>
             </div>
           </transition-group>
@@ -572,8 +580,9 @@ export default {
     },
 
     // 硬件信息表格切换分页
-    hardwarePagerChange (val) {
+    async hardwarePagerChange (val) {
       this.hardwareCurPage = val
+      await this.$refs['pagination'].pointAnimation(this.$refs['hardwareList'])
       this.getHardwareList()
     },
 

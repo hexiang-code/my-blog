@@ -208,7 +208,7 @@ export default {
   .notes-body {
     position: relative;
     display: flex;
-    width: 1000px;
+    width: 1300px;
     margin: 0 auto;
     height: 100%;
     z-index: 10;

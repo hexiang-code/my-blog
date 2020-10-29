@@ -93,6 +93,10 @@ export default {
         this.$liveRem.showToast({ text: '文章必须得有归属哦', type: 'error' })
         return
       }
+      if (!this.mdContent || !this.htmlContent) {
+        this.$liveRem.showToast({ text: '蕾姆什么都没收到哟, 按ctrl + s保存吧~', type: 'error' })
+        return
+      }
       let url = this.notesId ? 'notes/updateNotes' : 'notes/uploadNotes'
       let method = 'POST'
       let notesInfo = {

@@ -51,7 +51,8 @@ export default {
   justify-content: flex-end;
   z-index: 10;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.05);
-  background-color: #fff;
+  overflow: hidden;
+  // background-color: #fff;
 
   .nav-list {
     position: relative;
@@ -66,6 +67,7 @@ export default {
       line-height: 40px;
       margin-left: 20px;
       cursor: pointer;
+      color: #ffffff;
     }
 
     .nav-item:first-child {
@@ -82,5 +84,23 @@ export default {
     background: $theme-color;
     color: #ffffff;
   }
+}
+
+.head-top-zone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  background: $background no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  -webkit-filter: blur(20px);
+  -o-filter: blur(20px);
+  -moz-filter: blur(20px);
+  filter: blur(20px);
+  margin: -30px;
 }
 </style>

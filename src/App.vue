@@ -50,6 +50,8 @@ export default {
 <style scoped lang="scss">
   #app /deep/{
     height: 100%;
+    background-color: #f5f5f5;
+
     .message {
       max-height: 100px;
     }

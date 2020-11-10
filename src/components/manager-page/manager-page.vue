@@ -1,51 +1,9 @@
 <script>
-const colorArray = ["#91bef0","#33B5E5","#0099CC","#AA66CC","#9933CC","#99CC00","#669900","#FFBB33","#FF8800","#FF4444","#CC0000"]
-const bgColorArray = ["#f5f6f7", "#2f3136"]
-const hardwareTitle = [
-  {
-    props: 'cpuTemp',
-    label: 'cpu温度'
-  },
-  {
-    props: 'cpuUseage',
-    label: 'cpu使用率'
-  },
-  {
-    props: 'cpuMaxClocks',
-    label: 'cpu最大频率'
-  },
-  {
-    props: 'cpuPowers',
-    label: 'cpu功耗'
-  },
-  {
-    props: 'diskTemp',
-    label: '硬盘温度'
-  },
-  {
-    props: 'diskUseage',
-    label: '硬盘使用率'
-  },
-  {
-    props: 'ssdDiskTemp',
-    label: '固态硬盘温度'
-  },
-  {
-    props: 'ssdDiskUseage',
-    label: '固态硬盘使用率'
-  },
-  {
-    props: 'memUseage',
-    label: '内存使用率'
-  },
-  {
-    props: 'createdAt',
-    label: '创建时间'
-  }
-]
+import { colorArray, bgColorArray, hardwareTitle, loggerTitle } from './manager-config'
 import { dynamicStyle } from '../../config/js/dynamicSetting'
 import { debounce } from '../../utils/utils'
 import request from '../../utils/http'
+import userMode from '../../config/js/user-mode'
 export default {
   data () {
     return {
@@ -74,7 +32,24 @@ export default {
       hardawrePageSize: 10, // 单位页数据
       hardwareCurPage: 1, // 当前页
       fileType: 1, // 相册类型 1: 图片 2: 视频
-      hardwareSort: 'id=ASC' // 硬件信息排序方式
+      hardwareSort: 'id=ASC', // 硬件信息排序方式
+      // 日志查询参数
+      loggerFilter: {
+        method: '', // 请求方式
+        url: '', // 请求地址
+        timesArray: [], // 时间段
+        isError: false, // 是否只查错误信息
+        pageSize: 10,
+        curPage: 1,
+        total: 1,
+        sort: '', // 拍讯方式
+        errorInfo: '', // 错误信息
+        userAccount: '', // 用户账户
+        userId: '', // 用户Id
+        mode: '' // 用户身份
+      },
+      loggerList: [],
+      loggerTitle // 日志表格头
     }
   },
 
@@ -82,157 +57,251 @@ export default {
     return (
       <div class="main">
         <div class="design-class">
-          <p class="title">
-            定制主题
-              <div class="buttons">
-                <button onClick={() => this.applyColorSetting(1)}>本次应用</button>
-                <button onClick = { () => this.updateUserSetting()}>永久应用</button>
-              </div>
-          </p>
-          <transition-group name="design" appear tag="div" class="manager">
-            <div class="color-manager" key="colorManager">
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
-                选择主题色
-              </p>
-              <ul class="colors">
-                { this.colorArray.map(item => {
-                  return (
-                    <li class="color-item" title={item} onClick={() => this.selectColor(item, 1)} style={`background-color: ${item}`}>
-                      <i vShow={this.themeColor == item} class="iconfont sel-hander sel-icon">&#xe663;</i>
-                    </li>
-                  )
-                }) }
-              </ul>
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
-                选择背景色
-              </p>
-              <div class="background-setting">
-                <div class="left">
-                  纯色背景: &nbsp;
-                  <hx-switch vModel={this.nightMode} active-color="#2f3136" inactive-color="#f5f6f7">
-                    <i slot="switchLeft" class="iconfont sun-moon">&#xe603;</i>
-                    <i slot="switchRight" class="iconfont sun-moon">&#xe75d;</i>
-                  </hx-switch>
+          <div class="manage-module">
+            <p class="title">
+              定制主题
+                <div class="buttons">
+                  <button onClick={() => this.applyColorSetting(1)}>本次应用</button>
+                  <button onClick = { () => this.updateUserSetting()}>永久应用</button>
                 </div>
-                <div class="right">
-                  图片背景: &nbsp;
+            </p>
+            <transition-group name="design" appear tag="div" class="manage">
+              <div class="color-manage" key="colorManager">
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
+                  选择主题色
+                </p>
+                <ul class="colors">
+                  { this.colorArray.map(item => {
+                    return (
+                      <li class="color-item" title={item} onClick={() => this.selectColor(item, 1)} style={`background-color: ${item}`}>
+                        <i vShow={this.themeColor == item} class="iconfont sel-hander sel-icon">&#xe663;</i>
+                      </li>
+                    )
+                  }) }
+                </ul>
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
+                  选择背景色
+                </p>
+                <div class="background-setting">
+                  <div class="left">
+                    纯色背景: &nbsp;
+                    <hx-switch vModel={this.nightMode} active-color="#2f3136" inactive-color="#f5f6f7">
+                      <i slot="switchLeft" class="iconfont sun-moon">&#xe603;</i>
+                      <i slot="switchRight" class="iconfont sun-moon">&#xe75d;</i>
+                    </hx-switch>
+                  </div>
+                  <div class="right">
+                    图片背景: &nbsp;
+                    <button onClick={() => {
+                      this.imageApplayType = 'pageBg'
+                      this.albumVisibel = true
+                    }}>选择文件</button>
+                  </div>
+                </div>
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>3</span>
+                  选择透明度
+                </p>
+                <div class="opacity-slider">
+                  <span>透明度:</span>
+                  <hx-slider max={1} min={0.5} vModel={this.opacity}></hx-slider>
+                </div>
+                <div></div>
+              </div>
+
+              <div class="footer-manage color-manage" key="footerManager">
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
+                  个性签名
+                </p>
+                <div class="personal-sign">
+                  <input vModel={this.userDesignSetting.footerSetting.personalSign[0]} /> - <input vModel={this.userDesignSetting.footerSetting.personalSign[1]} />
+                </div>
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
+                  个人信息
+                </p>
+                <hx-form-item label="QQ" labelIcon={this.inputLabelIcon}>
+                  <input vModel={this.userDesignSetting.footerSetting.personalInfo.QQ} />
+                </hx-form-item>
+                <hx-form-item label="微信" labelIcon={this.inputLabelIcon}>
+                  <input vModel={this.userDesignSetting.footerSetting.personalInfo.wechat} />
+                </hx-form-item>
+                <hx-form-item label="地址" labelIcon={this.inputLabelIcon}>
+                  <input vModel={this.userDesignSetting.footerSetting.personalInfo.address} />
+                </hx-form-item>
+                <hx-form-item label="邮箱" labelIcon={this.inputLabelIcon}>
+                  <input vModel={this.userDesignSetting.footerSetting.personalInfo.email} />
+                </hx-form-item>
+              </div>
+
+              <div class="start-manage color-manage" key="startManager">
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
+                  首页海报
+                </p>
+                <div class="start-video">
+                  图片海报: &nbsp;
                   <button onClick={() => {
-                    this.imageApplayType = 'pageBg'
+                    this.imageApplayType = 'startPoster'
+                    this.albumVisibel = true
+                  }}>选择文件</button>
+                </div>
+                <p class="step-title">
+                  <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
+                  首页背景
+                </p>
+                <div class="start-video">
+                  视频背景: &nbsp;
+                  <button onClick={() => {
+                    this.getImageList(2)
+                    this.imageApplayType = 'startVideo'
                     this.albumVisibel = true
                   }}>选择文件</button>
                 </div>
               </div>
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>3</span>
-                选择透明度
-              </p>
-              <div class="opacity-slider">
-                <span>透明度:</span>
-                <hx-slider max={1} min={0.5} vModel={this.opacity}></hx-slider>
-              </div>
-              <div></div>
-            </div>
-
-            <div class="footer-manager color-manager" key="footerManager">
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
-                个性签名
-              </p>
-              <div class="personal-sign">
-                <input vModel={this.userDesignSetting.footerSetting.personalSign[0]} /> - <input vModel={this.userDesignSetting.footerSetting.personalSign[1]} />
-              </div>
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
-                个人信息
-              </p>
-              <hx-form-item label="QQ" labelIcon={this.inputLabelIcon}>
-                <input vModel={this.userDesignSetting.footerSetting.personalInfo.QQ} />
-              </hx-form-item>
-              <hx-form-item label="微信" labelIcon={this.inputLabelIcon}>
-                <input vModel={this.userDesignSetting.footerSetting.personalInfo.wechat} />
-              </hx-form-item>
-              <hx-form-item label="地址" labelIcon={this.inputLabelIcon}>
-                <input vModel={this.userDesignSetting.footerSetting.personalInfo.address} />
-              </hx-form-item>
-              <hx-form-item label="邮箱" labelIcon={this.inputLabelIcon}>
-                <input vModel={this.userDesignSetting.footerSetting.personalInfo.email} />
-              </hx-form-item>
-            </div>
-
-            <div class="start-manager color-manager" key="startManager">
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>1</span>
-                首页海报
-              </p>
-              <div class="start-video">
-                图片海报: &nbsp;
-                <button onClick={() => {
-                  this.imageApplayType = 'startPoster'
-                  this.albumVisibel = true
-                }}>选择文件</button>
-              </div>
-              <p class="step-title">
-                <span class="step-content" style={`background-color: ${this.getRandomColor(colorArray)}`}>2</span>
-                首页背景
-              </p>
-              <div class="start-video">
-                视频背景: &nbsp;
-                <button onClick={() => {
-                  this.getImageList(2)
-                  this.imageApplayType = 'startVideo'
-                  this.albumVisibel = true
-                }}>选择文件</button>
-              </div>
-            </div>
-          </transition-group>
-          <p class="title" vVisitor>
-            部署应用
-          </p>
-          <div class="manager deploy-manager" vVisitor>
-            <div class="deploy-btn" onClick={() => this.deployProject(1)} onDblclick={() => this.deployProject(1, true)}>部署前台</div>
-            <div class="deploy-btn" onClick={() => this.deployProject(2)} onDblclick={() => this.deployProject(2, true)}>部署后台</div>
-            <div class="deploy-btn" onClick={() => this.deployProject(0)} onDblclick={() => this.deployProject(0, true)}>全部部署</div>
+            </transition-group>
           </div>
-          <p class="title" vVisitor>
-            硬件监控
-          </p>
-          <transition-group class="manager hardware-manager" tag="div" appear name="hardware" vVisitor>
-            <div class="hardware-manager__filter" key="filter">
-              <hx-date-picker onSelectComplete={this.dateSeleteComplete} value={this.timesArray}></hx-date-picker>
-            </div>
-            <div class="hardware-manager__table" key="table" >
-              <hx-table tableData={this.hardwareList} {...{
-                  on: {
-                    'sort-change': this.hardwareSortChange
-                  }
-                }}
-                ref="hardwareList"
-              >
-                {
-                  this.hardwareTitle.map(item => {
-                    return (
-                      <hx-table-column prop={item.props} label={item.label} sortable={true}></hx-table-column>
-                    )
-                  })
-                }
-              </hx-table>
-              <div class="hardware-manager__bottom">
-                <hx-pagination {...{
-                    on: {
-                      'current-change': this.hardwarePagerChange
-                    }
 
-                  }}
-                  ref="pagination"
-                  total={this.hardwareTotal}
-                  page-size={this.hardawrePageSize}
-                  current-page={this.hardwareCurPage}>
-                </hx-pagination>
-              </div>
+          <div class="manage-module" vVisitor>
+            <p class="title">
+              部署应用
+            </p>
+            <div class="manage deploy-manage" >
+              <div class="deploy-btn" onClick={() => this.deployProject(1)} onDblclick={() => this.deployProject(1, true)}>部署前台</div>
+              <div class="deploy-btn" onClick={() => this.deployProject(2)} onDblclick={() => this.deployProject(2, true)}>部署后台</div>
+              <div class="deploy-btn" onClick={() => this.deployProject(0)} onDblclick={() => this.deployProject(0, true)}>全部部署</div>
             </div>
-          </transition-group>
+          </div>
+
+          <div class="manage-module" vVisitor>
+            <p class="title">
+              硬件监控
+            </p>
+            <transition-group class="manage hardware-manage" tag="div" appear name="hardware">
+              <div class="hardware-manager__filter" key="filter">
+                <hx-date-picker onSelectComplete={this.dateSeleteComplete} value={this.timesArray}></hx-date-picker>
+              </div>
+              <div class="hardware-manager__table" key="table" >
+                <hx-table tableData={this.hardwareList} {...{
+                    on: {
+                      'sort-change': this.hardwareSortChange
+                    }
+                  }}
+                  ref="hardwareList"
+                >
+                  {
+                    this.hardwareTitle.map(item => {
+                      return (
+                        <hx-table-column prop={item.props} label={item.label} sortable={true}></hx-table-column>
+                      )
+                    })
+                  }
+                </hx-table>
+                <div class="hardware-manager__bottom">
+                  <hx-pagination {...{
+                      on: {
+                        'current-change': this.hardwarePagerChange
+                      }
+
+                    }}
+                    ref="pagination"
+                    total={this.hardwareTotal}
+                    page-size={this.hardawrePageSize}
+                    current-page={this.hardwareCurPage}>
+                  </hx-pagination>
+                </div>
+              </div>
+            </transition-group>
+          </div>
+
+          <div class="manage-module" vVisitor>
+            <p class="title">
+              日志查询
+            </p>
+            <transition-group class="manage logger-manage" tag="div" appear name="logger">
+              <div class="logger-manage__filter" key="filter">
+                <hx-form-item label="请求方式" labelIcon={this.inputLabelIcon}>
+                  <input class="logger-manager__input" placeholder="请输入请求方式" vModel={this.loggerFilter.method}/>
+                </hx-form-item>
+                <hx-form-item label="请求地址" labelIcon={this.inputLabelIcon}>
+                  <input class="logger-manager__input" placeholder="请输入请求地址" vModel={this.loggerFilter.url}/>
+                </hx-form-item>
+                <hx-form-item label="是否只包含错误信息" labelIcon={this.inputLabelIcon}>
+                  <hx-select placeholder="请选择" vModel={this.loggerFilter.isError}>
+                    <hx-option label="是" value={true}></hx-option>
+                    <hx-option label="否" value={false}></hx-option>
+                  </hx-select>
+                </hx-form-item>
+                <hx-form-item label="错误信息" labelIcon={this.inputLabelIcon}>
+                  <input class="logger-manager__input" placeholder="请输入错误信息" vModel={this.loggerFilter.errorInfo}/>
+                </hx-form-item>
+                <hx-form-item label="用户账户" labelIcon={this.inputLabelIcon}>
+                  <input class="logger-manager__input" placeholder="请输入用户账户" vModel={this.loggerFilter.userAccount}/>
+                </hx-form-item>
+                <hx-form-item label="请求方式" labelIcon={this.inputLabelIcon}>
+                  <input class="logger-manager__input" placeholder="请输入请求方式" vModel={this.loggerFilter.method}/>
+                </hx-form-item>
+                <hx-form-item label="用户id" labelIcon={this.inputLabelIcon}>
+                  <input class="logger-manager__input" placeholder="请输入用户id" vModel={this.loggerFilter.userId}/>
+                </hx-form-item>
+                <hx-form-item label="用户身份" labelIcon={this.inputLabelIcon}>
+                  <hx-select placeholder="请选择用户身份" vModel={this.loggerFilter.mode}>
+                    {
+                      userMode.map(item => {
+                        return (
+                          <hx-option label={item.label} value={item.mode}></hx-option>
+                        )
+                      })
+                    }
+                  </hx-select>
+                </hx-form-item>
+                <hx-form-item label="查询时间" labelIcon={this.inputLabelIcon}>
+                  <hx-date-picker vModel={this.loggerFilter.timesArray}></hx-date-picker>
+                </hx-form-item>
+              </div>
+              <div class="search-btns" key="search">
+                <div class="search-logger" onClick={() => { this.getLoggerList() }} >查询</div>
+                <div class="search-cancel" onClick={() => { this.resetSearchLogger()}}>重置</div>
+              </div>
+              <div class="logger-manage__table" key="table" >
+                <hx-table tableData={this.loggerList} {...{
+                    on: {
+                      'sort-change': this.loggerSortChange
+                    }
+                  }}
+                  ref="loggerList"
+                >
+                  {
+                    this.loggerTitle.map(item => {
+                      if (item.props == 'token') {
+                        return <hx-table-column prop={item.props} label={item.label} sortable={item.sortable} align="center" width="300"></hx-table-column>
+                      } else {
+                        return <hx-table-column prop={item.props} label={item.label} sortable={item.sortable} align="center"></hx-table-column>
+                      }
+
+
+                    })
+                  }
+                </hx-table>
+                <div class="logger-manage__bottom">
+                  <hx-pagination {...{
+                      on: {
+                        'current-change': this.loggerPagerChange
+                      }
+
+                    }}
+                    ref="pagination"
+                    total={this.loggerFilter.total}
+                    page-size={this.loggerFilter.pageSize}
+                    current-page={this.loggerFilter.curPage}>
+                  </hx-pagination>
+                </div>
+              </div>
+            </transition-group>
+          </div>
         </div>
         <hx-album
           imageList={this.imageList}
@@ -316,6 +385,7 @@ export default {
     this.getImageList(1)
     this.deployProject = debounce(this._deployProject, 300)
     this.getHardwareList()
+    this.getLoggerList()
   },
 
   methods: {
@@ -596,6 +666,54 @@ export default {
     hardwareSortChange (props, sort) {
       this.hardwareSort = `${props}=${sort}`
       this.getHardwareList()
+    },
+
+    // 日志排序查询
+    loggerSortChange (prop, sort) {
+      this.loggerFilter.sort = `${prop}=${sort}`
+      this.getLoggerList()
+    },
+
+    // 日志分页切换
+    loggerPagerChange (val) {
+      this.loggerFilter.curPage = val
+      this.getLoggerList()
+    },
+
+    // 获取日志列表
+    getLoggerList () {
+      let params = {}
+      Object.keys(this.loggerFilter).forEach(key => {
+        if (key !== 'total' && this.loggerFilter[key]) params[key] = this.loggerFilter[key]
+      })
+      params.timesArray = JSON.stringify(this.loggerFilter.timesArray)
+      request({
+        url: 'logger/getLoggerList',
+        method: 'GET',
+        params,
+      }).then(res => {
+          this.loggerList = res.rows
+          this.loggerFilter.total = res.count
+      })
+    },
+
+    // 重置日志查询条件
+    resetSearchLogger () {
+      this.loggerFilter =  {
+        method: '', // 请求方式
+        url: '', // 请求地址
+        timesArray: [], // 时间段
+        isError: false, // 是否只查错误信息
+        pageSize: 10,
+        curPage: 1,
+        total: 1,
+        sort: '', // 拍讯方式
+        errorInfo: '', // 错误信息
+        userAccount: '', // 用户账户
+        userId: '', // 用户Id
+        mode: '' // 用户身份
+      }
+      this.getLoggerList()
     }
   }
 }
@@ -604,13 +722,17 @@ export default {
 <style lang='scss' scoped>
   @import '../../config/css/_globalStyle.scss';
   .main /deep/{
-    padding: 20px 20% 20px 20%;
+    padding: 20px 5% 20px 5%;
     min-width: 350px;
 
     .design-class {
       padding: 20px;
       background-color: rgba($color: #fff, $alpha: $opacity);
       // overflow: hidden;
+
+      .manage-module {
+
+      }
 
       .title {
         position: relative;
@@ -649,14 +771,14 @@ export default {
         }
       }
 
-      .manager {
+      .manage {
         display: flex;
         justify-content: space-around;
         flex-wrap: wrap;
         margin-top: 10px;
         font-size: 12px;
 
-        .color-manager {
+        .color-manage {
           padding: 10px;
           display: flex;
           flex-direction: column;
@@ -761,7 +883,7 @@ export default {
           }
         }
 
-        .footer-manager {
+        .footer-manage {
 
           input {
             display: inline-block;
@@ -796,7 +918,7 @@ export default {
 
         }
 
-        .start-manager {
+        .start-manage {
 
           .start-video {
             margin-top: 10px;
@@ -812,7 +934,7 @@ export default {
         }
       }
 
-      .deploy-manager {
+      .deploy-manage {
         justify-content: flex-start;
         padding-bottom: 20px;
 
@@ -830,9 +952,9 @@ export default {
         }
       }
 
-      .hardware-manager {
+      .hardware-manage {
         position: relative;
-
+        padding-bottom: 24px;
         .hardware-manager__filter {
           position: relative;
           width: 100%;
@@ -874,6 +996,93 @@ export default {
           }
         }
       }
+
+      .logger-manage {
+        flex-direction: column;
+
+        .logger-manage__filter {
+          display: flex;
+          flex-wrap: wrap;
+          // justify-content: space-between;
+          padding-bottom: 24px;
+
+          .login-input {
+            margin-right: 30px;
+          }
+
+          .logger-manager__input {
+            height: 30px;
+            border: 1px solid $theme-color;
+            border-radius: 5px;
+            padding: 0 10px;
+          }
+
+          .select .select__input {
+            width: 130px;
+            height: 30px;
+            line-height: 30px;
+          }
+          .login-label {
+            width: unset;
+            color: #000;
+          }
+
+          .date-pick {
+            display: flex;
+            position: relative;
+            z-index: 1;
+            background-color: #fff;
+
+            .date-pick__container {
+              background-color: #fff;
+            }
+
+            .date-picker__dialog {
+              background-color: #fff;
+            }
+          }
+        }
+
+        .search-btns {
+          display: flex;
+          align-items: center;
+          padding-bottom: 24px;
+
+          .search-logger {
+            width: 80px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 16px;
+            background-color: $theme-color;
+            border: none;
+            color: #fff;
+            margin-right: 20px;
+            border-radius: 6px;
+            cursor: pointer;
+          }
+
+          .search-cancel {
+            display: inline;
+            color: #000;
+            font-size: 14px;
+            cursor: pointer;
+          }
+        }
+
+
+        .logger-manage__table {
+          position: relative;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+
+          .logger-manage__bottom {
+            margin-top: 24px;
+          }
+        }
+      }
     }
 
     .design-enter-active {
@@ -882,6 +1091,10 @@ export default {
 
     .hardware-enter-active {
       animation: open-translate-bottom 1.5s forwards;
+    }
+
+    .logger-enter-active {
+      animation: open-translate-left 1.5s forwards;
     }
   }
 

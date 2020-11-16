@@ -692,8 +692,8 @@ export default {
         method: 'GET',
         params,
       }).then(res => {
-          this.loggerList = res.rows
-          this.loggerFilter.total = res.count
+        this.loggerList = res.rows
+        this.loggerFilter.total = res.count
       })
     },
 

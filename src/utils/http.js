@@ -1,9 +1,9 @@
 import axios from 'axios'
 import cookieServer from './cookie'
-import { httpBaseUrl } from '../config/js/envConfig'
+import { httpBaseUrl } from '../config/js/http-config'
 import Vue from 'vue'
 import store from '../store'
-import { urlWhiteList } from './httpsUrlConfig'
+import { urlWhiteList } from './https-url-config'
 const request = axios.create({
   baseURL: httpBaseUrl,
   timeout: 10000,

@@ -2,7 +2,7 @@ import checkFun from '../utils/check'
 import Vuex from 'vuex'
 import Vue from 'vue'
 import request from '../utils/http'
-import { dynamicStyle } from '../config/js/dynamicSetting'
+import { dynamicStyle } from '../config/js/dynamic-setting'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {

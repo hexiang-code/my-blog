@@ -1,6 +1,6 @@
 <script>
 import request from '../../utils/http.js'
-import { externalLink } from '../../config/js/mavonEditorConfig'
+import { externalLink } from '../../config/js/mavon-editor-config'
 export default {
   data () {
     return {

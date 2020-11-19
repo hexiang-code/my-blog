@@ -1,6 +1,6 @@
 <script>
 import { colorArray, bgColorArray, hardwareTitle, loggerTitle } from './manager-config'
-import { dynamicStyle } from '../../config/js/dynamicSetting'
+import { dynamicStyle } from '../../config/js/dynamic-setting'
 import { debounce } from '../../utils/utils'
 import request from '../../utils/http'
 import userMode from '../../config/js/user-mode'

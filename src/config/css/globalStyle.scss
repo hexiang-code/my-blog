@@ -6,7 +6,7 @@
   
   /*定义滚动条的轨道颜色、内阴影及圆角*/
   ::-webkit-scrollbar-track {
-    background-color: #fff;
+    // background-color: rgba($color: #fff, $alpha: $opacity);
     border-radius: 3px;
   }
   

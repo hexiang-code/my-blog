@@ -293,7 +293,7 @@ import cookieServe from "../../utils/cookie"
 import { VueEditor } from "vue2-editor"
 import { tabsConfig, navgation } from "../../config/js/start-page"
 import jsonp from 'jsonp'
-import eventBus from '../../utils/eventBus'
+import eventBus from '../../utils/event-bus'
 export default {
   data() {
     return {

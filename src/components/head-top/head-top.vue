@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-import firstNavConfig from "../../config/js/firstNavConfig";
+import firstNavConfig from "../../config/js/first-nav-config";
 export default {
   data() {
     return {

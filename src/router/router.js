@@ -19,7 +19,7 @@ const routerList =  [
             {
                 path: 'mainPage',
                 name: 'mainPage',
-                component: () => import('../components/mainPage/mainPage.vue')
+                component: () => import('../components/main-page/main-page.vue')
             },
             {
                 path: 'notes',

@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import bottomNavArr from "../../config/js/firstNavConfig";
+import bottomNavArr from "../../config/js/first-nav-config";
 
 export default {
   data() {

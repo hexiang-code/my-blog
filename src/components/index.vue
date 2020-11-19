@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import HeadTop from './headTop/headTop';
-import FootBottom from './footBottom/footBottom';
+import HeadTop from './head-top/head-top';
+import FootBottom from './foot-bottom/foot-bottom';
 export default {
   name: 'Index',
   components: {

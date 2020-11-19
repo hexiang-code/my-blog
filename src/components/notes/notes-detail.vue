@@ -1,7 +1,7 @@
 <script>
 import request from '../../utils/http'
 import { throttle } from '../../utils/utils'
-import { externalLink } from '../../config/js/mavonEditorConfig'
+import { externalLink } from '../../config/js/mavon-editor-config'
 let intersectionIo // dom观察器
 export default {
   data () {
@@ -58,7 +58,9 @@ export default {
     }
     return (
       <div class="notes-info">
-        <div class="notes-catalog" ref="notesCatalog"></div>
+        <div class="notes-catalog" ref="notesCatalog">
+          <div class="catalog-text">目录</div>
+        </div>
         <div class="notes-content">
           <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
         </div>
@@ -68,10 +70,6 @@ export default {
   created () {
     this.notesId = this.$route.query && this.$route.query.notesId
     this.getNotesDetail(this.notesId)
-    document.onscroll = throttle(() => {
-      let cssText = `transform: translateY(${document.documentElement.scrollTop}px); transition: .3s;`
-      this.$refs.notesCatalog.style.cssText = cssText
-    })
     intersectionIo = new IntersectionObserver(entries => {
       for(let entry of entries) {
         if (entry.intersectionRatio > 0.5) {
@@ -83,7 +81,15 @@ export default {
       entries: [0, 0.5, 0.75, 1]
     })
   },
-
+  mounted () {
+    const scrollFn = () => {
+      this.scrollTop = document.documentElement.scrollTop
+      let cssText = `transform: translateY(${this.scrollTop}px); transition: .2s;`
+      this.$refs.notesCatalog.style.cssText = cssText
+    }
+    scrollFn()
+    document.onscroll = throttle(scrollFn, 50)
+  },
   destroyed () {
     document.onscroll = null
     intersectionIo.disconnect()
@@ -118,7 +124,9 @@ export default {
         for (let child of catalog.childNodes) {
           if (child.tagName === 'A' && child.getAttribute('href') === `#${id}`) {
             this.$refs.notesCatalog.scrollTo(0, Math.floor(catalog.offsetTop / 2))
-            catalog.classList.add('catalog-select')
+            setTimeout(() => {
+              catalog.classList.add('catalog-select')
+            }, 300)
           } else {
             catalog.classList.remove('catalog-select')
           }
@@ -145,10 +153,19 @@ export default {
       width: 300px;
       max-height: 800px;
       margin-right: 10px;
-      padding: 20px 0;
+      padding: 10px 5px;
       overflow-y: auto;
       background-color: rgba($color: #fff, $alpha: $opacity);
       box-sizing: border-box;
+      border-radius: 5px;
+
+      .catalog-text {
+        margin: 0 12px;
+        padding: 5px 0;
+        border-bottom: 1px dashed #f5f5f5;
+        font-size: 16px;
+        font-weight: bold;
+      }
 
       h1, h2, h3, h4, h5, h6 {
         margin: 0;
@@ -171,29 +188,30 @@ export default {
       }
 
       h2 {
-        padding: 5px 0 5px 28px;
+        padding: 5px 0 5px 24px;
       }
 
       h3 {
-        padding: 5px 0 5px 44px;
+        padding: 5px 0 5px 36px;
       }
 
       h4 {
-        padding: 5px 0 5px 60px;
+        padding: 5px 0 5px 48px;
       }
 
       h5 {
-        padding: 5px 0 5px 72px;
+        padding: 5px 0 5px 60px;
       }
 
       h6 {
-        padding: 5px 0 5px 88px;
+        padding: 5px 0 5px 72px;
       }
     }
 
     .notes-content {
       width: 1000px;
       background-color: rgba($color: #fff, $alpha: $opacity);
+      border-radius: 5px;
 
       .v-note-wrapper {
         background-color: transparent;
@@ -217,12 +235,12 @@ export default {
     }
 
     .catalog-select {
-      margin: 0 20px !important;
-      background-color: $theme-color;
+      transform: translateX(12px);
+      transition: all .5s;
     }
 
     .catalog-select a {
-      color: #fff !important;
+      color: $theme-color !important;
     }
   }
 </style>

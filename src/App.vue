@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import lovelyRemind from './utils/lovelyRemind'
+import lovelyRemind from './utils/remind-map'
 import Vue from 'vue'
 export default {
   name: 'app',
@@ -33,7 +33,7 @@ export default {
   methods: {
     lovelyRemind () {
       Object.keys(lovelyRemind).forEach(item => {
-        this.sockets.listener.subscribe(item, res => {
+        this.sockets.subscribe(item, res => {
           window.focus()
           this.$liveRem.showToast({text: res})
         })

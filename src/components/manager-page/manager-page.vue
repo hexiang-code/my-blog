@@ -729,6 +729,7 @@ export default {
       padding: 20px;
       background-color: rgba($color: #fff, $alpha: $opacity);
       // overflow: hidden;
+      border-radius: 5px;
 
       .manage-module {
 

@@ -221,6 +221,7 @@ export default {
         position: relative;
         background-color: rgba($color: #fff, $alpha: $opacity);
         padding-top: 20px;
+        border-radius: 5px;
 
         .catalog-list {
           position: relative;
@@ -301,6 +302,7 @@ export default {
         height: 100%;
         box-sizing: border-box;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+         border-radius: 5px;
 
         .list-item {
           padding-bottom: 20px;

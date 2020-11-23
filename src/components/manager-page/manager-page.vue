@@ -145,6 +145,7 @@ export default {
                 <div class="start-video">
                   图片海报: &nbsp;
                   <button onClick={() => {
+                    this.getImageList(1)
                     this.imageApplayType = 'startPoster'
                     this.albumVisibel = true
                   }}>选择文件</button>
@@ -438,8 +439,8 @@ export default {
           return this.selectColor(`url(${image.resourceUrl})`, 2)
         case 'startPoster':
           return dynamicStyle('startPoster', image.resourceUrl)
-        case 'stratVideo':
-          return dynamicStyle('stratVideo', image.resourceUrl)
+        case 'startVideo':
+          return dynamicStyle('startVideo', image.resourceUrl)
       }
     },
 

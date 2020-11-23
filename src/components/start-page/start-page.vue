@@ -360,12 +360,12 @@ export default {
     // 启动页海报
     startPagePoster () {
       let userDesignSetting  = this.$store.getters.getUserDesignSetting
-      return userDesignSetting.startSetting.poster || require('../../assets/startBg.png')
+      return userDesignSetting.startSetting.startPoster || require('../../assets/startBg.png')
     },
     // 动态壁纸
     bgVideo () {
       let userDesignSetting  = this.$store.getters.getUserDesignSetting
-      return userDesignSetting.startSetting.bgVideo || require("../../assets/start-background-video.mp4")
+      return userDesignSetting.startSetting.startVideo || require("../../assets/start-background-video.mp4")
     },
 
     // 主题色

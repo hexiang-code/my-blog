@@ -53,6 +53,8 @@ export default {
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.05);
   overflow: hidden;
   // background-color: #fff;
+  background: $background;
+  background-attachment: fixed;
 
   .nav-list {
     position: relative;

@@ -23,7 +23,7 @@ const store = new Vuex.Store({
       // 启动页设置
       startSetting: {
         startPoster: require('../assets/startBg.png'),
-        stratVideo: require("../assets/start-background-video.mp4")
+        startVideo: require("../assets/start-background-video.mp4")
       },
       // 主题背景设置
       themeSetting: {

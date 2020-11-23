@@ -16,7 +16,7 @@ export default {
   @import '../../config/css/_globalStyle.scss';
   .notes-main {
     position: relative;
-    padding: 10px;
+    padding: 0 10px 10px 10px;
     z-index: 9;
     min-height: 100vh;
 

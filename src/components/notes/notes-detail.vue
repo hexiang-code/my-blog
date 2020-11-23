@@ -58,8 +58,9 @@ export default {
     }
     return (
       <div class="notes-info">
-        <div class="notes-catalog" ref="notesCatalog">
+        <div class="notes-catalog">
           <div class="catalog-text">目录</div>
+          <div class="list" ref="notesCatalog"></div>
         </div>
         <div class="notes-content">
           <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
@@ -73,7 +74,8 @@ export default {
     intersectionIo = new IntersectionObserver(entries => {
       for(let entry of entries) {
         if (entry.intersectionRatio > 0.5) {
-          this.highLightCatalog(entry.target.getAttribute('id'))
+          let entryInfo =  entry.target.getBoundingClientRect()
+          if ((Math.floor(entryInfo.top) - 80) < 100) this.highLightCatalog(entry.target.getAttribute('id'))
           return
         }
       }
@@ -84,11 +86,12 @@ export default {
   mounted () {
     const scrollFn = () => {
       this.scrollTop = document.documentElement.scrollTop
-      let cssText = `transform: translateY(${this.scrollTop}px); transition: .2s;`
-      this.$refs.notesCatalog.style.cssText = cssText
+      let cssText = `transform: translateY(${this.scrollTop}px);`
+      this.$refs.notesCatalog.parentNode.style.cssText = cssText
     }
     scrollFn()
-    document.onscroll = throttle(scrollFn, 50)
+    // document.onscroll = throttle(scrollFn, 50)
+    document.onscroll = scrollFn
   },
   destroyed () {
     document.onscroll = null
@@ -124,9 +127,7 @@ export default {
         for (let child of catalog.childNodes) {
           if (child.tagName === 'A' && child.getAttribute('href') === `#${id}`) {
             this.$refs.notesCatalog.scrollTo(0, Math.floor(catalog.offsetTop / 2))
-            setTimeout(() => {
-              catalog.classList.add('catalog-select')
-            }, 300)
+            catalog.classList.add('catalog-select')
           } else {
             catalog.classList.remove('catalog-select')
           }
@@ -151,13 +152,21 @@ export default {
     .notes-catalog {
       position: relative;
       width: 300px;
-      max-height: 800px;
+      max-height: 680px;
       margin-right: 10px;
       padding: 10px 5px;
       overflow-y: auto;
       background-color: rgba($color: #fff, $alpha: $opacity);
       box-sizing: border-box;
       border-radius: 5px;
+      overflow: hidden;
+
+      .list {
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-top: 24px;
+        max-height: 600px;
+      }
 
       .catalog-text {
         margin: 0 12px;

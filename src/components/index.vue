@@ -27,6 +27,7 @@ export default {
     background: $background no-repeat;
     background-size: cover;
     background-attachment: fixed;
+
     .container {
       position: relative;
       padding-top: 80px;

@@ -69,7 +69,6 @@ export default {
       line-height: 40px;
       margin-left: 20px;
       cursor: pointer;
-      color: #ffffff;
     }
 
     .nav-item:first-child {

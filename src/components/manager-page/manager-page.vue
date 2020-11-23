@@ -377,6 +377,8 @@ export default {
       },
 
       set (val) {
+        if (val) document.getElementById('app').style.color = '#fff'
+        else document.getElementById('app').style.color = '#000'
         this.background = bgColorArray[`${val ? 1 : 0}`]
       }
     }

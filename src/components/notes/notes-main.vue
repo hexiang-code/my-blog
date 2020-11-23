@@ -28,12 +28,12 @@ export default {
         </hx-dialog>
         <div class="notes-left">
           <div class="notes-catalog">
-            <div class="catalog-list">
-              {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
-            </div>
             <div class="add-catalog">
               <a onClick={() => this.addCatalogWindow = true}>新增目录</a>
               <i class="iconfont notes-icon">&#xe612;</i>
+            </div>
+            <div class="catalog-list">
+              {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
             </div>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default {
               </div>
               <div vVisitor>
                 <i class="iconfont notes-icon">&#xe62e;</i>
-                <a onClick={() => this.modifyCatalog(item, 1)} onDblclick ={() => this.modifyCatalog(item, 2)}>修改目录</a>
+                <a title="点击修改,双击删除" onClick={() => this.modifyCatalog(item, 1)} onDblclick ={() => this.modifyCatalog(item, 2)}>修改目录</a>
               </div>
             </div>
 
@@ -220,7 +220,6 @@ export default {
       .notes-catalog {
         position: relative;
         background-color: rgba($color: #fff, $alpha: $opacity);
-        padding-top: 20px;
         border-radius: 5px;
 
         .catalog-list {
@@ -228,20 +227,19 @@ export default {
           display: flex;
           flex-direction: column;
           max-height: 500px;
+          margin-top: 10px;
           padding: 20px 20px 20px 20px;
           overflow-y: auto;
         }
 
         .add-catalog {
-          position: absolute;
-          left: 0;
-          top: 0;
           box-sizing: border-box;
           display: flex;
           align-items: center;
-          padding: 10px 0 0 10px;
+          padding: 10px 0 10px 10px;
           width: 100%;
-          font-size: 12px;
+          font-size: 16px;
+          border-bottom: 1px dashed #fff;
           cursor: pointer;
         }
 

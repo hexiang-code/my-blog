@@ -73,7 +73,7 @@ export default {
     this.getNotesDetail(this.notesId)
     intersectionIo = new IntersectionObserver(entries => {
       for(let entry of entries) {
-        if (entry.intersectionRatio == 1) {
+        if (entry.intersectionRect.top < 200) {
           this.highLightCatalog(entry.target.getAttribute('id'))
           return
         }
@@ -84,8 +84,8 @@ export default {
   },
   mounted () {
     const scrollFn = () => {
-      this.scrollTop = document.documentElement.scrollTop
-      let cssText = `transform: translateY(${this.scrollTop}px);`
+      let scrollTop = document.documentElement.scrollTop
+      let cssText = `transform: translateY(${scrollTop}px);`
       this.$refs.notesCatalog.parentNode.style.cssText = cssText
     }
     scrollFn()
@@ -125,6 +125,10 @@ export default {
       for (let catalog of catalogs) {
         for (let child of catalog.childNodes) {
           if (child.tagName === 'A' && child.getAttribute('href') === `#${id}`) {
+            // this.$refs.notesCatalog.scrollIntoView({
+            //   behavior: 'auto',
+            //   block: 'center'
+            // })
             this.$refs.notesCatalog.scrollTo(0, Math.floor(catalog.offsetTop / 2))
             catalog.classList.add('catalog-select')
           } else {
@@ -151,7 +155,7 @@ export default {
     .notes-catalog {
       position: relative;
       width: 300px;
-      max-height: 680px;
+      max-height: 480px;
       margin-right: 10px;
       padding: 10px 5px;
       overflow-y: auto;

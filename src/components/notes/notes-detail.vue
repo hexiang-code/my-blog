@@ -1,6 +1,6 @@
 <script>
 import request from '../../utils/http'
-import { throttle } from '../../utils/utils'
+// import { throttle } from '../../utils/utils'
 import { externalLink } from '../../config/js/mavon-editor-config'
 let intersectionIo // dom观察器
 export default {
@@ -73,9 +73,8 @@ export default {
     this.getNotesDetail(this.notesId)
     intersectionIo = new IntersectionObserver(entries => {
       for(let entry of entries) {
-        if (entry.intersectionRatio > 0.5) {
-          let entryInfo =  entry.target.getBoundingClientRect()
-          if ((Math.floor(entryInfo.top) - 80) < 100) this.highLightCatalog(entry.target.getAttribute('id'))
+        if (entry.intersectionRatio == 1) {
+          this.highLightCatalog(entry.target.getAttribute('id'))
           return
         }
       }

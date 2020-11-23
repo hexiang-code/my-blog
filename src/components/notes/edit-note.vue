@@ -1,6 +1,7 @@
 <script>
 import request from '../../utils/http.js'
 import { externalLink } from '../../config/js/mavon-editor-config'
+import { throttle } from '../../utils/utils'
 export default {
   data () {
     return {
@@ -20,10 +21,21 @@ export default {
     }
   },
 
+  mounted () {
+    let bar =  document.getElementsByClassName('v-note-op')[0]
+    window.onscroll =throttle(() => {
+      let scrollTop = document.documentElement.scrollTop
+      if (scrollTop > 300) !bar.classList.contains('toolbar-fixed') && bar.classList.add('toolbar-right')
+      else bar.classList.contains('toolbar-right') && bar.classList.remove('toolbar-right')
+    })
+  },
+  destroyed () {
+    window.onscroll = null
+  },
   render () {
     let attrs = {
       previewBackground: 'transparent', // 预览框背景颜色
-      toolbarsBackground: 'transparent', // 工具栏背景颜色
+      // toolbarsBackground: 'transparent', // 工具栏背景颜色
       ishljs: true,
       externalLink
     }
@@ -119,13 +131,27 @@ export default {
   @import '../../config/css/_globalStyle.scss';
   .edit-notes /deep/{
     position: relative;
-    padding: 20px;
+    padding: 20px 70px;
     z-index: 10;
 
     .v-note-wrapper {
       min-height: 800px;
       background-color: rgba($color: #fff, $alpha: $opacity);
 
+      .toolbar-right {
+        position: fixed;
+        top: 80px;
+        right: 0;
+        bottom: 0;
+        width: 90px;
+        animation: open-translate-right .3s linear forwards;
+        transition: transform .5s;
+
+        .v-left-item, .v-right-item {
+          display: flex;
+          flex-direction: column
+        }
+      }
       // .v-show-content, .v-show-content-html {
       //   background-color: rgba($color: #fff, $alpha: $opacity)!important;
       // }
@@ -199,4 +225,6 @@ export default {
     }
 
   }
+
+
 </style>

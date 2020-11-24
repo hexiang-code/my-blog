@@ -32,7 +32,39 @@ function throttle (fn, wait = 200, ctx = null) {
   }
 }
 
+/**
+ * 格式化时间
+ * @param {String} formatText 格式化时间 （YYYY-MM-DD:HH:MM:SS）
+ * @param {Number} timestamp 目标时间戳
+ */
+function formatDate(formatText = 'YYYY-MM-DD:HH:MM:SS', timestamp = +new Date()) {
+  const _getFullDate = val => {
+    if (String(val).length < 2) {
+      return '0' + String(val)
+    } else {
+      return val
+    }
+  }
+  let targetDate = new Date(timestamp),
+  _targetYear = targetDate.getFullYear(),
+  _targetMonth = targetDate.getMonth() + 1,
+  _targetDay = targetDate.getDate(),
+  _targetHour = targetDate.getHours(),
+  _targetMinutes = targetDate.getMinutes(),
+  _targetSecond = targetDate.getSeconds(),
+  returnText = ''
+  returnText = formatText.replace('YYYY', _targetYear)
+  returnText = returnText.replace('MM', _getFullDate(_targetMonth))
+  returnText = returnText.replace('DD', _getFullDate(_targetDay))
+  returnText = returnText.replace('HH', _getFullDate(_targetHour))
+  returnText = returnText.replace('MM', _getFullDate(_targetMinutes))
+  returnText = returnText.replace('SS', _getFullDate(_targetSecond))
+  return returnText
+}
+
+
 export {
   debounce,
-  throttle
+  throttle,
+  formatDate
 }

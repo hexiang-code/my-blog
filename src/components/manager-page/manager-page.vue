@@ -4,6 +4,7 @@ import { dynamicStyle } from '../../config/js/dynamic-setting'
 import { debounce } from '../../utils/utils'
 import request from '../../utils/http'
 import userMode from '../../config/js/user-mode'
+import { formatDate } from '../../utils/utils'
 export default {
   data () {
     return {
@@ -279,6 +280,15 @@ export default {
                     this.loggerTitle.map(item => {
                       if (item.props == 'token') {
                         return <hx-table-column prop={item.props} label={item.label} sortable={item.sortable} align="center" width="300"></hx-table-column>
+                      } else if (item.props == 'createdAt') {
+                        return <hx-table-column prop={item.props} label={item.label} sortable={item.sortable} align="center"
+                        scopedSlots={{
+                          columnContent: function ({createdAt}) {
+                            return <span>{formatDate('YYYY-MM-DD HH:MM:SS', createdAt)}</span>
+                          }
+                        }}>
+
+                        </hx-table-column>
                       } else {
                         return <hx-table-column prop={item.props} label={item.label} sortable={item.sortable} align="center"></hx-table-column>
                       }

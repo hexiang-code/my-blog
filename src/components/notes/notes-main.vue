@@ -9,11 +9,15 @@ export default {
       addCatalogWindow: false, // 新增目录弹框
       addCatalogText: '', // 目录
       updateCatalogId: '', // 修改目录id
-      curSelCatalog: {} // 当前选中的目录
+      curSelCatalog: {}, // 当前选中的目录
+      notesLabelList: [], // 笔记标签列表
+      isVisiableNotesLabel: false, // 是否展开笔记标签窗口
+      isVisiableNotesCatalog: false // 是否展开笔记目录窗口
     }
   },
   created () {
     this.getNotesCatalog()
+    this.getNotesLabel()
     this.modifyCatalog = debounce(function(item, type) {
                           this.updateCatalog(item, type)
                         }, 300, this)
@@ -21,19 +25,38 @@ export default {
   render () {
     return (
       <div class="notes-body">
-        <hx-dialog isShowWindow={this.addCatalogWindow} {...{on:{'update:dialogVisiable': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
+        <hx-dialog dialogVisiable={this.addCatalogWindow} {...{on:{'update:dialogVisiable': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
           <hx-form-item label="目录名">
             <input slot="default" class="catalog-input" vModel={this.addCatalogText} type="text" placeholder="请输目录名" />
           </hx-form-item>
         </hx-dialog>
         <div class="notes-left">
-          <div class="notes-catalog">
+          <div class="notes-catalog" ref="notes-catalog">
             <div class="add-catalog">
-              <a onClick={() => this.addCatalogWindow = true}>新增目录</a>
-              <i class="iconfont notes-icon">&#xe612;</i>
+              <div>
+                <i class="iconfont catalog-icon">&#xe6a5;</i>
+                <a onClick={() => this.addCatalogWindow = true}>新增目录</a>
+              </div>
+              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-catalog'], height: 46}}>&#xe67c;</i>
             </div>
             <div class="catalog-list">
               {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
+            </div>
+          </div>
+          <div class="notes-label" ref="notes-label">
+            <div class="header">
+              <div>
+                <i class="iconfont label-icon">&#xe7a5;</i>
+                标签
+              </div>
+              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-label'], height: 46}}>&#xe67c;</i>
+            </div>
+            <div class="content">
+              {
+                this.notesLabelList.map(item => {
+                  return <span>{item.name}</span>
+                })
+              }
             </div>
           </div>
         </div>
@@ -199,6 +222,20 @@ export default {
       }
     },
 
+    /**
+     * 获取笔记标签列表
+     */
+    getNotesLabel () {
+      request({
+        url: 'notesLabel/getNotesLabelList',
+        methods: 'GET',
+        params: {
+          curPage: -1
+        }
+      }).then(res => {
+        this.notesLabelList = res.data
+      })
+    }
   }
 }
 </script>
@@ -221,26 +258,36 @@ export default {
         position: relative;
         background-color: rgba($color: #fff, $alpha: $opacity);
         border-radius: 5px;
+        height: auto;
 
         .catalog-list {
           position: relative;
           display: flex;
           flex-direction: column;
-          max-height: 500px;
+          max-height: 400px;
           margin-top: 10px;
-          padding: 20px 20px 20px 20px;
+          padding: 12px;
           overflow-y: auto;
         }
 
         .add-catalog {
           box-sizing: border-box;
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          padding: 10px 0 10px 10px;
+          padding: 12px;
           width: 100%;
           font-size: 16px;
+          font-weight: bold;
           border-bottom: 1px dashed #fff;
           cursor: pointer;
+
+          .catalog-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            color: $theme-color;
+          }
         }
 
         .catalog-item {
@@ -248,7 +295,7 @@ export default {
           flex-direction: column;
           justify-content: space-between;
           padding: 5px;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
 
           .catalog-title {
             box-sizing: border-box;
@@ -284,6 +331,69 @@ export default {
           }
         }
 
+      }
+
+      .notes-label {
+        position: relative;
+        margin-top: 24px;
+        background-color: rgba($color: #fff, $alpha: $opacity);
+        border-radius: 5px;
+        font-size: 14px;
+
+        .header {
+          display: flex;
+          justify-content: space-between;
+          padding: 12px;
+          font-size: 16px;
+          border-bottom: 1px dashed #fff;
+          font-weight: bold;
+
+          .label-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            color: $theme-color;
+          }
+        }
+
+        .content {
+          display: flex;
+          padding: 0 12px;
+          max-height: 300px;
+          overflow-x: hidden;
+          overflow-y: auto;
+
+          span {
+            position: relative;
+            margin: 0 12px;
+            padding: 12px 0;
+            cursor: pointer;
+          }
+
+          span::after {
+            content: '';
+            transition: all .6s;
+            height: 4px;
+            width: 0;
+            border-radius: 1px;
+            background-color: $theme-color;
+          }
+
+          span:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+          }
+        }
+      }
+
+      .notes-visiable-icon {
+        width: 16px;
+        height: 16px;
+        color: $theme-color;
+        cursor: pointer;
       }
     }
 

@@ -68,6 +68,7 @@ export default {
       text-align: center;
       line-height: 40px;
       margin-left: 20px;
+      color: #ffffff;
       cursor: pointer;
     }
 

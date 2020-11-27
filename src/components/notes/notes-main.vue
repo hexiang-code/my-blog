@@ -12,9 +12,37 @@ export default {
       curSelCatalog: {}, // 当前选中的目录
       notesLabelList: [], // 笔记标签列表
       isVisiableNotesLabel: false, // 是否展开笔记标签窗口
-      isVisiableNotesCatalog: false // 是否展开笔记目录窗口
+      isVisiableNotesCatalog: false, // 是否展开笔记目录窗口
+      delNotesLabelVisibel: false, // 是否展示笔记标签删除按钮
+      addNotesLabelVisibel: false, // 是否展示新增笔记标签功能
+      newNotesLabel: '', // 新增笔记标签名称
+      notesLabelCtxMenu: [
+        {
+          label: '新增标签',
+          clickCallback: () => {
+            this.addNotesLabelVisibel = true
+          }
+        },
+        {
+          label: '删除标签',
+          clickCallback: () => {
+            this.delNotesLabelVisibel = true
+          }
+        }
+      ] // 笔记标签右键菜单
     }
   },
+  watch: {
+    // 新增笔记标签和删除笔记标签只能存在一个
+    delNotesLabelVisibel (newVal) {
+      if (newVal) this.addNotesLabelVisibel = false
+    },
+    // 新增笔记标签和删除笔记标签只能存在一个
+    addNotesLabelVisibel (newVal) {
+      if (newVal) this.delNotesLabelVisibel = false
+    }
+  },
+
   created () {
     this.getNotesCatalog()
     this.getNotesLabel()
@@ -35,9 +63,9 @@ export default {
             <div class="add-catalog">
               <div>
                 <i class="iconfont catalog-icon">&#xe6a5;</i>
-                <a onClick={() => this.addCatalogWindow = true}>新增目录</a>
+                <a onClick={() => this.addCatalogWindow = true}>目录</a>
               </div>
-              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-catalog'], height: 46}}>&#xe67c;</i>
+              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-catalog']}}>&#xe67c;</i>
             </div>
             <div class="catalog-list">
               {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
@@ -45,17 +73,44 @@ export default {
           </div>
           <div class="notes-label" ref="notes-label">
             <div class="header">
-              <div>
+              <div vCtxmenu={{menuList: this.notesLabelCtxMenu}}>
                 <i class="iconfont label-icon">&#xe7a5;</i>
                 标签
               </div>
-              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-label'], height: 46}}>&#xe67c;</i>
+              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-label']}}>&#xe67c;</i>
             </div>
             <div class="content">
               {
                 this.notesLabelList.map(item => {
-                  return <span>{item.name}</span>
+                  return <span class={this.delNotesLabelVisibel ?  'label-item_delete' : 'label-item'}>
+                    <span>{item.name}</span>
+                    {
+                      this.delNotesLabelVisibel
+                      ? <i class="iconfont label-close" onClick={() => this.delNotesLabel(item.id)}>&#xe604;</i>
+                      : ''
+                    }
+                  </span>
                 })
+              }
+              {
+                this.delNotesLabelVisibel
+                  ? (
+                      <div class="label-operation">
+                        <span class="label-confirm" onClick={() => this.delNotesLabelVisibel = false}>确定</span>
+                      </div>
+                    )
+                  : ''
+              }
+              {
+                this.addNotesLabelVisibel
+                  ? (
+                    <div class="label-operation">
+                      <input class="add-label" vModel={this.newNotesLabel} />
+                      <span class="label-confirm" onClick={() => this.addNotesLabel()}>确定</span>
+                      <span class="label-cancel" onClick={() => this.addNotesLabelVisibel = false}>取消</span>
+                    </div>
+                  )
+                  : ''
               }
             </div>
           </div>
@@ -233,7 +288,35 @@ export default {
           curPage: -1
         }
       }).then(res => {
-        this.notesLabelList = res.data
+        this.notesLabelList = res.data.rows
+      })
+    },
+
+    // 删除笔记标签
+    delNotesLabel (noteLabelId) {
+      request({
+        url: 'notesLabel/deleteNotesLabel',
+        method: 'POST',
+        data: {
+          noteLabelId
+        }
+      }).then(() => {
+        this.getNotesLabel()
+      })
+    },
+
+    // 新增笔记标签
+    addNotesLabel () {
+      request({
+        url: 'notesLabel/addNotesLabel',
+        method: 'POST',
+        data: {
+          name: this.newNotesLabel
+        }
+      }).then(() => {
+        this.$liveRem.showToast({text: '新建笔记标签成功', type: 'success'})
+        this.addNotesLabelVisibel = false
+        this.getNotesLabel()
       })
     }
   }
@@ -358,19 +441,20 @@ export default {
 
         .content {
           display: flex;
-          padding: 0 12px;
-          max-height: 300px;
+          flex-wrap: wrap;
+          padding: 16px 12px;
+          max-height: 500px;
           overflow-x: hidden;
           overflow-y: auto;
 
-          span {
+          .label-item {
             position: relative;
             margin: 0 12px;
             padding: 12px 0;
             cursor: pointer;
           }
 
-          span::after {
+          .label-item::after {
             content: '';
             transition: all .6s;
             height: 4px;
@@ -379,12 +463,74 @@ export default {
             background-color: $theme-color;
           }
 
-          span:hover::after {
+          .label-item:hover::after {
             content: '';
             position: absolute;
             bottom: 4px;
             left: 0;
             width: 100%;
+          }
+
+          .label-item_delete {
+            display: flex;
+            justify-content: space-between;
+            margin-right: 12px;
+            padding: 8px;
+            height: 16px;
+            line-height: 16px;
+            border: 1px solid #e9e9eb;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+          }
+
+          .label-item_delete span, .label-item span {
+            display: inline-block;
+            max-width: 120px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+
+          .label-close {
+            margin-left: 8px;
+            font-size: 16px;
+            color: $theme-color;
+            cursor: pointer;
+          }
+
+          .label-operation {
+            margin-top: 12px;
+            width: 100%;
+          }
+
+          .label-confirm, .label-cancel {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+
+          .label-confirm {
+            background-color: $theme-color;
+            color: #fff;
+          }
+
+          .label-cancel{
+            margin-left: 12px;
+            cursor: pointer;
+            background-color: #fff;
+            color: $theme-color;
+            border: 1px solid $theme-color;
+          }
+
+          .add-label {
+            margin-right: 12px;
+            width: 100px;
+            line-height: 20px;
+            padding-left: 12px;
+            border: 1px solid $theme-color;
+            outline: none;
           }
         }
       }

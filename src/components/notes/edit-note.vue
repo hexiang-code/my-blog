@@ -9,7 +9,9 @@ export default {
       mdContent: '', // md文本
       title: '', // 文章标题
       catalogId: '', // 目录id
-      editInitContent: '' // 编辑文章时，初始内容
+      editInitContent: '', // 编辑文章时，初始内容
+      selectedNotesLabels: '', // 选择的笔记标签
+      notesLabelList: [] // 笔记标签列表
     }
   },
 
@@ -19,6 +21,7 @@ export default {
     if (this.notesId && this.catalogId) {
       this.getNotesContent(this.notesId)
     }
+    this.getNotesLabel()
   },
 
   mounted () {
@@ -42,12 +45,23 @@ export default {
     return (
       <div class="edit-notes">
         <div class="edit-header">
-          <div class="notes-title">
-            标题
-            <input vModel={this.title} class="notes-title-input"></input>
+          <div class="left">
+            <div class="notes-title">
+              标题
+              <input vModel={this.title} class="notes-title-input"></input>
+            </div>
+            <div class="operation-btn">
+              <div class="upload-btn" onClick={this.upload}>{this.notesId ? '更新' : '上传'}</div>
+            </div>
           </div>
-          <div class="operation-btn">
-            <div class="upload-btn" onClick={this.upload}>{this.notesId ? '更新' : '上传'}</div>
+          <div class="right">
+            <hx-select multiple={true} filterable={true} value={this.selectedNotesLabels} onInput={ val => this.selectedNotesLabels = val }>
+              { this.notesLabelList.map(item => {
+                return (
+                  <hx-option label={item.name} value={item.id}></hx-option>
+                )
+              })}
+            </hx-select>
           </div>
         </div>
         <mavon-editor { ...{attrs} } vModel={this.editInitContent} onSave={this.getInputText} onImgAdd={this.uploadImage} ref="mavonEditor"></mavon-editor>
@@ -75,6 +89,7 @@ export default {
       }).then(res => {
         this.editInitContent = res.content
         this.title = res.name
+        this.selectedNotesLabels = res.notesLabel.map(item => item.id)
       })
     },
 
@@ -115,14 +130,30 @@ export default {
         name: this.title,
         mdContent: this.mdContent,
         htmlContent: this.htmlContent,
-        pid: this.catalogId
+        pid: this.catalogId,
+        notesLabelIds: this.selectedNotesLabels
       }
       if (this.notesId) notesInfo.id = this.notesId
       request({url, method, data: {notesInfo}}).then(() => {
         this.$liveRem.showToast({ text: '保存好啦', type: 'sccuess' })
         this.$router.back()
       })
-    }
+    },
+
+    /**
+     * 获取笔记标签列表
+     */
+    getNotesLabel () {
+      request({
+        url: 'notesLabel/getNotesLabelList',
+        methods: 'GET',
+        params: {
+          curPage: -1
+        }
+      }).then(res => {
+        this.notesLabelList = res.data.rows
+      })
+    },
   }
 }
 </script>
@@ -158,52 +189,69 @@ export default {
     }
 
     .edit-header {
+      position: relative;
+      z-index: 1600;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 10px;
       margin-bottom: 20px;
-      padding: 0 10px;
-      height: 60px;
       background-color: rgba($color: #fff, $alpha: $opacity);
 
-      .notes-title {
-        display: flex;
-        align-items: center;
-        font-size: 20px;
-        // font-weight: bold;
+      .left {
         flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
 
-        .notes-title-input {
+        .notes-title {
+          display: flex;
+          align-items: center;
+          font-size: 20px;
+          // font-weight: bold;
           flex: 1;
-          height: 30px;
-          margin-left: 10px;
-          font-size: 22px;
-          padding: 4px;
-          border-radius: 4px;
-          border: 1px solid #f3f3f3;
+
+          .notes-title-input {
+            flex: 1;
+            height: 30px;
+            margin-left: 10px;
+            font-size: 22px;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #f3f3f3;
+          }
+
+          .notes-title-input:focus {
+            outline: none;
+            border: 1px solid #f3f3f3;
+          }
         }
 
-        .notes-title-input:focus {
-          outline: none;
-          border: 1px solid #f3f3f3;
+        .operation-btn {
+          display: flex;
+          margin-left: 12px;
+
+          .upload-btn {
+            width: 50px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: $theme-color;
+            color: #fff;
+            cursor: pointer;
+          }
+
+          .upload-btn:active {
+            transform: scale(.95)
+          }
         }
       }
 
-      .operation-btn {
+      .right {
+        margin-left: 60px;
+        flex-shrink: 0;
         display: flex;
-        margin-left: 30px;
-        .upload-btn {
-          width: 50px;
-          height: 30px;
-          line-height: 30px;
-          text-align: center;
-          background-color: $theme-color;
-          color: #fff;
-          cursor: pointer;
-        }
-
-        .upload-btn:active {
-          transform: scale(.95)
+        align-items: center;
+        .select {
+          background-color: #fff;
         }
       }
     }

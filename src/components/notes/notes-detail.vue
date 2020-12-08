@@ -2,12 +2,14 @@
 import request from '../../utils/http'
 // import { throttle } from '../../utils/utils'
 import { externalLink } from '../../config/js/mavon-editor-config'
+import { colorArray } from '../manager-page/manager-config'
 let intersectionIo // dom观察器
 export default {
   data () {
     return {
-      notesId: '',
-      notesDetail: {},
+      notesId: '', // 笔记id
+      notesDetail: {}, // 笔记详情
+      notesLabelList: [] // 笔记标签列表
     }
   },
   watch: {
@@ -58,9 +60,28 @@ export default {
     }
     return (
       <div class="notes-info">
-        <div class="notes-catalog">
-          <div class="catalog-text">目录</div>
-          <div class="list" ref="notesCatalog"></div>
+        <div class="left" ref="noteLeft">
+          {
+            this.notesLabelList.length > 0
+             ? (
+                <div class="notes-labels">
+                  {
+                    this.notesLabelList.map(label => {
+                      let colorIndex = Math.floor(Math.random() * colorArray.length)
+                      let color = colorArray[colorIndex]
+                      return (
+                        <span class="label-item" style={{color: color, 'border-style': color}}>{label.name}</span>
+                      )
+                    })
+                  }
+                </div>
+             )
+             : ''
+          }
+          <div class="notes-catalog">
+            <div class="catalog-text">目录</div>
+            <div class="list" ref="notesCatalog"></div>
+          </div>
         </div>
         <div class="notes-content">
           <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
@@ -68,12 +89,17 @@ export default {
       </div>
     )
   },
+
   created () {
     this.notesId = this.$route.query && this.$route.query.notesId
     this.getNotesDetail(this.notesId)
     intersectionIo = new IntersectionObserver(entries => {
       for(let entry of entries) {
-        if (entry.intersectionRect.top < 200) {
+        // if (entry.intersectionRect.top < 200) {
+        //   this.highLightCatalog(entry.target.getAttribute('id'))
+        //   return
+        // }
+        if (entry.intersectionRatio > 0.2) {
           this.highLightCatalog(entry.target.getAttribute('id'))
           return
         }
@@ -82,29 +108,35 @@ export default {
       entries: [0, 0.5, 0.75, 1]
     })
   },
+
   mounted () {
     const scrollFn = () => {
       let scrollTop = document.documentElement.scrollTop
       let cssText = `transform: translateY(${scrollTop}px);`
-      this.$refs.notesCatalog.parentNode.style.cssText = cssText
+      this.$refs.noteLeft.style.cssText = cssText
     }
     scrollFn()
     // document.onscroll = throttle(scrollFn, 50)
     document.onscroll = scrollFn
   },
+
   destroyed () {
     document.onscroll = null
     intersectionIo.disconnect()
   },
 
   methods: {
+    // 获取笔记详情
     getNotesDetail (notesId) {
       request({
         url: 'notes/getNotesContent',
         method: 'GET',
         params: {notesId}
       }).then(res => {
-        this.notesDetail = res
+        if (res.notesLabel && res.notesLabel.length > 0) this.notesLabelList = res.notesLabel
+        this.$nextTick(() => {
+          this.notesDetail = res
+        })
       })
     },
 
@@ -122,14 +154,22 @@ export default {
     // 高亮笔记目录
     highLightCatalog (id) {
       let catalogs = this.$refs.notesCatalog.childNodes
+      let catalogInfo = this.$refs.notesCatalog.getBoundingClientRect()
+      let listHeight = catalogInfo.height
       for (let catalog of catalogs) {
         for (let child of catalog.childNodes) {
           if (child.tagName === 'A' && child.getAttribute('href') === `#${id}`) {
-            // this.$refs.notesCatalog.scrollIntoView({
+            // catalog.scrollIntoView({
             //   behavior: 'auto',
             //   block: 'center'
             // })
-            this.$refs.notesCatalog.scrollTo(0, Math.floor(catalog.offsetTop / 2))
+            // let nums = Math.floor(catalog.offsetTop / listHeight)
+            if (catalog.offsetTop > listHeight/ 2) {
+              this.$refs.notesCatalog.scrollTo(0, Math.floor(catalog.offsetTop - listHeight/2))
+            } else {
+              this.$refs.notesCatalog.scrollTo(0, 0)
+            }
+
             catalog.classList.add('catalog-select')
           } else {
             catalog.classList.remove('catalog-select')
@@ -150,73 +190,97 @@ export default {
     z-index: 10;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     box-sizing: border-box;
 
-    .notes-catalog {
-      position: relative;
-      width: 300px;
-      max-height: 480px;
+    .left {
+      display: flex;
+      flex-direction: column;
       margin-right: 10px;
-      padding: 10px 5px;
-      overflow-y: auto;
-      background-color: rgba($color: #fff, $alpha: $opacity);
-      box-sizing: border-box;
-      border-radius: 5px;
-      overflow: hidden;
 
-      .list {
-        overflow-x: hidden;
-        overflow-y: auto;
-        padding-top: 24px;
-        max-height: 600px;
-      }
+      .notes-labels {
+        display: flex;
+        background-color: rgba($color: #fff, $alpha: $opacity);
+        padding: 12px;
+        margin-bottom: 24px;
+        font-size: 12px;
+        border-radius: 5px;
 
-      .catalog-text {
-        margin: 0 12px;
-        padding: 5px 0;
-        border-bottom: 1px dashed #f5f5f5;
-        font-size: 16px;
-        font-weight: bold;
-      }
-
-      h1, h2, h3, h4, h5, h6 {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-size: 17px;
-        font-weight: normal;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-
-
-        a {
-          color: #000;
+        .label-item {
+          background-color: #fff;
+          display: inline-block;
+          border: 1px solid;
+          padding: 4px 12px;
+          border-radius: 3px;
+          margin-right: 12px;
         }
       }
 
-      h1 {
-        padding: 5px 0 5px 12px;
-      }
+      .notes-catalog {
+        position: relative;
+        width: 300px;
+        max-height: 480px;
+        padding: 0 5px;
+        overflow-y: auto;
+        background-color: rgba($color: #fff, $alpha: $opacity);
+        box-sizing: border-box;
+        border-radius: 5px;
+        overflow: hidden;
 
-      h2 {
-        padding: 5px 0 5px 24px;
-      }
+        .list {
+          overflow-x: hidden;
+          overflow-y: auto;
+          margin-top: 24px;
+          max-height: 380px;
+        }
 
-      h3 {
-        padding: 5px 0 5px 36px;
-      }
+        .catalog-text {
+          margin: 0 12px;
+          padding: 12px 0;
+          border-bottom: 1px dashed #f5f5f5;
+          font-size: 16px;
+          font-weight: bold;
+        }
 
-      h4 {
-        padding: 5px 0 5px 48px;
-      }
+        h1, h2, h3, h4, h5, h6 {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-size: 17px;
+          font-weight: normal;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
 
-      h5 {
-        padding: 5px 0 5px 60px;
-      }
 
-      h6 {
-        padding: 5px 0 5px 72px;
+          a {
+            color: #000;
+          }
+        }
+
+        h1 {
+          padding: 5px 0 5px 12px;
+        }
+
+        h2 {
+          padding: 5px 0 5px 24px;
+        }
+
+        h3 {
+          padding: 5px 0 5px 36px;
+        }
+
+        h4 {
+          padding: 5px 0 5px 48px;
+        }
+
+        h5 {
+          padding: 5px 0 5px 60px;
+        }
+
+        h6 {
+          padding: 5px 0 5px 72px;
+        }
       }
     }
 

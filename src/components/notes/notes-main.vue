@@ -29,7 +29,15 @@ export default {
             this.delNotesLabelVisibel = true
           }
         }
-      ] // 笔记标签右键菜单
+      ], // 笔记标签右键菜单
+      notesCatalogMenuList: [
+        {
+          label: '新增目录',
+          clickCallback: () => {
+            this.addCatalogWindow = true
+          }
+        }
+      ] // 笔记目录右键菜单
     }
   },
   watch: {
@@ -50,6 +58,7 @@ export default {
                           this.updateCatalog(item, type)
                         }, 300, this)
   },
+
   render () {
     return (
       <div class="notes-body">
@@ -61,9 +70,9 @@ export default {
         <div class="notes-left">
           <div class="notes-catalog" ref="notes-catalog">
             <div class="add-catalog">
-              <div>
+              <div title="鼠标右键呼出菜单">
                 <i class="iconfont catalog-icon">&#xe6a5;</i>
-                <a onClick={() => this.addCatalogWindow = true}>目录</a>
+                <span vCtxmenu={{ menuList: this.notesCatalogMenuList }}>文章列表</span>
               </div>
               <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-catalog']}}>&#xe67c;</i>
             </div>
@@ -73,7 +82,7 @@ export default {
           </div>
           <div class="notes-label" ref="notes-label">
             <div class="header">
-              <div vCtxmenu={{menuList: this.notesLabelCtxMenu}}>
+              <div vCtxmenu={{menuList: this.notesLabelCtxMenu}} title="鼠标右键呼出菜单">
                 <i class="iconfont label-icon">&#xe7a5;</i>
                 标签
               </div>

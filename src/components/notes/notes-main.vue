@@ -1,6 +1,7 @@
 <script>
 import request from '../../utils/http'
 import { debounce } from '../../utils/utils'
+import { nextTick } from 'q'
 export default {
   data () {
     return {
@@ -37,7 +38,15 @@ export default {
             this.addCatalogWindow = true
           }
         }
-      ] // 笔记目录右键菜单
+      ], // 笔记目录右键菜单
+      musicList: [], // 音乐列表
+      currentMusicInfo: {
+        musicLyric: '', // 歌词
+        musicSrc: '', // 歌曲url
+        musicFaceSrc: '', // 歌曲封面地址
+        singer: '', // 歌手
+        song: '' // 歌名
+      } // 当前音乐信息
     }
   },
   watch: {
@@ -57,6 +66,7 @@ export default {
     this.modifyCatalog = debounce(function(item, type) {
                           this.updateCatalog(item, type)
                         }, 300, this)
+    this.getMusicList()
   },
 
   render () {
@@ -74,12 +84,19 @@ export default {
                 <i class="iconfont catalog-icon">&#xe6a5;</i>
                 <span vCtxmenu={{ menuList: this.notesCatalogMenuList }}>文章列表</span>
               </div>
-              <i class="iconfont notes-visiable-icon" v-open={{target: this.$refs['notes-catalog']}}>&#xe67c;</i>
+              <i class="iconfont notes-visiable-icon" vOpen={{target: this.$refs['notes-catalog']}}>&#xe67c;</i>
             </div>
             <div class="catalog-list">
               {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
             </div>
           </div>
+        </div>
+        <div class="notes-center">
+            <div class="notes-list">
+              {this.notesList.length > 0 ? this.createNotesList() : ''}
+            </div>
+        </div>
+        <div class="notes-right">
           <div class="notes-label" ref="notes-label">
             <div class="header">
               <div vCtxmenu={{menuList: this.notesLabelCtxMenu}} title="鼠标右键呼出菜单">
@@ -123,16 +140,37 @@ export default {
               }
             </div>
           </div>
+          <div class="music">
+            <hx-music
+              ref="hx-music"
+              onEnd={mode =>  mode !== 'circulation' && this.changeMusic(mode, 2)}
+              onUp={mode => this.changeMusic(mode, 1)}
+              onNext={mode => this.changeMusic(mode, 2)}
+              {...{attrs: this.currentMusicInfo}}>
+            </hx-music>
+            <ul class="list" ref="music-list">
+              <li class="list-header">
+                歌单
+                <i class="iconfont list-visiable-icon" vOpen={{target: this.$refs['music-list']}}>&#xe67c;</i>
+              </li>
+              {
+                this.musicList.map(item => {
+                  return (
+                    <li
+                      class={{ 'selected': this.currentMusicInfo.songId == item.songId }}
+                      title="item.songName"
+                      onClick={() => this.checkMusic(item)}
+                    >{item.songName}</li>
+                  )
+                })
+              }
+            </ul>
+          </div>
         </div>
-        <div class="notes-right">
-            <div class="notes-list">
-              {this.notesList.length > 0 ? this.createNotesList() : ''}
-            </div>
-        </div>
-
       </div>
     )
   },
+
   methods: {
     // 创建目录
     createNotesCatalog () {
@@ -327,6 +365,79 @@ export default {
         this.addNotesLabelVisibel = false
         this.getNotesLabel()
       })
+    },
+
+    // 网易云音乐盒
+    async getMusicList () {
+      let musicList = await request({
+        url: 'proxy/getMusicList',
+        method: 'GET',
+      })
+      this.musicList = musicList
+      if (this.musicList && this.musicList[0]) {
+        this.currentMusicInfo = await this._getCurrentMusicFromMusicList(this.musicList[0])
+      }
+
+    },
+
+    // 播放音乐
+    async checkMusic (music) {
+      this.$refs['hx-music'].pauseMusic()
+      this.currentMusicInfo = await this._getCurrentMusicFromMusicList(music)
+      await this.$nextTick()
+      this.playMusic()
+    },
+
+    // 播放音乐
+    playMusic() {
+      this.$refs['hx-music'].playMusic()
+    },
+
+    /**
+     * 切换音乐
+     * @param {String} playMode 播放模式 random:随机播放，circulation:单曲循环，sequence:顺序播放
+     * @param {Number} type 1: 上一曲 2:下一曲
+     */
+    async changeMusic (playMode, type) {
+      if (playMode === 'random') {
+        this.currentMusicInfo = await this._getCurrentMusicFromMusicList(this._getRandomMusic())
+      } else if (playMode == 'sequence' || playMode === 'circulation') {
+        let index = this.musicList.findIndex(music => music.songId === this.currentMusicInfo.songId)
+        if (index == 0 && type == 1) index == this.musicList.length - 1
+        if (index > this.musicList.length - 1) index = 0
+        this.currentMusicInfo = type == 2
+          ? await this._getCurrentMusicFromMusicList(this.musicList[index + 1])
+          : await this._getCurrentMusicFromMusicList(this.musicList[index - 1])
+      }
+      this.playMusic()
+    },
+
+    // 随机获取歌曲
+    _getRandomMusic () {
+      let len = this.musicList.length
+      let random = Math.floor(Math.random() * len)
+      return this.musicList[random]
+    },
+
+    /**
+     * 从音乐列表中获取一条音乐数据
+     */
+    async _getCurrentMusicFromMusicList (music) {
+      let lyric = await request({
+        url: 'proxy/getMusicLyric',
+        params: {
+          songId: music.songId
+        }
+      })
+      let currentMusicInfo = {
+          musicLyric: lyric, // 歌词
+          musicSrc: music.songUrl, // 歌曲url
+          musicFaceSrc: `${music.picUrl}?param=80y80`, // 歌曲封面地址
+          singer: music.singer, // 歌手
+          song: music.songName, // 歌名
+          songId: music.songId // 歌曲id
+      }
+      return currentMusicInfo
     }
   }
 }
@@ -337,6 +448,7 @@ export default {
   .notes-body {
     position: relative;
     display: flex;
+    align-items: flex-start;
     width: 1300px;
     margin: 0 auto;
     height: 100%;
@@ -345,10 +457,11 @@ export default {
     .notes-left {
       width: 300px;
       margin-top: 10px;
+      flex-shrink: 0;
+      background-color: rgba($color: #fff, $alpha: $opacity);
 
       .notes-catalog {
         position: relative;
-        background-color: rgba($color: #fff, $alpha: $opacity);
         border-radius: 5px;
         height: auto;
 
@@ -424,10 +537,56 @@ export default {
         }
 
       }
+    }
+
+    .notes-center {
+      flex: 1;
+      margin-left: 10px;
+      margin-top: 10px;
+      min-height: 100vh;
+      background-color: rgba($color: #fff, $alpha: $opacity);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+      border-radius: 5px;
+
+      .notes-list {
+        flex: 1;
+        padding: 20px;
+        height: 100%;
+        box-sizing: border-box;
+
+        .list-item {
+          padding-bottom: 20px;
+          .notes-info {
+            margin-top: 10px;
+            span {
+              margin-right: 10px;
+              font-weight: 100;
+            }
+          }
+
+          .notes-item {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+          }
+
+          .notes-item:hover {
+            color: $theme-color;
+          }
+        }
+      }
+    }
+
+    .notes-right {
+      margin-left: 10px;
+      width: 300px;
+      margin-top: 10px;
+      flex-shrink: 0;
 
       .notes-label {
         position: relative;
-        margin-top: 24px;
         background-color: rgba($color: #fff, $alpha: $opacity);
         border-radius: 5px;
         font-size: 14px;
@@ -544,52 +703,62 @@ export default {
         }
       }
 
-      .notes-visiable-icon {
-        width: 16px;
-        height: 16px;
-        color: $theme-color;
-        cursor: pointer;
-      }
-    }
+      .music {
+        margin-top: 24px;
+        // background: #fff;
 
-    .notes-right {
-      flex: 1;
-      margin-left: 10px;
-      margin-top: 10px;
-      min-height: 100vh;
+        .list {
+          margin-top: 12px;
+          padding: 0 12px 12px 12px;
+          background-color: rgba($color: #fff, $alpha: $opacity);
+          box-sizing: border-box;
 
-      .notes-list {
-        flex: 1;
-        padding: 20px;
-        background-color: rgba($color: #fff, $alpha: $opacity);
-        height: 100%;
-        box-sizing: border-box;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
-         border-radius: 5px;
+          .list-header {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px dashed #fff;
+            cursor: pointer;
 
-        .list-item {
-          padding-bottom: 20px;
-          .notes-info {
-            margin-top: 10px;
-            span {
-              margin-right: 10px;
-              font-weight: 100;
+            .list-visiable-icon {
+              width: 16px;
+              height: 16px;
+              color: $theme-color;
+              cursor: pointer;
             }
           }
 
-          .notes-item {
-            display: flex;
-            flex-direction: column;
+          li {
+            width: 100%;
+            max-height: 274px;
+            padding: 0 12px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-top: 8px;
+            font-size: 12px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
           }
 
-          .notes-item:hover {
+          .selected {
+            font-weight: bold;
             color: $theme-color;
           }
         }
       }
+    }
+
+    .notes-visiable-icon {
+      width: 16px;
+      height: 16px;
+      color: $theme-color;
+      cursor: pointer;
     }
 
     .catalog-input {

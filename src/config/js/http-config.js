@@ -7,7 +7,7 @@ if (isDev) {
 }
 
 if (isProd) {
-  httpBaseUrl = 'https://api.hexiangzone.cn/api'
+  httpBaseUrl = 'https://api.hexiangzone.cn/api/'
   wsBaseUrl = 'wss://api.hexiangzone.cn'
 }
 

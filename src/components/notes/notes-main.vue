@@ -1,7 +1,6 @@
 <script>
 import request from '../../utils/http'
 import { debounce } from '../../utils/utils'
-import { nextTick } from 'q'
 export default {
   data () {
     return {
@@ -90,13 +89,6 @@ export default {
               {this.notesCatalog.length > 0 ? this.createNotesCatalog() : ''}
             </div>
           </div>
-        </div>
-        <div class="notes-center">
-            <div class="notes-list">
-              {this.notesList.length > 0 ? this.createNotesList() : ''}
-            </div>
-        </div>
-        <div class="notes-right">
           <div class="notes-label" ref="notes-label">
             <div class="header">
               <div vCtxmenu={{menuList: this.notesLabelCtxMenu}} title="鼠标右键呼出菜单">
@@ -140,6 +132,13 @@ export default {
               }
             </div>
           </div>
+        </div>
+        <div class="notes-center">
+            <div class="notes-list">
+              {this.notesList.length > 0 ? this.createNotesList() : ''}
+            </div>
+        </div>
+        <div class="notes-right">
           <div class="music">
             <hx-music
               ref="hx-music"
@@ -455,15 +454,17 @@ export default {
     z-index: 10;
 
     .notes-left {
+      display: flex;
+      flex-direction: column;
       width: 300px;
       margin-top: 10px;
       flex-shrink: 0;
-      background-color: rgba($color: #fff, $alpha: $opacity);
 
       .notes-catalog {
         position: relative;
         border-radius: 5px;
         height: auto;
+        background-color: rgba($color: #fff, $alpha: $opacity);
 
         .catalog-list {
           position: relative;
@@ -535,57 +536,10 @@ export default {
             }
           }
         }
-
       }
-    }
-
-    .notes-center {
-      flex: 1;
-      margin-left: 10px;
-      margin-top: 10px;
-      min-height: 100vh;
-      background-color: rgba($color: #fff, $alpha: $opacity);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
-      border-radius: 5px;
-
-      .notes-list {
-        flex: 1;
-        padding: 20px;
-        height: 100%;
-        box-sizing: border-box;
-
-        .list-item {
-          padding-bottom: 20px;
-          .notes-info {
-            margin-top: 10px;
-            span {
-              margin-right: 10px;
-              font-weight: 100;
-            }
-          }
-
-          .notes-item {
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-          }
-
-          .notes-item:hover {
-            color: $theme-color;
-          }
-        }
-      }
-    }
-
-    .notes-right {
-      margin-left: 10px;
-      width: 300px;
-      margin-top: 10px;
-      flex-shrink: 0;
 
       .notes-label {
+        margin-top: 12px;
         position: relative;
         background-color: rgba($color: #fff, $alpha: $opacity);
         border-radius: 5px;
@@ -702,6 +656,53 @@ export default {
           }
         }
       }
+    }
+
+    .notes-center {
+      flex: 1;
+      margin-left: 10px;
+      margin-top: 10px;
+      min-height: 100vh;
+      background-color: rgba($color: #fff, $alpha: $opacity);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+      border-radius: 5px;
+
+      .notes-list {
+        flex: 1;
+        padding: 20px;
+        height: 100%;
+        box-sizing: border-box;
+
+        .list-item {
+          padding-bottom: 20px;
+          .notes-info {
+            margin-top: 10px;
+            span {
+              margin-right: 10px;
+              font-weight: 100;
+            }
+          }
+
+          .notes-item {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+          }
+
+          .notes-item:hover {
+            color: $theme-color;
+          }
+        }
+      }
+    }
+
+    .notes-right {
+      margin-left: 10px;
+      width: 300px;
+      margin-top: 10px;
+      flex-shrink: 0;
 
       .music {
         margin-top: 24px;

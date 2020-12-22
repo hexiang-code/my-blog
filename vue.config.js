@@ -2,7 +2,7 @@ const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-
+const webpack = require('webpack')
 // 开发环境插件
 const devPlugins = [
   new CopyPlugin({
@@ -47,6 +47,9 @@ const prodPlugins = [
     test: productionGzipExtensions,
     threshold: 2048,
     minRatio: 0.8
+  }),
+  new webpack.ProgressPlugin((percentage) => {
+    console.log(percentage)
   })
 ]
 

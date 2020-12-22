@@ -50,7 +50,11 @@ export default {
         mode: '' // 用户身份
       },
       loggerList: [],
-      loggerTitle // 日志表格头
+      loggerTitle, // 日志表格头
+      isDeployingVue: false, // 前端项目是否部署中
+      isDeployingNode: false, // 后端项目是否部署中
+      isDeployingAll: false, // 是否全部再部署
+      deployMessage: '全力部署中...',
     }
   },
 
@@ -172,9 +176,21 @@ export default {
               部署应用
             </p>
             <div class="manage deploy-manage" >
-              <div class="deploy-btn" onClick={() => this.deployProject(1)} onDblclick={() => this.deployProject(1, true)}>部署前台</div>
-              <div class="deploy-btn" onClick={() => this.deployProject(2)} onDblclick={() => this.deployProject(2, true)}>部署后台</div>
-              <div class="deploy-btn" onClick={() => this.deployProject(0)} onDblclick={() => this.deployProject(0, true)}>全部部署</div>
+              <div class="deploy-btn"
+                onClick={() => this.deployProject(1)} onDblclick={() => this.deployProject(1, true)}
+                vLoading={{isLoading: this.isDeployingVue, message: this.deployMessage}}>
+                  部署前台
+              </div>
+              <div class="deploy-btn"
+                onClick={() => this.deployProject(2)} onDblclick={() => this.deployProject(2, true)}
+                vLoading={{isLoading: this.isDeployingNode, message: this.deployMessage}}>
+                  部署后台
+              </div>
+              <div class="deploy-btn"
+                onClick={() => this.deployProject(0)} onDblclick={() => this.deployProject(0, true)}
+                vLoading={{isLoading: this.isDeployingAll, message: this.deployMessage}}>
+                  全部部署
+              </div>
             </div>
           </div>
 
@@ -536,6 +552,10 @@ export default {
      * @param {Boolean} isDbClick true: 双击 false: 单击
      */
     _deployProject (type, isDbClick = false) {
+      if(this.isDeploying) {
+        this.$liveRem.showToast({text: '已经再部署啦！'})
+        return
+      }
       if (isDbClick) {
         this.postDeployRequest(type)
       } else {
@@ -551,6 +571,7 @@ export default {
      * @param {Number} type 1: 部署前台 2: 部署后台 0: 全部部署
      */
     postDeployRequest (type) {
+      this._deployStatus(true, type)
       request.defaults.timeout = 60000
       request({
         url: 'manager/deployProject',
@@ -635,7 +656,30 @@ export default {
             break
         }
         this.$liveRem.showToast({text, time: 10000})
+      }).finally(() => {
+        this._deployStatus(false, type)
       })
+    },
+
+    /**
+     * 部署状态切换
+     * @param {Boolean} value 需要切换的值
+     * @param {Number} type 部署类型
+     */
+    _deployStatus (value, type) {
+      switch (type) {
+        case 1:
+          this.isDeployingVue = value
+          break
+        case 2:
+          this.isDeployingNode = value
+          break
+        case 3:
+          this.isDeployingAll = value
+          break
+        default:
+          return
+      }
     },
 
     // 获取硬件信息列表
@@ -953,7 +997,7 @@ export default {
         padding-bottom: 20px;
 
         .deploy-btn {
-          width: 80px;
+          padding: 0 10px;
           height: 30px;
           margin-right: 20px;
           line-height: 30px;

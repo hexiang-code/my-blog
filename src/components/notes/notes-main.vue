@@ -145,6 +145,7 @@ export default {
               onEnd={mode =>  mode !== 'circulation' && this.changeMusic(mode, 2)}
               onUp={mode => this.changeMusic(mode, 1)}
               onNext={mode => this.changeMusic(mode, 2)}
+              onMusicError = {mode => this.changeMusic(mode, 2)}
               {...{attrs: this.currentMusicInfo}}>
             </hx-music>
             <ul class="list" ref="music-list">
@@ -705,13 +706,16 @@ export default {
       flex-shrink: 0;
 
       .music {
-        margin-top: 24px;
+        // margin-top: 24px;
         // background: #fff;
 
         .list {
           margin-top: 12px;
           padding: 0 12px 12px 12px;
           background-color: rgba($color: #fff, $alpha: $opacity);
+          max-height: 380px;
+          overflow-y: auto;
+          overflow-x: hidden;
           box-sizing: border-box;
 
           .list-header {

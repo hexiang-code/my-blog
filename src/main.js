@@ -4,7 +4,7 @@ import router from './router/router'
 import Vuex from 'vuex'
 import store from './store/index'
 import codeHeUI from 'codehe-ui'
-Vue.config.productionTip = false
+
 import 'codehe-ui/lib/codeheUi.css'
 import VueSocketIo from 'vue-socket.io'
 import cookieServe from './utils/cookie'
@@ -14,6 +14,11 @@ import 'mavon-editor/dist/css/index.css'
 import './config/css/baseIcon.scss'
 import './config/css/globalStyle.scss'
 import directives from './utils/directives'
+
+Vue.config.productionTip = false
+const LoadingService  = codeHeUI.LoadingService
+Vue.prototype.$loading = new LoadingService()
+
 Vue.use(directives)
 Vue.use(new VueSocketIo({
   debug: false,

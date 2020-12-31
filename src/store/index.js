@@ -31,7 +31,9 @@ const store = new Vuex.Store({
         backgroundOpacity: '',
         themeColor: ''
       }
-    }
+    },
+    liveRemMeauList: [], // liveRem菜单列表
+    musicBoxFix: false // 音乐盒是否固定为全局播放
   },
   getters: {
     // 获取当前用户信息
@@ -47,6 +49,16 @@ const store = new Vuex.Store({
     // 获取用户自定义设置
     getUserDesignSetting: state => {
       return state.userDesignSetting
+    },
+
+    // 获取liveRem菜单列表
+    getLiveRemMeauList: state => {
+      return state.liveRemMeauList
+    },
+
+    // 获取音乐盒是否固定位全局播放
+    getMusicBoxFix: state => {
+      return state.musicBoxFix
     }
   },
   mutations: {
@@ -79,6 +91,16 @@ const store = new Vuex.Store({
         }
       }
       state.userDesignSetting = userDesignSetting
+    },
+
+    // 设置liveRem菜单
+    setLiveRemMeauList (state, liveRemMeauList) {
+      state.liveRemMeauList = liveRemMeauList
+    },
+
+    // 设置音乐盒全局播放状态
+    setMusicBoxFix (state, musicBoxFix) {
+      state.musicBoxFix = musicBoxFix
     }
   },
   actions: {

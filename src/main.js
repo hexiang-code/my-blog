@@ -14,7 +14,6 @@ import 'mavon-editor/dist/css/index.css'
 import './config/css/baseIcon.scss'
 import './config/css/globalStyle.scss'
 import directives from './utils/directives'
-
 Vue.config.productionTip = false
 const LoadingService  = codeHeUI.LoadingService
 Vue.prototype.$loading = new LoadingService()

@@ -48,9 +48,9 @@ const prodPlugins = [
     threshold: 2048,
     minRatio: 0.8
   }),
-  new webpack.ProgressPlugin((percentage) => {
-    console.log(percentage)
-  })
+  // new webpack.ProgressPlugin((percentage) => {
+  //   console.log(percentage)
+  // })
 ]
 
 module.exports = {

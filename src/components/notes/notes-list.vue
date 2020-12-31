@@ -45,7 +45,9 @@ export default {
         musicFaceSrc: '', // 歌曲封面地址
         singer: '', // 歌手
         song: '' // 歌名
-      } // 当前音乐信息
+      }, // 当前音乐信息
+      musicFix: this.$store.getters.getMusicBoxFix, // 音乐盒全局播放
+      musicVolume: 50 // 音乐盒初始音量
     }
   },
   watch: {
@@ -56,6 +58,10 @@ export default {
     // 新增笔记标签和删除笔记标签只能存在一个
     addNotesLabelVisibel (newVal) {
       if (newVal) this.delNotesLabelVisibel = false
+    },
+
+    musicFix (newVal) {
+      this.$store.commit('setMusicBoxFix', newVal)
     }
   },
 
@@ -139,14 +145,25 @@ export default {
             </div>
         </div>
         <div class="notes-right">
-          <div class="music">
+          <div class="music" ref="music">
             <hx-music
               ref="hx-music"
               onEnd={mode =>  mode !== 'circulation' && this.changeMusic(mode, 2)}
               onUp={mode => this.changeMusic(mode, 1)}
               onNext={mode => this.changeMusic(mode, 2)}
-              onMusicError = {mode => this.changeMusic(mode, 2)}
-              {...{attrs: this.currentMusicInfo}}>
+              onMusicError = {mode => this.musicError(mode)}
+              musicFix={!this.musicFix}
+              volume={this.musicVolume}
+              {...{
+                attrs: this.currentMusicInfo,
+                on: {
+                  'update:musicFix': val => this.musicFix = !val,
+                  'music-start': () => this.musicStart(),
+                  'music-pause': () => this.isMusicStart = false,
+                  'update:volume': val => this.musicVolume = val,
+                  'after-animation': () => this. musicBoxAnimationed()
+                }
+              }}>
             </hx-music>
             <ul class="list" ref="music-list">
               <li class="list-header">
@@ -393,6 +410,17 @@ export default {
       this.$refs['hx-music'].playMusic()
     },
 
+    // 监听音乐开始播放
+    musicStart () {
+      let text = (<span>
+        当前播放的是
+        <span class="tips__song-name">{`${this.currentMusicInfo.singer}`}</span>的
+        <span class="tips__song-name">{`${this.currentMusicInfo.song}`}</span>, 很好听哟
+      </span>)
+      this.$liveRem.showToast({text, type: 'shy'})
+      this.isMusicStart = true
+    },
+
     /**
      * 切换音乐
      * @param {String} playMode 播放模式 random:随机播放，circulation:单曲循环，sequence:顺序播放
@@ -438,6 +466,64 @@ export default {
           songId: music.songId // 歌曲id
       }
       return currentMusicInfo
+    },
+
+    // 音乐播放出错
+    musicError (mode) {
+      console.log('音乐播放出错')
+      this.changeMusic(mode, 2)
+    },
+
+    // 音乐盒入场动画结束
+    musicBoxAnimationed () {
+      // 让动画执行完成在操作
+      let music = this.$refs['hx-music']
+      this.$liveRem.$el.appendChild(music.$el)
+      this.$liveRem.musicBox = this.$refs['hx-music']
+      let liveRemMeauList = [
+        {
+          name: '上一曲',
+          icon: '&#xe61f;',
+          clickCallback: () => {
+            this.$liveRem.musicBox && this.$liveRem.musicBox.changeMusic(1)
+          }
+        },
+        {
+          name: '下一曲',
+          icon: '&#xe651;',
+          clickCallback: () => {
+            this.$liveRem.musicBox && this.$liveRem.musicBox.changeMusic(2)
+          }
+        },
+        {
+          name: this.isMusicStart ? '暂停' : '开始',
+          icon: this.isMusicStart ? '&#xe60f;' : '&#xe617;',
+          type: this.isMusicStart ? 'musicStart' : 'musicPause',
+          clickCallback: () => {
+            let { type } = liveRemMeauList[2]
+            if (type == 'musicStart') {
+              this.$liveRem.musicBox && this.$liveRem.musicBox.pauseMusic()
+              liveRemMeauList[2] = Object.assign(liveRemMeauList[2], {name: '开始', icon: '&#xe617;', type: 'musicPause'})
+            }
+            if (type == 'musicPause') {
+              this.$liveRem.musicBox && this.$liveRem.musicBox.playMusic()
+              liveRemMeauList[2] = Object.assign(liveRemMeauList[2], {name: '开始', icon: '&#xe60f;', type: 'musicStart'})
+            }
+          }
+        },
+        {
+          name: '音乐盒回到初始位置',
+          icon: '&#xe6a1;',
+          clickCallback: () => {
+            this.$router.push({name: 'notesList'})
+            this.$refs['music'].insertAdjacentElement('afterbegin', this.$liveRem.$el.lastElementChild)
+            this.musicFix = false
+            delete this.$liveRem.musicBox
+            this.$store.commit('setLiveRemMeauList', [])
+          }
+        }
+      ]
+      this.$store.commit('setLiveRemMeauList', liveRemMeauList)
     }
   }
 }
@@ -708,9 +794,9 @@ export default {
       .music {
         // margin-top: 24px;
         // background: #fff;
+        margin-bottom: 12px;
 
         .list {
-          margin-top: 12px;
           padding: 0 12px 12px 12px;
           background-color: rgba($color: #fff, $alpha: $opacity);
           max-height: 380px;
@@ -778,6 +864,13 @@ export default {
     .hx-dialog {
       background-color: #000;
     }
+  }
+
+  .tips__song-name {
+    font-size: 14px;
+    color: $theme-color;
+    font-weight: bold;
+    margin: 0 4px;
   }
 
 </style>

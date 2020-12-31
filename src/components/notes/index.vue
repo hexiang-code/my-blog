@@ -1,6 +1,6 @@
 <script>
 export default {
-
+  name: 'notesIndex',
   render () {
     return (
       <div class="notes-main">

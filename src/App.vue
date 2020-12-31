@@ -1,7 +1,13 @@
 <template>
   <div id="app">
     <router-view />
-    <live-rem :manualLoad="manualLoad" ref="rem" @liveRemTalk="liveRemCommunication" :welcomeBack="welcomeBack"></live-rem>
+    <live-rem
+      :manualLoad="manualLoad"
+      ref="rem"
+      @liveRemTalk="liveRemCommunication"
+      :meauList="$store.getters.getLiveRemMeauList"
+      :welcomeBack="welcomeBack">
+    </live-rem>
   </div>
 </template>
 
@@ -57,7 +63,7 @@ export default {
     }
 
     .menu-list {
-      left: 120px;
+      left: 98px;
     }
   }
 </style>

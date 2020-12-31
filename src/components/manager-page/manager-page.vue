@@ -6,6 +6,7 @@ import request from '../../utils/http'
 import userMode from '../../config/js/user-mode'
 import { formatDate } from '../../utils/utils'
 export default {
+  name: 'managerPage',
   data () {
     return {
       colorArray, // 颜色数组

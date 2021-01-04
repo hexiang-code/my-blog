@@ -151,7 +151,6 @@ export default {
               onEnd={mode =>  mode !== 'circulation' && this.changeMusic(mode, 2)}
               onUp={mode => this.changeMusic(mode, 1)}
               onNext={mode => this.changeMusic(mode, 2)}
-              onMusicError = {mode => this.musicError(mode)}
               musicFix={!this.musicFix}
               volume={this.musicVolume}
               {...{
@@ -161,7 +160,8 @@ export default {
                   'music-start': () => this.musicStart(),
                   'music-pause': () => this.isMusicStart = false,
                   'update:volume': val => this.musicVolume = val,
-                  'after-animation': () => this. musicBoxAnimationed()
+                  'after-animation': () => this. musicBoxAnimationed(),
+                  'music-error': mode => this.musicError(mode)
                 }
               }}>
             </hx-music>
@@ -803,6 +803,7 @@ export default {
           overflow-y: auto;
           overflow-x: hidden;
           box-sizing: border-box;
+          border-radius: 5px;
 
           .list-header {
             box-sizing: border-box;

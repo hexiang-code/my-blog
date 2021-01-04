@@ -608,7 +608,6 @@ export default {
                       <B class="deploy-title">{`${vueRedeployTimes}`}</B>
                     </span>
                   )
-                  history.go(-1)
             break
           case 2:
             text =  node &&
@@ -653,7 +652,6 @@ export default {
                         <B class="deploy-title">{`${nodeRedeployTimes}`}</B>
                       </span>
                     )
-              history.go(-1)
             break
           default:
             break

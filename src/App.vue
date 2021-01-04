@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <router-view />
-    <!-- <live-rem
+    <live-rem
       :manualLoad="manualLoad"
       ref="rem"
       @liveRemTalk="liveRemCommunication"
       :meauList="$store.getters.getLiveRemMeauList"
       :welcomeBack="welcomeBack">
-    </live-rem> -->
+    </live-rem>
   </div>
 </template>
 

@@ -470,7 +470,6 @@ export default {
 
     // 音乐播放出错
     musicError (mode) {
-      console.log('音乐播放出错')
       this.changeMusic(mode, 2)
     },
 

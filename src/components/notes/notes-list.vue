@@ -46,8 +46,9 @@ export default {
         singer: '', // 歌手
         song: '' // 歌名
       }, // 当前音乐信息
-      musicFix: this.$store.getters.getMusicBoxFix, // 音乐盒全局播放
-      musicVolume: 50 // 音乐盒初始音量
+      musicFix: '', // 音乐盒全局播放
+      musicVolume: 50, // 音乐盒初始音量
+      musicPlayMode: 'sequence' // 音乐播放顺序
     }
   },
   watch: {
@@ -61,7 +62,7 @@ export default {
     },
 
     musicFix (newVal) {
-      this.$store.commit('setMusicBoxFix', newVal)
+      this.$store.commit('setMusicBoxFix', { musicBoxFix: newVal })
     }
   },
 
@@ -72,6 +73,33 @@ export default {
                           this.updateCatalog(item, type)
                         }, 300, this)
     this.getMusicList()
+    this.init()
+  },
+
+  // 讲音乐盒记录保存到服务器
+  deactivated () {
+    let payload = {
+      musicId: this.currentMusicInfo.songId,
+      musicVolume: this.musicVolume,
+      musicMode: this.musicPlayMode
+    }
+    let hasModify
+    let musicBoxSetting = this.$store.getters.getMusicBoxSetting
+    for (let key in payload) {
+      if(payload[key] !== undefined && payload[key] !== null && payload[key] !== musicBoxSetting[key]) {
+        hasModify = true
+        break
+      }
+    }
+    if (hasModify) {
+        request({
+          url: 'userSetting/updateUserSetting',
+          method: 'POST',
+          data: payload
+        }).then(() => {
+          this.$store.commit('setMusicBoxFix', Object.assign({}, payload, {musicBoxFix: this.musicFix}))
+        })
+      }
   },
 
   render () {
@@ -148,6 +176,7 @@ export default {
           <div class="music" ref="music">
             <hx-music
               ref="hx-music"
+              playMode={this.musicPlayMode}
               onEnd={mode =>  mode !== 'circulation' && this.changeMusic(mode, 2)}
               onUp={mode => this.changeMusic(mode, 1)}
               onNext={mode => this.changeMusic(mode, 2)}
@@ -189,6 +218,13 @@ export default {
   },
 
   methods: {
+
+    init () {
+      this.musicVolume = this.$store.getters.getMusicBoxSetting.musicVolume
+      this.musicPlayMode = this.$store.getters.getMusicBoxSetting.musicPlayMode
+      this.musicFix = this.$store.getters.getMusicBoxSetting.musicBoxFix
+    },
+
     // 创建目录
     createNotesCatalog () {
       return this.notesCatalog.map(item => {
@@ -391,8 +427,15 @@ export default {
         method: 'GET',
       })
       this.musicList = musicList
-      if (this.musicList && this.musicList[0]) {
-        this.currentMusicInfo = await this._getCurrentMusicFromMusicList(this.musicList[0])
+      let musicId = this.$store.getters.getMusicBoxSetting.musicId
+      let currentMusic
+      if (musicId) {
+        currentMusic = this.musicList.find(item => item.songId == musicId) || this.musicList[0]
+      } else {
+        currentMusic = this.musicList[0]
+      }
+      if (currentMusic) {
+        this.currentMusicInfo = await this._getCurrentMusicFromMusicList(currentMusic)
       }
 
     },
@@ -470,6 +513,7 @@ export default {
 
     // 音乐播放出错
     musicError (mode) {
+      console.log(mode, 'music error')
       this.changeMusic(mode, 2)
     },
 

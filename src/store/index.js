@@ -33,7 +33,13 @@ const store = new Vuex.Store({
       }
     },
     liveRemMeauList: [], // liveRem菜单列表
-    musicBoxFix: false // 音乐盒是否固定为全局播放
+    // 音乐盒设定
+    musicBoxSetting:{
+      musicBoxFix: false, // 音乐盒是否固定为全局播放
+      musicId: '', // 歌曲id
+      musicVolume: 50, // 音乐音量
+      musicPlayMode: 'sequence' // 播放模式
+    }
   },
   getters: {
     // 获取当前用户信息
@@ -57,8 +63,8 @@ const store = new Vuex.Store({
     },
 
     // 获取音乐盒是否固定位全局播放
-    getMusicBoxFix: state => {
-      return state.musicBoxFix
+    getMusicBoxSetting: state => {
+      return state.musicBoxSetting
     }
   },
   mutations: {
@@ -99,12 +105,16 @@ const store = new Vuex.Store({
     },
 
     // 设置音乐盒全局播放状态
-    setMusicBoxFix (state, musicBoxFix) {
-      state.musicBoxFix = musicBoxFix
+    setMusicBoxFix (state, musicBoxSetting) {
+      for(let key in state.musicBoxSetting) {
+        if ((musicBoxSetting[key] !== undefined && musicBoxSetting[key] !== null) &&  musicBoxSetting[key] !== state.musicBoxSetting[key])  {
+          state.musicBoxSetting[key] = musicBoxSetting[key]
+        }
+      }
     }
   },
   actions: {
-    // 获取当前登录的用户信息
+    // 设置当前登录的用户信息
     setCurLoginUserInfo({ commit }) {
       return new Promise((resolve, reject) => {
         let url = 'user/getCurLoginUserInfo'
@@ -112,13 +122,16 @@ const store = new Vuex.Store({
         request({ url, method }).then(res => {
           commit('setUserInfo', res.userInfo)
           commit('setMode', res.mode)
-          if (res.userInfo.userSetting) commit('setUserDesignSetting', res.userInfo.userSetting)
+          if (res.userInfo.userSetting) {
+            commit('setUserDesignSetting', res.userInfo.userSetting)
+            commit('setMusicBoxFix', res.userInfo.userSetting)
+          }
           resolve()
         }).catch(() => {
           reject()
         })
       })
-    }
+    },
   }
 })
 export default store

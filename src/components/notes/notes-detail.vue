@@ -17,6 +17,7 @@ export default {
       handler: function (newVal) {
         let reg =/<h[1-6]{1}>(.+?)<\/h[1-6]{1}>/g
         let fragement = document.createDocumentFragment()
+        if (!newVal) return
         newVal.replace(reg, a => {
           let root = document.createElement('div')
           root.innerHTML = a
@@ -84,7 +85,7 @@ export default {
           </div>
         </div>
         <div class="notes-content">
-          <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
+          <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent || ''} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
         </div>
       </div>
     )

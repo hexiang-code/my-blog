@@ -10,7 +10,7 @@ export default {
       title: '', // 文章标题
       catalogId: '', // 目录id
       editInitContent: '', // 编辑文章时，初始内容
-      selectedNotesLabels: '', // 选择的笔记标签
+      selectedNotesLabels: [], // 选择的笔记标签
       notesLabelList: [] // 笔记标签列表
     }
   },

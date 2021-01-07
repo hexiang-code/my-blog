@@ -106,7 +106,7 @@ export default {
     return (
       <div class="notes-body">
         <hx-dialog dialogVisiable={this.addCatalogWindow} {...{on:{'update:dialogVisiable': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
-          <hx-form-item label="目录名">
+          <hx-form-item label="目录名" label-icon={require('../../assets/status-icon/leimu-icon.png')}>
             <input slot="default" class="catalog-input" vModel={this.addCatalogText} type="text" placeholder="请输目录名" />
           </hx-form-item>
         </hx-dialog>
@@ -364,6 +364,11 @@ export default {
       if (!this.addCatalogText) {
         this.$liveRem.showToast({text: '目录名字必填哦', type: 'error'})
       }
+      // TODO 防暴击优化
+      if (this.addCatalogCompelte == false) {
+        this.$liveRem.showToast({text: '点击太快啦！', type: 'error'})
+        return
+      }
       let notesInfo = {
         name: this.addCatalogText,
         pid: 0,
@@ -371,6 +376,7 @@ export default {
         htmlContent: '',
         type: 1
       }
+      this.addCatalogCompelte = false
       request({
         url: 'notes/uploadNotes',
         method: 'POST',
@@ -378,7 +384,7 @@ export default {
       }).then(() => {
           this.$liveRem.showToast({text: '目录建好啦', type: 'success'})
           this.getNotesCatalog()
-      })
+      }).finally(() => this.addCatalogCompelte = true)
     },
 
     /**

@@ -228,23 +228,46 @@ export default {
     // 创建目录
     createNotesCatalog () {
       return this.notesCatalog.map(item => {
+        const menuList = [
+          {
+            label: (
+              <div vVisitor>
+                <i class="iconfont notes-icon">&#xe612;</i>
+                <a>新增博文</a>
+              </div>
+            ),
+            clickCallback: () => this.goEditNotes(item.id)
+          },
+          {
+            label: (
+              <div vVisitor>
+                <i class="iconfont notes-icon">&#xe62e;</i>
+                <a>修改目录</a>
+              </div>
+            ),
+            clickCallback: () => this.modifyCatalog(item, 1)
+          },
+          {
+            label: (
+              <div vVisitor>
+                <i class="iconfont notes-icon">&#xe62e;</i>
+                <a>删除目录</a>
+              </div>
+            ),
+            clickCallback: () => this.modifyCatalog(item, 2)
+          }
+        ]
         return (
           <div class="catalog-item">
-            <div class={this.curSelCatalog.id === item.id ? 'catalog-title catalog_selected' : 'catalog-title'} onClick={() => this.selCatalog(item)}>
+            <div class={this.curSelCatalog.id === item.id ? 'catalog-title catalog_selected' : 'catalog-title'}
+              onClick={() => this.selCatalog(item)}
+              vCtxmenu={{menuList}}>
               {item.name}
             </div>
             <div class="catalog-btn">
               <div>
                 <i class="iconfont notes-icon">&#xe658;</i>
                 {item.notesNumber > 0 ? item.notesNumber + '篇' : '暂无'}
-              </div>
-              <div vVisitor>
-                <i class="iconfont notes-icon">&#xe612;</i>
-                <a onClick={() => this.goEditNotes(item.id)}>新增博文</a>
-              </div>
-              <div vVisitor>
-                <i class="iconfont notes-icon">&#xe62e;</i>
-                <a title="点击修改,双击删除" onClick={() => this.modifyCatalog(item, 1)} onDblclick ={() => this.modifyCatalog(item, 2)}>修改目录</a>
               </div>
             </div>
 
@@ -256,9 +279,17 @@ export default {
     // 创建目录列表
     createNotesList () {
       return this.notesList.map(item => {
+        const noteItemCtxMenu = [
+          {
+            label: '删除笔记',
+            clickCallback: () => {
+              this.deleteNote(item)
+            }
+          }
+        ]
         return (
           <div class="list-item">
-            <div class="notes-item">
+            <div class="notes-item" title="鼠标右键呼出菜单" vCtxmenu={{menuList: noteItemCtxMenu}}>
               <a onClick={() => this.goDetail(item.id)}>{item.name}</a>
             </div>
             <div class="notes-info">
@@ -363,13 +394,14 @@ export default {
         return
       }
       if (type == 2) {
+        let notesInfo = {
+          id,
+          disabled: 1
+        }
         request({
           url: 'notes/updateNotes',
           method: 'POST',
-          data: {
-            id,
-            disabled: 1
-          }
+          data: {notesInfo}
         }).then(() => {
           this.$liveRem.showToast({text: '又少了个目录哦', type: 'sad'})
           this.getNotesCatalog()
@@ -567,6 +599,22 @@ export default {
         }
       ]
       this.$store.commit('setLiveRemMeauList', liveRemMeauList)
+    },
+
+    // 删除单个笔记
+    deleteNote (noteItem) {
+      let notesInfo = {
+        id: noteItem.id,
+        disabled: 1
+      }
+      request({
+        url: 'notes/updateNotes',
+        method: 'POST',
+        data: { notesInfo }
+      }).then(() => {
+        this.$liveRem.showToast({text: '删除成功'})
+        this.getNotesList(this.curSelCatalog.id)
+      })
     }
   }
 }
@@ -582,6 +630,17 @@ export default {
     margin: 0 auto;
     height: 100%;
     z-index: 10;
+
+    /deep/ .dialog-container {
+      background: $background;
+      background-attachment: fixed;
+
+      .dialog__footer {
+        button {
+          background-color: unset;
+        }
+      }
+    }
 
     .notes-left {
       display: flex;

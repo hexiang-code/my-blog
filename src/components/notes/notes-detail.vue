@@ -227,6 +227,7 @@ export default {
         box-sizing: border-box;
         border-radius: 5px;
         overflow: hidden;
+        padding-bottom: 10px;
 
         .list {
           overflow-x: hidden;

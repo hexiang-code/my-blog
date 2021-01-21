@@ -120,6 +120,8 @@ const store = new Vuex.Store({
         let method = 'GET'
         request({ url, method }).then(res => {
           commit('setUserInfo', res.userInfo)
+          let { userName } = res.userInfo
+          document.title = userName ? `${userName}的博客呀~` : '嘿嘿嘿~'
           commit('setMode', res.mode)
           if (res.userInfo.userSetting) {
             commit('setUserDesignSetting', res.userInfo.userSetting)

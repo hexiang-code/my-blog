@@ -34,8 +34,8 @@ export default {
 
   render () {
     return (
-      <div class="music-zone">
-        <i class="iconfont music-switch" onClick={() => this.openMusic()}>&#xe6a1;</i>
+      <div class="music-zone" vDrag={{limit: 'window'}} ref="music-zone">
+        <i class="iconfont music-switch" onClick={$event => this.openMusic($event)}>&#xe6a1;</i>
         <transition name="music-box">
           <div class="music-box" ref="music" vShow={this.musicVisiable}>
             <hx-music
@@ -88,9 +88,12 @@ export default {
     },
 
     // 展示音乐盒
-    async openMusic () {
+    async openMusic ($event) {
+      $event.stopPropagation()
       if (!this.musicVisiable) this.musicVisiable = true
       else {
+        // 将Drag指令绑定的样式移除
+        this.$refs['music-zone'].style = ""
         !this.isMusicStart && await pointAnimation(this.$refs['music'], { isRemoveTargetNode: true })
         this.musicVisiable = false
       }
@@ -267,6 +270,7 @@ export default {
     top: 100px;
     right: 0px;
     z-index: 10001;
+    max-width: 320px;
 
     .music-box {
       width: 300px;

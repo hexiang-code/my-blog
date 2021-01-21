@@ -34,7 +34,7 @@ export default {
 
   render () {
     return (
-      <div class="music-zone" vDrag={{limit: 'window'}} ref="music-zone">
+      <div class="music-zone" vDrag:Y={{limit: 'window'}} ref="music-zone">
         <i class="iconfont music-switch" onClick={$event => this.openMusic($event)}>&#xe6a1;</i>
         <transition name="music-box">
           <div class="music-box" ref="music" vShow={this.musicVisiable}>
@@ -93,7 +93,7 @@ export default {
       if (!this.musicVisiable) this.musicVisiable = true
       else {
         // 将Drag指令绑定的样式移除
-        this.$refs['music-zone'].style = ""
+        // this.$refs['music-zone'].style = ""
         !this.isMusicStart && await pointAnimation(this.$refs['music'], { isRemoveTargetNode: true })
         this.musicVisiable = false
       }
@@ -193,7 +193,7 @@ export default {
     // 音乐播放出错
     musicError (mode) {
       console.log(mode, 'music error')
-      this.changeMusic(mode, 2)
+      // this.changeMusic(mode, 2)
     },
 
     // 将音乐盒控制绑定到liveRem菜单

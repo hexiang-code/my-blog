@@ -35,7 +35,6 @@ const store = new Vuex.Store({
     liveRemMeauList: [], // liveRem菜单列表
     // 音乐盒设定
     musicBoxSetting:{
-      musicBoxFix: false, // 音乐盒是否固定为全局播放
       musicId: '', // 歌曲id
       musicVolume: 50, // 音乐音量
       musicPlayMode: 'sequence' // 播放模式
@@ -105,7 +104,7 @@ const store = new Vuex.Store({
     },
 
     // 设置音乐盒全局播放状态
-    setMusicBoxFix (state, musicBoxSetting) {
+    setMusicBoxSetting (state, musicBoxSetting) {
       for(let key in state.musicBoxSetting) {
         if ((musicBoxSetting[key] !== undefined && musicBoxSetting[key] !== null) &&  musicBoxSetting[key] !== state.musicBoxSetting[key])  {
           state.musicBoxSetting[key] = musicBoxSetting[key]
@@ -124,7 +123,7 @@ const store = new Vuex.Store({
           commit('setMode', res.mode)
           if (res.userInfo.userSetting) {
             commit('setUserDesignSetting', res.userInfo.userSetting)
-            commit('setMusicBoxFix', res.userInfo.userSetting)
+            commit('setMusicBoxSetting', res.userInfo.userSetting)
           }
           resolve()
         }).catch(() => {

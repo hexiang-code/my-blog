@@ -8,11 +8,13 @@
       :meauList="$store.getters.getLiveRemMeauList"
       :welcomeBack="welcomeBack">
     </live-rem>
+    <global-music></global-music>
   </div>
 </template>
 
 <script>
 import lovelyRemind from './utils/remind-map'
+import globalMusic from './components/global-components/music-global/music-global'
 import Vue from 'vue'
 export default {
   name: 'app',
@@ -25,6 +27,11 @@ export default {
       manualLoad: false // 是否手动加载蕾姆
     }
   },
+
+  components: {
+    'global-music': globalMusic
+  },
+
   mounted () {
     let liveRem = this.$refs.rem
     if (liveRem) {

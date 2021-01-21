@@ -38,17 +38,6 @@ export default {
           }
         }
       ], // 笔记目录右键菜单
-      musicList: [], // 音乐列表
-      currentMusicInfo: {
-        musicLyric: '', // 歌词
-        musicSrc: '', // 歌曲url
-        musicFaceSrc: '', // 歌曲封面地址
-        singer: '', // 歌手
-        song: '' // 歌名
-      }, // 当前音乐信息
-      musicFix: '', // 音乐盒全局播放
-      musicVolume: 50, // 音乐盒初始音量
-      musicPlayMode: 'sequence' // 音乐播放顺序
     }
   },
   watch: {
@@ -59,10 +48,6 @@ export default {
     // 新增笔记标签和删除笔记标签只能存在一个
     addNotesLabelVisibel (newVal) {
       if (newVal) this.delNotesLabelVisibel = false
-    },
-
-    musicFix (newVal) {
-      this.$store.commit('setMusicBoxFix', { musicBoxFix: newVal })
     }
   },
 
@@ -70,36 +55,8 @@ export default {
     this.getNotesCatalog()
     this.getNotesLabel()
     this.modifyCatalog = debounce(function(item, type) {
-                          this.updateCatalog(item, type)
-                        }, 300, this)
-    this.getMusicList()
-    this.init()
-  },
-
-  // 讲音乐盒记录保存到服务器
-  deactivated () {
-    let payload = {
-      musicId: this.currentMusicInfo.songId,
-      musicVolume: this.musicVolume,
-      musicMode: this.musicPlayMode
-    }
-    let hasModify
-    let musicBoxSetting = this.$store.getters.getMusicBoxSetting
-    for (let key in payload) {
-      if(payload[key] !== undefined && payload[key] !== null && payload[key] !== musicBoxSetting[key]) {
-        hasModify = true
-        break
-      }
-    }
-    if (hasModify) {
-        request({
-          url: 'userSetting/updateUserSetting',
-          method: 'POST',
-          data: payload
-        }).then(() => {
-          this.$store.commit('setMusicBoxFix', Object.assign({}, payload, {musicBoxFix: this.musicFix}))
-        })
-      }
+      this.updateCatalog(item, type)
+    }, 300, this)
   },
 
   render () {
@@ -173,44 +130,8 @@ export default {
             </div>
         </div>
         <div class="notes-right">
-          <div class="music" ref="music">
-            <hx-music
-              ref="hx-music"
-              playMode={this.musicPlayMode}
-              onEnd={mode =>  mode !== 'circulation' && this.changeMusic(mode, 2)}
-              onUp={mode => this.changeMusic(mode, 1)}
-              onNext={mode => this.changeMusic(mode, 2)}
-              musicFix={!this.musicFix}
-              volume={this.musicVolume}
-              {...{
-                attrs: this.currentMusicInfo,
-                on: {
-                  'update:musicFix': val => this.musicFix = !val,
-                  'music-start': () => this.musicStart(),
-                  'music-pause': () => this.isMusicStart = false,
-                  'update:volume': val => this.musicVolume = val,
-                  'after-animation': () => this. musicBoxAnimationed(),
-                  'music-error': mode => this.musicError(mode)
-                }
-              }}>
-            </hx-music>
-            <ul class="list" ref="music-list">
-              <li class="list-header">
-                歌单
-                <i class="iconfont list-visiable-icon" vOpen={{target: this.$refs['music-list']}}>&#xe67c;</i>
-              </li>
-              {
-                this.musicList.map(item => {
-                  return (
-                    <li
-                      class={{ 'selected': this.currentMusicInfo.songId == item.songId }}
-                      title="item.songName"
-                      onClick={() => this.checkMusic(item)}
-                    >{item.songName}</li>
-                  )
-                })
-              }
-            </ul>
+          <div class="wait-write">
+            <h3>开发代办</h3>
           </div>
         </div>
       </div>
@@ -218,13 +139,6 @@ export default {
   },
 
   methods: {
-
-    init () {
-      this.musicVolume = this.$store.getters.getMusicBoxSetting.musicVolume
-      this.musicPlayMode = this.$store.getters.getMusicBoxSetting.musicPlayMode
-      this.musicFix = this.$store.getters.getMusicBoxSetting.musicBoxFix
-    },
-
     // 创建目录
     createNotesCatalog () {
       return this.notesCatalog.map(item => {
@@ -456,155 +370,6 @@ export default {
         this.addNotesLabelVisibel = false
         this.getNotesLabel()
       })
-    },
-
-    // 网易云音乐盒
-    async getMusicList () {
-      let musicList = await request({
-        url: 'proxy/getMusicList',
-        method: 'GET',
-      })
-      this.musicList = musicList
-      let musicId = this.$store.getters.getMusicBoxSetting.musicId
-      let currentMusic
-      if (musicId) {
-        currentMusic = this.musicList.find(item => item.songId == musicId) || this.musicList[0]
-      } else {
-        currentMusic = this.musicList[0]
-      }
-      if (currentMusic) {
-        this.currentMusicInfo = await this._getCurrentMusicFromMusicList(currentMusic)
-      }
-
-    },
-
-    // 播放音乐
-    async checkMusic (music) {
-      this.$refs['hx-music'].pauseMusic()
-      this.currentMusicInfo = await this._getCurrentMusicFromMusicList(music)
-      await this.$nextTick()
-      this.playMusic()
-    },
-
-    // 播放音乐
-    playMusic() {
-      this.$refs['hx-music'].playMusic()
-    },
-
-    // 监听音乐开始播放
-    musicStart () {
-      let text = (<span>
-        当前播放的是
-        <span class="tips__song-name">{`${this.currentMusicInfo.singer}`}</span>的
-        <span class="tips__song-name">{`${this.currentMusicInfo.song}`}</span>, 很好听哟
-      </span>)
-      this.$liveRem.showToast({text, type: 'shy'})
-      this.isMusicStart = true
-    },
-
-    /**
-     * 切换音乐
-     * @param {String} playMode 播放模式 random:随机播放，circulation:单曲循环，sequence:顺序播放
-     * @param {Number} type 1: 上一曲 2:下一曲
-     */
-    async changeMusic (playMode, type) {
-      if (playMode === 'random') {
-        this.currentMusicInfo = await this._getCurrentMusicFromMusicList(this._getRandomMusic())
-      } else if (playMode == 'sequence' || playMode === 'circulation') {
-        let index = this.musicList.findIndex(music => music.songId === this.currentMusicInfo.songId)
-        if (index == 0 && type == 1) index == this.musicList.length - 1
-        if (index > this.musicList.length - 1) index = 0
-        this.currentMusicInfo = type == 2
-          ? await this._getCurrentMusicFromMusicList(this.musicList[index + 1])
-          : await this._getCurrentMusicFromMusicList(this.musicList[index - 1])
-      }
-      this.playMusic()
-    },
-
-    // 随机获取歌曲
-    _getRandomMusic () {
-      let len = this.musicList.length
-      let random = Math.floor(Math.random() * len)
-      return this.musicList[random]
-    },
-
-    /**
-     * 从音乐列表中获取一条音乐数据
-     */
-    async _getCurrentMusicFromMusicList (music) {
-      let lyric = await request({
-        url: 'proxy/getMusicLyric',
-        params: {
-          songId: music.songId
-        }
-      })
-      let currentMusicInfo = {
-          musicLyric: lyric, // 歌词
-          musicSrc: music.songUrl, // 歌曲url
-          musicFaceSrc: `${music.picUrl}?param=80y80`, // 歌曲封面地址
-          singer: music.singer, // 歌手
-          song: music.songName, // 歌名
-          songId: music.songId // 歌曲id
-      }
-      return currentMusicInfo
-    },
-
-    // 音乐播放出错
-    musicError (mode) {
-      console.log(mode, 'music error')
-      this.changeMusic(mode, 2)
-    },
-
-    // 音乐盒入场动画结束
-    musicBoxAnimationed () {
-      // 让动画执行完成在操作
-      let music = this.$refs['hx-music']
-      this.$liveRem.$el.appendChild(music.$el)
-      this.$liveRem.musicBox = this.$refs['hx-music']
-      let liveRemMeauList = [
-        {
-          name: '上一曲',
-          icon: '&#xe61f;',
-          clickCallback: () => {
-            this.$liveRem.musicBox && this.$liveRem.musicBox.changeMusic(1)
-          }
-        },
-        {
-          name: '下一曲',
-          icon: '&#xe651;',
-          clickCallback: () => {
-            this.$liveRem.musicBox && this.$liveRem.musicBox.changeMusic(2)
-          }
-        },
-        {
-          name: this.isMusicStart ? '暂停' : '开始',
-          icon: this.isMusicStart ? '&#xe60f;' : '&#xe617;',
-          type: this.isMusicStart ? 'musicStart' : 'musicPause',
-          clickCallback: () => {
-            let { type } = liveRemMeauList[2]
-            if (type == 'musicStart') {
-              this.$liveRem.musicBox && this.$liveRem.musicBox.pauseMusic()
-              liveRemMeauList[2] = Object.assign(liveRemMeauList[2], {name: '开始', icon: '&#xe617;', type: 'musicPause'})
-            }
-            if (type == 'musicPause') {
-              this.$liveRem.musicBox && this.$liveRem.musicBox.playMusic()
-              liveRemMeauList[2] = Object.assign(liveRemMeauList[2], {name: '开始', icon: '&#xe60f;', type: 'musicStart'})
-            }
-          }
-        },
-        {
-          name: '音乐盒回到初始位置',
-          icon: '&#xe6a1;',
-          clickCallback: () => {
-            this.$router.push({name: 'notesList'})
-            this.$refs['music'].insertAdjacentElement('afterbegin', this.$liveRem.$el.lastElementChild)
-            this.musicFix = false
-            delete this.$liveRem.musicBox
-            this.$store.commit('setLiveRemMeauList', [])
-          }
-        }
-      ]
-      this.$store.commit('setLiveRemMeauList', liveRemMeauList)
     },
 
     // 删除单个笔记
@@ -899,58 +664,10 @@ export default {
       margin-top: 10px;
       flex-shrink: 0;
 
-      .music {
-        // margin-top: 24px;
-        // background: #fff;
-        margin-bottom: 12px;
-
-        .list {
-          padding: 0 12px 12px 12px;
-          background-color: rgba($color: #fff, $alpha: $opacity);
-          max-height: 380px;
-          overflow-y: auto;
-          overflow-x: hidden;
-          box-sizing: border-box;
-          border-radius: 5px;
-
-          .list-header {
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 12px 0;
-            font-size: 16px;
-            font-weight: bold;
-            border-bottom: 1px dashed #fff;
-            cursor: pointer;
-
-            .list-visiable-icon {
-              width: 16px;
-              height: 16px;
-              color: $theme-color;
-              cursor: pointer;
-            }
-          }
-
-          li {
-            width: 100%;
-            max-height: 274px;
-            padding: 0 12px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            margin-top: 8px;
-            font-size: 12px;
-            cursor: pointer;
-          }
-
-          .selected {
-            font-weight: bold;
-            color: $theme-color;
-          }
-        }
+      .wait-write {
+        padding: 12px;
+        border-radius: 5px;
+        background-color: rgba($color: #fff, $alpha: $opacity);
       }
     }
 

@@ -65,7 +65,7 @@ export default {
                   this.musicList.map(item => {
                     return (
                       <li
-                        class={{ 'selected': this.currentMusicInfo.songId == item.songId }}
+                        class={{ 'selected': this.currentMusicInfo.musicId == item.musicId }}
                         title="item.songName"
                         onClick={() => this.checkMusic(item)}
                       >{item.songName}</li>
@@ -109,7 +109,7 @@ export default {
       let musicId = this.$store.getters.getMusicBoxSetting.musicId
       let currentMusic
       if (musicId) {
-        currentMusic = this.musicList.find(item => item.songId == musicId) || this.musicList[0]
+        currentMusic = this.musicList.find(item => item.musicId == musicId) || this.musicList[0]
       } else {
         currentMusic = this.musicList[0]
       }
@@ -152,7 +152,7 @@ export default {
       if (playMode === 'random') {
         this.currentMusicInfo = await this._getCurrentMusicFromMusicList(this._getRandomMusic())
       } else if (playMode == 'sequence' || playMode === 'circulation') {
-        let index = this.musicList.findIndex(music => music.songId === this.currentMusicInfo.songId)
+        let index = this.musicList.findIndex(music => music.musicId === this.currentMusicInfo.musicId)
         if (index == 0 && type == 1) index == this.musicList.length - 1
         if (index > this.musicList.length - 1) index = 0
         this.currentMusicInfo = type == 2
@@ -173,19 +173,28 @@ export default {
      * 从音乐列表中获取一条音乐数据
      */
     async _getCurrentMusicFromMusicList (music) {
-      let lyric = await request({
-        url: 'proxy/getMusicLyric',
-        params: {
-          songId: music.songId
-        }
-      })
+      let [lyric, musicUrls] = await Promise.all([
+        request({
+          url: 'proxy/getMusicLyric',
+          params: {
+            musicId: music.musicId
+          }
+        }),
+        request({
+          url: 'proxy/getMusicUrls',
+          params: {
+            musicIds: JSON.stringify([music.musicId])
+          }
+        })
+      ])
+      let musicUrl = musicUrls.find(item => item.id == music.musicId)
       let currentMusicInfo = {
           musicLyric: lyric, // 歌词
-          musicSrc: music.songUrl, // 歌曲url
+          musicSrc: musicUrl && musicUrl.url, // 歌曲url
           musicFaceSrc: `${music.picUrl}?param=80y80`, // 歌曲封面地址
           singer: music.singer, // 歌手
           song: music.songName, // 歌名
-          songId: music.songId // 歌曲id
+          musicId: music.musicId // 歌曲id
       }
       return currentMusicInfo
     },
@@ -236,7 +245,7 @@ export default {
     // 将音乐盒记录保存到服务器
     deactivated () {
       let payload = {
-        musicId: this.currentMusicInfo.songId,
+        musicId: this.currentMusicInfo.musicId,
         musicVolume: this.musicVolume,
         musicMode: this.musicPlayMode
       }

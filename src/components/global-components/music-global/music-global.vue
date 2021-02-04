@@ -1,6 +1,8 @@
 <script>
 import request  from '../../../utils/http'
+import { httpBaseUrl } from '../../../config/js/http-config'
 import codeHeUI from 'codehe-ui'
+import cookieServer from '../../../utils/cookie'
 const pointAnimation = codeHeUI.pointAnimation
 
 export default {
@@ -132,6 +134,11 @@ export default {
       this.$refs['hx-music'].playMusic()
     },
 
+    // 暂停音乐
+    pauseMusic () {
+      this.$refs['hx-music'].pauseMusic()
+    },
+
     // 监听音乐开始播放
     musicStart () {
       let text = (<span>
@@ -141,6 +148,8 @@ export default {
       </span>)
       this.$liveRem.showToast({text, type: 'shy'})
       this.isMusicStart = true
+      this.saveMusicRecord()
+      this.musicBindLiveRem()
     },
 
     /**
@@ -212,14 +221,14 @@ export default {
           name: '上一曲',
           icon: '&#xe61f;',
           clickCallback: () => {
-            this.changeMusic(1)
+            this.changeMusic(this.musicPlayMode, 1)
           }
         },
         {
           name: '下一曲',
           icon: '&#xe651;',
           clickCallback: () => {
-            this.changeMusic(2)
+            this.changeMusic(this.musicPlayMode, 2)
           }
         },
         {
@@ -243,7 +252,14 @@ export default {
     },
 
     // 将音乐盒记录保存到服务器
-    deactivated () {
+    beforeDestory () {
+      this.saveMusicRecord()
+    },
+
+    /**
+     * 保存音乐播放记录
+     */
+    saveMusicRecord () {
       let payload = {
         musicId: this.currentMusicInfo.musicId,
         musicVolume: this.musicVolume,
@@ -258,15 +274,16 @@ export default {
         }
       }
       if (hasModify) {
-          request({
-            url: 'userSetting/updateUserSetting',
-            method: 'POST',
-            data: payload
-          }).then(() => {
-            this.$store.commit('setMusicBoxSetting', Object.assign({}, payload))
-          })
-        }
-    },
+        request({
+          url: 'userSetting/updateUserSetting',
+          method: 'POST',
+          data: payload
+        })
+        .then(() => {
+          this.$store.commit('setMusicBoxSetting', Object.assign({}, payload))
+        })
+      }
+    }
   }
 
 }

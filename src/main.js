@@ -15,6 +15,7 @@ import './config/css/baseIcon.scss'
 import './config/css/globalStyle.scss'
 import directives from './utils/directives'
 Vue.config.productionTip = false
+Vue.config.performance = false
 const LoadingService  = codeHeUI.LoadingService
 Vue.prototype.$loading = new LoadingService()
 

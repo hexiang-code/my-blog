@@ -13,7 +13,7 @@ import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import './config/css/baseIcon.scss'
 import './config/css/globalStyle.scss'
-import directives from './utils/directives'
+import directives from './directive'
 Vue.config.productionTip = false
 Vue.config.performance = false
 const LoadingService  = codeHeUI.LoadingService

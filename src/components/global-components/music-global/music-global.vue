@@ -1,8 +1,6 @@
 <script>
 import request  from '../../../utils/http'
-import { httpBaseUrl } from '../../../config/js/http-config'
 import codeHeUI from 'codehe-ui'
-import cookieServer from '../../../utils/cookie'
 const pointAnimation = codeHeUI.pointAnimation
 
 export default {
@@ -36,7 +34,7 @@ export default {
 
   render () {
     return (
-      <div class="music-zone" vDrag:Y={{limit: 'window'}} ref="music-zone">
+      <div class="music-zone"  ref="music-zone">
         <i class="iconfont music-switch" onClick={$event => this.openMusic($event)}>&#xe6a1;</i>
         <transition name="music-box">
           <div class="music-box" ref="music" vShow={this.musicVisiable}>

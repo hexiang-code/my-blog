@@ -1,6 +1,12 @@
 <script>
 import request from '../../utils/http'
-import { debounce } from '../../utils/utils'
+import { debounce, formatDate, getMillisecond } from '../../utils/utils'
+let limitTimer = null // 限时更新的计时器
+const dayToMs = getMillisecond(24) // 1天毫秒数
+const hoursToMs = getMillisecond(1) // 1小时毫秒数
+const minutesToMs = getMillisecond(0, 1) // 1分钟毫秒数
+const secondToMs = getMillisecond(0, 0, 1) // 1秒毫秒数
+
 export default {
   data () {
     return {
@@ -38,6 +44,11 @@ export default {
           }
         }
       ], // 笔记目录右键菜单
+      lastUpdateInfo: {
+        id: '',
+        updatedAt: ''
+      }, // 最后一次更新时间
+      diffLastUpdate: 0 // 现在与最后一次更新时间的差值
     }
   },
   watch: {
@@ -51,12 +62,53 @@ export default {
     }
   },
 
-  created () {
-    this.getNotesCatalog()
+  computed: {
+    // 笔记最后一次更新时间
+    lastUpdateTime () {
+      let { updatedAt } = this.lastUpdateInfo
+      return formatDate('YYYY-MM-DD hh:ss:mm', updatedAt)
+    },
+
+    // 催更文字-日
+    diffLastUpdateDays () {
+      let { diffLastUpdate } = this
+      return Math.floor(diffLastUpdate / dayToMs)
+    },
+
+    // 催更文字-时
+    diffLastUpdateHours () {
+      let { diffLastUpdate } = this
+      let _hours = (diffLastUpdate % dayToMs)
+      return Math.floor(_hours / hoursToMs)
+    },
+
+    // 催更文字-分
+    diffLastUpdateMinutes () {
+      let { diffLastUpdate } = this
+        let _minutes = (diffLastUpdate % dayToMs) % hoursToMs
+        return Math.floor(_minutes / minutesToMs)
+    },
+
+    // 催更文字-秒
+    diffLastUpdateSecond () {
+      let { diffLastUpdate } = this
+        let _second = ((diffLastUpdate % dayToMs) % minutesToMs)
+        return Math.floor(_second / secondToMs)
+    },
+  },
+
+  async created () {
+    await this.getNotesCatalog()
+    await this.getNotesList(this.curSelCatalog.id)
     this.getNotesLabel()
+    this.updateLimitTime()
     this.modifyCatalog = debounce(function(item, type) {
       this.updateCatalog(item, type)
     }, 300, this)
+  },
+
+  destroyed() {
+    window.clearTimeout(limitTimer)
   },
 
   render () {
@@ -130,6 +182,35 @@ export default {
             </div>
         </div>
         <div class="notes-right">
+          <div class="limit-update">
+            <div class="diff-update">
+              <span>距离最后一次更新已经过去：</span>
+              <div class="timer">
+                <transition name="second" mode="out-in" appear appear-class="test">
+                  <span class="date" key={this.diffLastUpdateDays}>{ this.diffLastUpdateDays }</span>
+                </transition>
+                <span>天</span>
+                <transition name="second" mode="out-in" appear appear-class="test">
+                  <span class="date" key={this.diffLastUpdateHours}>{ this.diffLastUpdateHours }</span>
+                </transition>
+                <span>时</span>
+                <transition name="second" mode="out-in" appear appear-class="test">
+                  <span class="date" key={this.diffLastUpdateMinutes}>{ this.diffLastUpdateMinutes }</span>
+                </transition>
+                <span>分</span>
+                {/*<transition name="second" mode="out-in" appear appear-class="test">*/}
+                  <span class="date" key={this.diffLastUpdateSecond}>{ this.diffLastUpdateSecond }</span>
+                {/*</transition>*/}
+                <span>秒</span>
+              </div>
+            </div>
+            <div class="last-update">
+              <span>最后一次更新时间：</span>
+              <span class="time">
+              { this.lastUpdateTime }
+              </span>
+            </div>
+          </div>
           <div class="wait-write">
             <h3>开发代办</h3>
           </div>
@@ -249,22 +330,22 @@ export default {
     },
 
     // 获取笔记目录
-    getNotesCatalog () {
-      request({
+    async getNotesCatalog () {
+      return request({
         url: 'notes/getNotesCatalog',
         method: 'GET'
       }).then(res => {
-        this.notesCatalog = res
+        this.notesCatalog = res.catalog
+        this.lastUpdateInfo = res.lastUpdate
         if (this.notesCatalog && this.notesCatalog.length > 0) {
           this.curSelCatalog = this.notesCatalog[0]
-          this.getNotesList(this.curSelCatalog.id)
         }
       })
     },
 
     // 获取笔记列表
-    getNotesList (catalogId) {
-      request({
+    async getNotesList (catalogId) {
+      return request({
         url: 'notes/getNotesList',
         method: 'GET',
         params: { catalogId }
@@ -386,6 +467,17 @@ export default {
         this.$liveRem.showToast({text: '删除成功'})
         this.getNotesList(this.curSelCatalog.id)
       })
+    },
+
+    // 限时更新
+    updateLimitTime () {
+      let { updatedAt } = this.lastUpdateInfo
+      let currentTime = + new Date()
+      let diff = currentTime - new Date(updatedAt)
+      this.diffLastUpdate = diff
+      limitTimer = setTimeout(() => {
+        this.updateLimitTime()
+      }, secondToMs)
     }
   }
 }
@@ -664,7 +756,71 @@ export default {
       margin-top: 10px;
       flex-shrink: 0;
 
+      .limit-update {
+        padding: 12px;
+        border-radius: 5px;
+        font-size: 16px;
+        line-height: 30px;
+        background-color: rgba($color: #fff, $alpha: $opacity);
+
+        .diff-update {
+          display: flex;
+          flex-direction: column;
+
+          .timer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            .date {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 5px;
+              width: 30px;
+              height: 40px;
+              background-color: $theme-color;
+              color: #fff;
+              font-size: 16px;
+              border-radius: 3px;
+            }
+
+            .second-enter-active {
+              animation: flip-2-hor-top-2 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) forwards;
+            }
+
+            @keyframes flip-2-hor-top-2 {
+              0% {
+                transform: translateY(0) rotateX(0);
+                transform-origin: 50% 0%;
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(-100%) rotateX(180deg);
+                transform-origin: 50% 100%;
+                opacity: 0;
+              }
+            }
+          }
+        }
+
+        .last-update {
+          display: flex;
+          flex-direction: column;
+          margin-top: 20px;
+
+          .time {
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            animation: text-twinkle 3s infinite;
+            color: #fff;
+          }
+        }
+      }
+
       .wait-write {
+        margin-top: 12px;
         padding: 12px;
         border-radius: 5px;
         background-color: rgba($color: #fff, $alpha: $opacity);

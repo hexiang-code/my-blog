@@ -33,19 +33,3 @@
     -ms-user-select: none; /*IE10*/
     -khtml-user-select: none; /*早期浏览器*/
   }
-
-
-
-  /* 动画 */
-
-  @keyframes twinkle {
-    0%, 100% {
-      transform: scale(1);
-      opacity: .6;
-    }
-
-    50% {
-      transform: scale(1.5);
-      opacity: 1;
-    }
-  }

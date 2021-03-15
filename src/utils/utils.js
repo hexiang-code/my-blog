@@ -37,7 +37,7 @@ function throttle (fn, wait = 200, ctx = null) {
  * @param {String} formatText 格式化时间 （YYYY-MM-DD:HH:MM:SS）
  * @param {Number} timestamp 目标时间戳
  */
-function formatDate(formatText = 'YYYY-MM-DD:HH:MM:SS', timestamp = +new Date()) {
+function formatDate(formatText = 'YYYY-MM-DD hh:mm:ss', timestamp = +new Date()) {
   const _getFullDate = val => {
     if (String(val).length < 2) {
       return '0' + String(val)
@@ -56,15 +56,27 @@ function formatDate(formatText = 'YYYY-MM-DD:HH:MM:SS', timestamp = +new Date())
   returnText = formatText.replace('YYYY', _targetYear)
   returnText = returnText.replace('MM', _getFullDate(_targetMonth))
   returnText = returnText.replace('DD', _getFullDate(_targetDay))
-  returnText = returnText.replace('HH', _getFullDate(_targetHour))
-  returnText = returnText.replace('MM', _getFullDate(_targetMinutes))
-  returnText = returnText.replace('SS', _getFullDate(_targetSecond))
+  returnText = returnText.replace('hh', _getFullDate(_targetHour))
+  returnText = returnText.replace('mm', _getFullDate(_targetMinutes))
+  returnText = returnText.replace('ss', _getFullDate(_targetSecond))
   return returnText
 }
 
+/**
+ * 获得毫秒数
+ * @param {Number} hours 小时
+ * @param {Number} minutes 分钟
+ * @param {Number} seconds 秒
+ */
+function getMillisecond(hours, minutes = 0, seconds = 0) {
+  return hours * 60 * 60 * 1000 +
+          minutes * 60 * 1000 +
+            seconds * 1000
+}
 
 export {
   debounce,
   throttle,
-  formatDate
+  formatDate,
+  getMillisecond
 }

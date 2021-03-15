@@ -3,6 +3,7 @@ import request from '../../utils/http'
 // import { throttle } from '../../utils/utils'
 import { externalLink } from '../../config/js/mavon-editor-config'
 import { colorArray } from '../manager-page/manager-config'
+import { formatDate } from '../../utils/utils'
 let intersectionIo // dom观察器
 export default {
   data () {
@@ -38,6 +39,14 @@ export default {
         })
         this.$refs.notesCatalog.appendChild(fragement)
       }
+    }
+  },
+
+  computed: {
+    // 笔记更新时间
+    updatedAt () {
+      let { updatedAt } = this.notesDetail
+      return formatDate('YYYY-MM-DD hh:mm:ss', updatedAt)
     }
   },
 
@@ -85,6 +94,10 @@ export default {
           </div>
         </div>
         <div class="notes-content">
+          <div class="notes-title">
+            <span class="notes-name">{ this.notesDetail.name }</span>
+            <span class="notes-updated-at">更新于 { this.updatedAt }</span>
+          </div>
           <mavon-editor ref="mavonEditor" value={this.notesDetail.htmlContent || ''} {...{attrs}} onPreviewToggle={ () => this.editNotes()}></mavon-editor>
         </div>
       </div>
@@ -288,11 +301,46 @@ export default {
 
     .notes-content {
       width: 1000px;
-      background-color: rgba($color: #fff, $alpha: $opacity);
+      background-color: transparent;
       border-radius: 5px;
 
+      .notes-title {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 20px;
+        margin-bottom: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        border-radius: 5px;
+        background-color: rgba($color: #fff, $alpha: $opacity);
+
+        .notes-name {
+          flex: 1;
+          margin-right: 50px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          animation: text-twinkle 3s infinite;
+          color: #fff;
+        }
+
+        .notes-name:hover {
+          color: #000;
+          animation: none;
+        }
+
+        .notes-updated-at {
+          flex-shrink: 0;
+          padding-bottom: 4px;
+          font-size: 16px;
+          font-weight: normal;
+        }
+      }
+
       .v-note-wrapper {
-        background-color: transparent;
+        // background-color: transparent;
+        background-color: rgba($color: #fff, $alpha: $opacity);
 
         .v-note-navigation-wrapper {
           // position: fixed;

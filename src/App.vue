@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import lovelyRemind from './utils/remind-map'
+import lovelyRemind from './config/js/remind-map'
 import globalMusic from './components/global-components/music-global/music-global'
 import Vue from 'vue'
 export default {

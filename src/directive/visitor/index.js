@@ -1,7 +1,7 @@
-import store from '../store'
+import store from '../../store'
 
-const install = Vue => {
-  // 访客模式指令
+// 访客模式指令
+const visitorMode = Vue => {
   Vue.directive('visitor', function (el) {
       if (store.getters.getCurMode === 'visitor') {
         el.parentNode && el.parentNode.removeChild(el)
@@ -10,4 +10,6 @@ const install = Vue => {
   )
 }
 
-export default install
+export default visitorMode
+
+

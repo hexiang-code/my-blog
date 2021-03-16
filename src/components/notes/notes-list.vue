@@ -786,20 +786,7 @@ export default {
             }
 
             .second-enter-active {
-              animation: flip-2-hor-top-2 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) forwards;
-            }
-
-            @keyframes flip-2-hor-top-2 {
-              0% {
-                transform: translateY(0) rotateX(0);
-                transform-origin: 50% 0%;
-                opacity: 1;
-              }
-              100% {
-                transform: translateY(-100%) rotateX(180deg);
-                transform-origin: 50% 100%;
-                opacity: 0;
-              }
+              animation: flip-card 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) forwards;
             }
           }
         }

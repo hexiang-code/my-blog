@@ -185,23 +185,51 @@ export default {
           <div class="limit-update">
             <div class="diff-update">
               <span>距离最后一次更新已经过去：</span>
-              <div class="timer">
-                <transition name="second" mode="out-in" appear appear-class="test">
-                  <span class="date" key={this.diffLastUpdateDays}>{ this.diffLastUpdateDays }</span>
-                </transition>
+              <div class="timer" title={`真是混掉了，${this.diffLastUpdateDays}天不更新你想干什么！`}>
+                {
+                  this.diffLastUpdateDays
+                    ? (
+                        <transition name="second" >
+                          <span class="date" key={this.diffLastUpdateDays}>{ this.diffLastUpdateDays }</span>
+                        </transition>
+                      )
+                    : ''
+                }
                 <span>天</span>
-                <transition name="second" mode="out-in" appear appear-class="test">
-                  <span class="date" key={this.diffLastUpdateHours}>{ this.diffLastUpdateHours }</span>
-                </transition>
+                {
+                  this.diffLastUpdateHours
+                    ? (
+                        <transition name="second" >
+                          <span class="date" key={this.diffLastUpdateHours}>{ this.diffLastUpdateHours }</span>
+                        </transition>
+                      )
+                    : ''
+                }
                 <span>时</span>
-                <transition name="second" mode="out-in" appear appear-class="test">
-                  <span class="date" key={this.diffLastUpdateMinutes}>{ this.diffLastUpdateMinutes }</span>
-                </transition>
+                {
+                  this.diffLastUpdateMinutes
+                    ?  (
+                        <transition name="second" >
+                          <span class="date" key={this.diffLastUpdateMinutes}>{ this.diffLastUpdateMinutes }</span>
+                        </transition>
+                      )
+                    : ''
+                }
                 <span>分</span>
-                {/*<transition name="second" mode="out-in" appear appear-class="test">*/}
-                  <span class="date" key={this.diffLastUpdateSecond}>{ this.diffLastUpdateSecond }</span>
-                {/*</transition>*/}
-                <span>秒</span>
+                {
+                /*
+                  {
+                    this.diffLastUpdateSecond
+                      ? (
+                          <transition name="second">
+                            <span class="date" key={this.diffLastUpdateSecond}>{ this.diffLastUpdateSecond }</span>
+                          </transition>
+                        )
+                      : ''
+                  }
+                  <span>秒</span>
+                */
+                }
               </div>
             </div>
             <div class="last-update">

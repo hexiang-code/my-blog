@@ -965,12 +965,12 @@ export default {
             }
           }
 
-          .login-input {
+          .form-item {
             height: auto;
             justify-content: flex-start;
             margin-top: 10px;
 
-            .login-label {
+            .form-label {
               width: 30px;
             }
           }
@@ -1065,7 +1065,7 @@ export default {
           // justify-content: space-between;
           padding-bottom: 24px;
 
-          .login-input {
+          .form-item {
             margin-right: 30px;
           }
 
@@ -1081,7 +1081,7 @@ export default {
             height: 30px;
             line-height: 30px;
           }
-          .login-label {
+          .form-label {
             width: unset;
             color: #000;
           }

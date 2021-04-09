@@ -48,7 +48,37 @@ export default {
         id: '',
         updatedAt: ''
       }, // 最后一次更新时间
-      diffLastUpdate: 0 // 现在与最后一次更新时间的差值
+      diffLastUpdate: 0, // 现在与最后一次更新时间的差值
+
+      todoCurPage: 1, // 待办列表当前页
+      todoPageSize: 10, // 待办列表每页数量
+      todoList: [], // 待办列表
+      todoTotal: 1, // 待办总量
+      todoComplete: 0, // 1：查询已完成待办项 0: 查询未完成待办项
+      isShowAddTodoDialog: false, // 打开新增待办项弹框
+      isMultiCompleteTodo: false, // 批量完成待办开关
+      selectedTodoIds: [], // 批量选择的待办项
+      // 新建待办项内容
+      todoForm: {
+        id: '', // 仅编辑时有
+        name: '', // 待办名称
+        content: '' // 待办内容
+      },
+      // 待办右键菜单
+      todoMenuList: [
+        {
+          label: '新增待办',
+          clickCallback: () => {
+            this.isShowAddTodoDialog = true
+          }
+        },
+        {
+          label: '批量完成',
+          clickCallback: () => {
+            this.isMultiCompleteTodo = true
+          }
+        }
+      ]
     }
   },
   watch: {
@@ -101,6 +131,7 @@ export default {
     await this.getNotesCatalog()
     await this.getNotesList(this.curSelCatalog.id)
     this.getNotesLabel()
+    this.getTodoList()
     this.updateLimitTime()
     this.modifyCatalog = debounce(function(item, type) {
       this.updateCatalog(item, type)
@@ -114,11 +145,6 @@ export default {
   render () {
     return (
       <div class="notes-body">
-        <hx-dialog dialogVisiable={this.addCatalogWindow} {...{on:{'update:dialogVisiable': this.closeWindow}}} title='新增目录' onConfirm={() => this.addCatalog()}>
-          <hx-form-item label="目录名" label-icon={require('../../assets/status-icon/leimu-icon.png')}>
-            <input slot="default" class="catalog-input" vModel={this.addCatalogText} type="text" placeholder="请输目录名" />
-          </hx-form-item>
-        </hx-dialog>
         <div class="notes-left">
           <div class="notes-catalog" ref="notes-catalog">
             <div class="add-catalog">
@@ -185,9 +211,9 @@ export default {
           <div class="limit-update">
             <div class="diff-update">
               <span>距离最后一次更新已经过去：</span>
-              <div class="timer" title={`真是混掉了，${this.diffLastUpdateDays}天不更新你想干什么！`}>
+              <div class="timer" vTips={{ content: `真是混掉了，${this.diffLastUpdateDays}天不更新你想干什么！` }}>
                 {
-                  this.diffLastUpdateDays
+                  typeof this.diffLastUpdateDays != 'undefined'
                     ? (
                         <transition name="second" >
                           <span class="date" key={this.diffLastUpdateDays}>{ this.diffLastUpdateDays }</span>
@@ -197,7 +223,7 @@ export default {
                 }
                 <span>天</span>
                 {
-                  this.diffLastUpdateHours
+                  typeof this.diffLastUpdateHours != 'undefined'
                     ? (
                         <transition name="second" >
                           <span class="date" key={this.diffLastUpdateHours}>{ this.diffLastUpdateHours }</span>
@@ -207,7 +233,7 @@ export default {
                 }
                 <span>时</span>
                 {
-                  this.diffLastUpdateMinutes
+                  typeof this.diffLastUpdateMinutes != 'undefined'
                     ?  (
                         <transition name="second" >
                           <span class="date" key={this.diffLastUpdateMinutes}>{ this.diffLastUpdateMinutes }</span>
@@ -239,10 +265,118 @@ export default {
               </span>
             </div>
           </div>
-          <div class="wait-write">
-            <h3>开发代办</h3>
+          <div class="todo" ref="todo">
+            <div class="todo-header">
+              <div title="鼠标右键呼出菜单">
+                <i class="iconfont wirte-icon">&#xe712;</i>
+                <span vCtxmenu={{ menuList: this.todoMenuList }}>待办列表</span>
+              </div>
+              <i class="iconfont notes-visiable-icon" vOpen={{target: this.$refs['todo']}}>&#xe67c;</i>
+            </div>
+            <div class="todo-tabs">
+              <span class={[ 'tab-item', {'tab-item_active': this.todoComplete == 0} ]}
+                onClick={() => !(this.todoComplete = 0) && this.getTodoList()}>
+                未完成
+              </span>
+              <span class={[ 'tab-item', {'tab-item_active': this.todoComplete == 1} ]}
+                onClick={() => (this.todoComplete = 1) && this.getTodoList()}>
+                已完成
+              </span>
+            </div>
+            <hx-tree
+              ref="todo-list"
+              tree={{ children: this.todoList }}
+              renderKey={{ label: 'name' }}
+              scopedSlots={
+                {
+                  operation: todoItem => {
+                    return (
+                      this.todoComplete == 0
+                       ? (
+                         <div class="operation">
+                          <span class="complete-btn" onClick={ () => this.completeTodo([todoItem.id]) }>完成</span>
+                          <span class="edit-btn" onClick={ () => this.eidtTodo(todoItem) }>编辑</span>
+                         </div>
+                        )
+                       : ''
+                    )
+                  },
+                  leafContent: todoItem => {
+                    return (
+                      <span vTips={{ content: todoItem.content }}>{ todoItem.name }</span>
+                    )
+                  }
+                }
+              }
+              {
+                ... {
+                  on: {
+                    'check-change': this.todoMultiSelect
+                  }
+                }
+              }
+              isShowCheckbox={this.isMultiCompleteTodo}>
+            </hx-tree>
+            <div class="todo-footer">
+              {
+                this.isMultiCompleteTodo
+                  ? (
+                    <div class="todo-left">
+                      <span class="todo-confirm" onClick={() => this.confirmCompleteTodo()}>确定</span>
+                      <span class="todo-cancel" onClick={() => this.isMultiCompleteTodo = false}>取消</span>
+                    </div>
+                  )
+                  : ''
+              }
+              <hx-pagination
+                pageSize={this.todoPageSize} currentPage={this.todoCurPage}
+                {
+                  ...{
+                    on: {
+                      'current-change': this.todoCurPageChange
+                    }
+                  }
+                }
+                total={this.todoTotal}
+                layout="prev, pager, next"
+              >
+            </hx-pagination>
+            </div>
           </div>
         </div>
+
+        <hx-dialog
+          dialogVisiable={this.addCatalogWindow}
+          {
+            ...{
+                on: {
+                  'update:dialog-visiable': this.closeWindow
+                  }
+              }
+          }
+          title='新增目录' onConfirm={() => this.addCatalog()}>
+          <hx-form-item label="目录名" label-icon={require('../../assets/status-icon/leimu-icon.png')}>
+            <input slot="default" class="catalog-input" vModel={this.addCatalogText} type="text" placeholder="请输目录名" />
+          </hx-form-item>
+        </hx-dialog>
+        <hx-dialog
+          dialogVisiable={this.isShowAddTodoDialog}
+          title="新增待办项"
+          onConfirm={ () => this.addDialogConfirm() }
+          {
+          ...{
+              on: {
+                'update:dialog-visiable': val => this.isShowAddTodoDialog = val
+              }
+            }
+          }>
+          <hx-form-item label="待办名称" label-icon={require('../../assets/status-icon/leimu-icon.png')}>
+            <input slot="default" class="catalog-input" vModel={this.todoForm.name} type="text" placeholder="请输入待办名称" />
+          </hx-form-item>
+          <hx-form-item label="待办内容" label-icon={require('../../assets/status-icon/leimu-icon.png')}>
+            <textarea slot="default" class="todo-dialog__textarea" vModel={this.todoForm.content} type="text" placeholder="请输入待办内容"></textarea>
+          </hx-form-item>
+        </hx-dialog>
       </div>
     )
   },
@@ -293,7 +427,6 @@ export default {
                 {item.notesNumber > 0 ? item.notesNumber + '篇' : '暂无'}
               </div>
             </div>
-
           </div>
         )
       })
@@ -333,6 +466,7 @@ export default {
     closeWindow(val) {
       this.addCatalogWindow = val
     },
+
     // 进入详情
     goDetail (notesId) {
       this.$router.push({
@@ -506,6 +640,89 @@ export default {
       limitTimer = setTimeout(() => {
         this.updateLimitTime()
       }, secondToMs)
+    },
+
+    // 获取代办列表
+    async getTodoList () {
+      let res = await request({
+        url: 'todo/getTodoList',
+        method: 'GET',
+        params: {
+          curPage: this.todoCurPage,
+          pageSize: this.todoPageSize,
+          complete: this.todoComplete
+        }
+      })
+      this.todoList = res.data.rows
+      this.$nextTick(() => {
+        this.todoList.forEach(item => {
+          if (this.selectedTodoIds.includes(item.id)) {
+            this.$refs['todo-list'].setNodeStatus({id: item.id}, true)
+          }
+        })
+      })
+      this.todoTotal = res.data.count
+    },
+
+    // 待办列表分页变更
+    todoCurPageChange (curPage) {
+      this.todoCurPage = curPage
+      this.getTodoList(curPage)
+    },
+
+    // 完成待办
+    completeTodo (ids) {
+      request({
+        url: 'todo/multiOperation',
+        method: 'POST',
+        data: {
+          isComplete: true,
+          ids
+        }
+      }).then(() => {
+        this.$liveRem.showToast({ text: '又达成了许多目标哦，加油', type: 'lovely' })
+        this.getTodoList()
+      })
+    },
+
+    // 批量选择待办
+    todoMultiSelect (node) {
+      let { selectedTodoIds } = this
+      let { isCheck, id } = node
+      if (isCheck) {
+        if (!selectedTodoIds.includes(id)) selectedTodoIds.push(id)
+      } else {
+        let index = selectedTodoIds.findIndex(item => item == id)
+        index > -1 && selectedTodoIds.splice(index, 1)
+      }
+    },
+
+    // 批量完成待办确定按钮
+    confirmCompleteTodo () {
+      this.completeTodo(this.selectedTodoIds)
+    },
+
+    // 确认新增待办弹框
+    addDialogConfirm () {
+      const { name, content, id } = this.todoForm
+      let data = { name, content }
+      id && (data.id = id)
+      request({
+        url: `todo/${id ? 'updateTodo' : 'addTodo'}`,
+        method: 'POST',
+        data
+      }).then(() => {
+        this.$liveRem.showToast({ text: `${id ? '编辑' : '新建'}待办成功啦，要早点完成哦~`, type: 'lovely' })
+        this.getTodoList()
+        this.isShowAddTodoDialog = false
+      })
+    },
+
+    eidtTodo ({ name, content, id }) {
+      this.isShowAddTodoDialog = true
+      this.todoForm.name = name
+      this.todoForm.content = content
+      this.todoForm.id = id
     }
   }
 }
@@ -677,6 +894,7 @@ export default {
             display: flex;
             justify-content: space-between;
             margin-right: 12px;
+            margin-top: 12px;
             padding: 8px;
             height: 16px;
             line-height: 16px;
@@ -834,11 +1052,128 @@ export default {
         }
       }
 
-      .wait-write {
+      .todo {
         margin-top: 12px;
-        padding: 12px;
+        padding: 0 12px;
         border-radius: 5px;
         background-color: rgba($color: #fff, $alpha: $opacity);
+
+        .todo-header {
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 0;
+          font-size: 16px;
+          border-bottom: 1px dashed #fff;
+          font-weight: bold;
+
+          .wirte-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            color: $theme-color;
+          }
+        }
+
+        .todo-tabs {
+          display: flex;
+
+          .tab-item {
+            width: 50%;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+          }
+
+          .tab-item_active {
+            color: $theme-color;
+            font-weight: bold;
+          }
+        }
+
+        /deep/ .tree-main {
+          padding: 0;
+
+          .tree-main__children-label {
+            padding: 10px 0;
+            box-sizing: border-box;
+          }
+
+          .operation {
+
+            .complete-btn {
+              color: $theme-color;
+            }
+
+            .edit-btn {
+              color: $theme-color;
+              margin-left: 20px;
+            }
+          }
+
+
+        }
+
+        .todo-list {
+          position: relative;
+          max-height: 300px;
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          .todo-item {
+            box-sizing: border-box;
+            position: relative;
+            padding: 12px;
+            cursor: pointer;
+            width: 100%;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        }
+
+        .todo-footer {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+
+          .todo-left {
+            display: flex;
+            flex: 1;
+
+            .todo-confirm {
+              width: 40px;
+              height: 25px;
+              line-height: 25px;
+              text-align: center;
+              color: #fff;
+              background-color: $theme-color;
+              border-radius: 2px;
+              font-size: 12px;
+              cursor: pointer;
+            }
+
+            .todo-cancel {
+              @extend .todo-confirm;
+              margin-left: 10px;
+              background: none;
+              border: 1px solid $theme-color;
+              color: $theme-color;
+            }
+          }
+
+          /deep/ .pagination {
+
+            padding: 12px 0;
+
+            .pagination-item  {
+              min-width: 20px;
+              height: 20px;
+              font-size: 14px;
+            }
+          }
+        }
+
       }
     }
 
@@ -850,16 +1185,45 @@ export default {
     }
 
     .catalog-input {
+      width: 200px;
       height: 30px;
       padding-left: 20px;
-      border: 1px solid $theme-color;
-      color: $theme-color;
+      border: 1px solid #fff;
+      color: #fff;
       background-color: transparent;
       outline: none;
+      box-sizing: border-box;
     }
 
-    .hx-dialog {
-      background-color: #000;
+    .todo-dialog__textarea {
+      box-sizing: border-box;
+      margin-top: 20px;
+      width: 200px;
+      height: 100px;
+      padding: 12px 20px;
+      border: 1px solid #fff;
+      color: #fff;
+      background-color: transparent;
+      outline: none;
+      resize: none;
+    }
+
+    /deep/ .dialog-container {
+      // background: #fff;
+
+      .form-item {
+        height: auto;
+
+        .form-label {
+          color: #fff;
+        }
+      }
+
+      .dialog__footer {
+        button {
+          color: #fff;
+        }
+      }
     }
   }
 

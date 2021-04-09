@@ -102,14 +102,14 @@
         </div>
       </div>
       <div class="bookmarks-body__content">
-        <tree
+        <hx-tree
           :tree="{
             title: '我的书签',
             children: bookmark
           }"
-          :isExpandAll="bookmarkExpand"
-          :isShowCheckBox="isShowCheckBox"
-          @childNodeClick="openLink"
+          :is-expand-all="bookmarkExpand"
+          :is-show-checkbox="isShowCheckbox"
+          @child-node-click="openLink"
           ref="bookmarks"
          >
           <template #header>
@@ -124,7 +124,7 @@
               <span v-visitor class="delete-btn" title="双击删除" @dblclick="deleteMarks(treeItem)">删除</span>
             </div>
           </template>
-        </tree>
+        </hx-tree>
       </div>
     </drawer>
 
@@ -144,17 +144,17 @@
             <i class="iconfont start-page-icon bookmarks-header__search-icon">&#xe6e6;</i>
           </div>
         </div>
-        <tree
+        <hx-tree
           class="notepad-content"
           :tree=" {
             title: '我的记事本',
             children: notepadList
           }"
-          :isExpandAll="true"
-          :renderKey="{
+          :is-expand-all="true"
+          :render-key="{
             label: 'name'
           }"
-          @childNodeClick="clickNotepadList"
+          @child-node-click="clickNotepadList"
           ref="notepad"
          >
           <template #header>
@@ -165,7 +165,7 @@
               </span>
             </div>
           </template>
-        </tree>
+        </hx-tree>
         <drawer
           :title="curNotepad.name"
           :isShow.sync="isShowNotepadContent"
@@ -182,7 +182,7 @@
     </drawer>
 
     <!-- 登录弹框 -->
-    <hx-dialog :dialogVisiable.sync="isShowLoginWindow" :isCurtain="false" title="登录" @confirm="login">
+    <hx-dialog :dialog-visiable.sync="isShowLoginWindow" :isCurtain="false" title="登录" @confirm="login">
       <template>
         <hx-form-item
           label="ACCOUNT"
@@ -210,7 +210,7 @@
     </hx-dialog>
 
     <!-- 注册弹框 -->
-    <hx-dialog :dialogVisiable.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
+    <hx-dialog :dialog-visiable.sync="isShowRegisterWindow" title="来啦？老弟" @confirm="register">
       <template>
         <hx-form-item
           label="NAME"
@@ -260,7 +260,7 @@
     </hx-dialog>
 
     <!-- 修改书签弹框 -->
-    <hx-dialog :dialogVisiable.sync="isShowBookmarksWindow" title="修改书签" @confirm="modifyConfirm">
+    <hx-dialog :dialog-visiable.sync="isShowBookmarksWindow" title="修改书签" @confirm="modifyConfirm">
       <hx-form-item
         label="书签"
         :label-icon="require('../../assets/status-icon/leimu-icon.png')"
@@ -276,7 +276,7 @@
     </hx-dialog>
 
     <!-- 记事本对话框 -->
-    <hx-dialog :dialogVisiable.sync="notepadDialogVisible" title="新增记事本" @confirm="addNotepadComfirm">
+    <hx-dialog :dialog-visiable.sync="notepadDialogVisible" title="新增记事本" @confirm="addNotepadComfirm">
       <hx-form-item
         label="记事本名称"
         :label-icon="require('../../assets/status-icon/leimu-icon.png')"
@@ -338,7 +338,7 @@ export default {
       navgation: navgation, // 导航数据
       curNav: navgation[0], // 当前选中的导航
       websideUrl: "", // 要打开的导航地址
-      isShowCheckBox: false, // 是否展示复选框
+      isShowCheckbox: false, // 是否展示复选框
       marksFilterVal: "", // 书签过滤关键字
       isShowBookmarksWindow: false, // 是否展示书签弹框
       curSelBookmark: {}, // 当前选中的书签
@@ -935,13 +935,13 @@ export default {
   filter: blur(10px) contrast(0.8);
 }
 
-.login-input {
+.form-item {
   display: flex;
   height: 60px;
   align-items: center;
 }
 
-.login-label {
+.form-label {
   position: relative;
   display: inline-block;
   width: 140px;
@@ -951,7 +951,7 @@ export default {
   color: $theme-color;
 }
 
-.login-label::before {
+.form-label::before {
   content: "";
   position: absolute;
   width: 30px;

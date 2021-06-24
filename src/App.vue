@@ -61,10 +61,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  @import './config/css/_globalStyle.scss';
   #app /deep/{
     height: 100%;
     background-color: #f5f5f5;
-
+    color: $font-color;
     .message {
       max-height: 100px;
     }

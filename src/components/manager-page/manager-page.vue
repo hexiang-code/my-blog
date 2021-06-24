@@ -365,7 +365,7 @@ export default {
     // 透明度
     opacity: {
       get () {
-        return this.$store.getters.getUserDesignSetting.themeSetting.backgroundOpacity || 1
+        return this.userDesignSetting.themeSetting.backgroundOpacity || 1
       },
 
       set (val) {
@@ -404,8 +404,12 @@ export default {
       },
 
       set (val) {
-        if (val) document.getElementById('app').style.color = '#fff'
-        else document.getElementById('app').style.color = '#000'
+        if (val) {
+          dynamicStyle('fontColor', '#fff')
+          this.opacity = 0.5
+        } else {
+          dynamicStyle('fontColor', '#000')
+        }
         this.background = bgColorArray[`${val ? 1 : 0}`]
       }
     }

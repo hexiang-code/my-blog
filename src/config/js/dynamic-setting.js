@@ -1,6 +1,6 @@
 
 // 可以动态配置的样式类型
-const styles = ['themeColor', 'background', 'backgroundOpacity']
+const styles = ['themeColor', 'background', 'backgroundOpacity', 'containerBg', 'fontColor']
 const vuexs = ['startPoster', 'startVideo'] // 利用vuex做到响应式
 import store from '../../store'
 // 动态配置样式

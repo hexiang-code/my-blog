@@ -38,9 +38,6 @@ export default {
       Vue.prototype.$liveRem = liveRem
       this.lovelyRemind()
     }
-    // eventBus.$on('videoAlready', async () => {
-    //   liveRem.initLiveRem()
-    // })
   },
 
   methods: {

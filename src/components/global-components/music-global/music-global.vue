@@ -273,7 +273,7 @@ export default {
       }
       if (hasModify) {
         request({
-          url: 'userSetting/updateUserSetting',
+          url: 'userTheme/updateUserTheme',
           method: 'POST',
           data: payload
         })

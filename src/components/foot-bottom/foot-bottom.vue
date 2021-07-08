@@ -16,12 +16,12 @@
         </div>
         <div class="person-info">
           <p>
-            <span>QQ: {{footerSetting.personalInfo.QQ}}</span>
-            <span>微信：{{footerSetting.personalInfo.wechat}}</span>
+            <span>QQ: {{footerSetting.QQ}}</span>
+            <span>微信：{{footerSetting.wechat}}</span>
           </p>
           <p>
-            <span>地址: {{footerSetting.personalInfo.address}}</span>
-            <span>邮箱: {{footerSetting.personalInfo.email}}</span>
+            <span>地址: {{footerSetting.address}}</span>
+            <span>邮箱: {{footerSetting.email}}</span>
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="bg-wall">
     <backgroundVideo :resource="bgVideo" :poster="startPagePoster" @posterLoaded="videoAlready"></backgroundVideo>
-    <load-animation :isShow.sync="isLoadAnimation"></load-animation>
+    <load-animation :isShow.sync="isLoadAnimation" v-if="bgVideo"></load-animation>
     <div class="search-question">
       <div class="search-tabs">
         <div class="search-items" v-for="item in navgation" :key="item.name" @click="selectTabs(item)">
@@ -293,7 +293,6 @@ import cookieServe from "../../utils/cookie"
 import { VueEditor } from "vue2-editor"
 import { tabsConfig, navgation } from "../../config/js/start-page"
 import jsonp from 'jsonp'
-import eventBus from '../../utils/event-bus'
 export default {
   data() {
     return {
@@ -360,12 +359,14 @@ export default {
     // 启动页海报
     startPagePoster () {
       let userDesignSetting  = this.$store.getters.getUserDesignSetting
-      return userDesignSetting.startSetting.startPoster || require('../../assets/startBg.png')
+      // return userDesignSetting.startSetting.startPoster || require('../../assets/startBg.png')
+      return userDesignSetting.startSetting.startPoster
     },
     // 动态壁纸
     bgVideo () {
       let userDesignSetting  = this.$store.getters.getUserDesignSetting
-      return userDesignSetting.startSetting.startVideo || require("../../assets/start-background-video.mp4")
+      // return userDesignSetting.startSetting.startVideo || require("../../assets/start-background-video.mp4")
+      return userDesignSetting.startSetting.startVideo
     },
 
     // 主题色
@@ -399,7 +400,6 @@ export default {
     // 视频加载完成回调
     videoAlready() {
       this.isLoadAnimation = false;
-      eventBus.$emit('videoAlready')
     },
 
     //点击书签

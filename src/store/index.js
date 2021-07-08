@@ -13,17 +13,17 @@ const store = new Vuex.Store({
       // 网页底部设置
       footerSetting: {
         personalSign: ['天高鸟嗷嗷飞', '水深鱼哗哗游'],
-        personalInfo: {
-          QQ: '309871923',
-          wechat: 'hx309871923',
-          address: '安徽合肥',
-          email: '309871923@qq.com'
-        }
+        QQ: '309871923',
+        wechat: 'hx309871923',
+        address: '安徽合肥',
+        email: '309871923@qq.com'
       },
       // 启动页设置
       startSetting: {
-        startPoster: require('../assets/startBg.png'),
-        startVideo: require("../assets/start-background-video.mp4")
+        // startPoster: require('../assets/startBg.png'),
+        // startVideo: require("../assets/start-background-video.mp4")
+        startPoster: '',
+        startVideo: ''
       },
       // 主题背景设置
       themeSetting: {
@@ -123,9 +123,9 @@ const store = new Vuex.Store({
           let { userName } = res.userInfo
           document.title = userName ? `${userName}的博客呀~` : '嘿嘿嘿~'
           commit('setMode', res.mode)
-          if (res.userInfo.userSetting) {
-            commit('setUserDesignSetting', res.userInfo.userSetting)
-            commit('setMusicBoxSetting', res.userInfo.userSetting)
+          if (res.userInfo.userTheme) {
+            commit('setUserDesignSetting', res.userInfo.userTheme)
+            commit('setMusicBoxSetting', res.userInfo.userTheme)
           }
           resolve()
         }).catch(() => {

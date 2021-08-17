@@ -92,7 +92,7 @@ export default {
                           首页背景：
                         </span>
                         {item.startVideo ? (
-                          <video class="video" muted>
+                          <video class="video" muted autoplay loop>
                             <source src={item.startVideo} type="video/mp4" />
                             <source src={item.startVideo} type="video/ogg" />
                           </video>
@@ -149,8 +149,8 @@ export default {
                         ></hx-slider>
                       </p>
                       <p class="line">
-                        <button>编辑主题</button>
-                        <button>本次试用</button>
+                        <button onClick={() => this.editTheme(item)}>编辑主题</button>
+                        <button onClick={() => this.trialTheme(item)}>本次试用</button>
                         <button onClick={() => this.setTheme(item.id)}>永久使用</button>
                       </p>
                     </div>
@@ -1172,6 +1172,22 @@ export default {
         this.$liveRem.showToast({text: '该主题已经永久使用啦'})
         this.$store.dispatch('setCurLoginUserInfo')
       })
+    },
+
+    // 试用主题
+    trialTheme (theme) {
+      const { backgroundOpacity: opacity, background, themeColor, startPoster, startVideo  } = theme
+      this.opacity = opacity
+      this.background = background
+      this.themeColor = themeColor
+      this.startPoster = startPoster
+      this.startVideo = startVideo
+      this.nightMode = background == bgColorArray[1] ? true : false
+    },
+
+    // 编辑主题
+    editTheme (theme) {
+      this.trialTheme(theme)
     }
   },
 };

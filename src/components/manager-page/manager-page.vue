@@ -10,6 +10,7 @@ import { debounce } from "../../utils/utils";
 import request from "../../utils/http";
 import userMode from "../../config/js/user-mode";
 import { formatDate } from "../../utils/utils";
+import { mapGetters } from "vuex";
 export default {
   name: "managerPage",
   data() {
@@ -70,6 +71,10 @@ export default {
         pageSize: 10,
         total: 0,
       },
+      editThemeInfo: {
+        isEditing: false, // 是否在更新主题
+        themeId: "", // 需要更新的主题id
+      },
     };
   },
 
@@ -82,8 +87,25 @@ export default {
             <div class="theme-list">
               {this.themeList.map((item) => {
                 return (
-                  <div class={['theme-card__bg', this.currentThemeId == item.id ? 'theme-card_active' : '']} vTips={{ content: this.currentThemeId == item.id ? '当前应用的主题' : '' }}>
-                    <div class={['theme-card', this.currentThemeId == item.id ? 'theme-card_no-border' : '']} key={item.id}>
+                  <div
+                    class={[
+                      "theme-card__bg",
+                      this.currentThemeId == item.id ? "theme-card_active" : "",
+                    ]}
+                    vTips={{
+                      content:
+                        this.currentThemeId == item.id ? "当前应用的主题" : "",
+                    }}
+                  >
+                    <div
+                      class={[
+                        "theme-card",
+                        this.currentThemeId == item.id
+                          ? "theme-card_no-border"
+                          : "",
+                      ]}
+                      key={item.id}
+                    >
                       <p class="line">
                         <span
                           class="label"
@@ -149,9 +171,20 @@ export default {
                         ></hx-slider>
                       </p>
                       <p class="line">
-                        <button onClick={() => this.editTheme(item)}>编辑主题</button>
-                        <button onClick={() => this.trialTheme(item)}>本次试用</button>
-                        <button onClick={() => this.setTheme(item.id)}>永久使用</button>
+                        <button onClick={() => this.editTheme(item)}>
+                          编辑主题
+                        </button>
+                        <button
+                          onClick={() => this.delTheme(item.id, item.name)}
+                        >
+                          删除主题
+                        </button>
+                        <button onClick={() => this.trialTheme(item)}>
+                          本次试用
+                        </button>
+                        <button onClick={() => this.setTheme(item.id)}>
+                          永久使用
+                        </button>
                       </p>
                     </div>
                   </div>
@@ -173,6 +206,11 @@ export default {
                 定制主题
                 <div class="buttons">
                   <input vModel={this.themeName} placeholder="请输入主题名称" />
+                  {this.editThemeInfo.isEditing ? (
+                    <button onClick={() => this.updateTheme()}>更新主题</button>
+                  ) : (
+                    ""
+                  )}
                   <button onClick={() => this.applyColorSetting(1)}>
                     本次应用
                   </button>
@@ -341,7 +379,7 @@ export default {
                     首页海报
                   </p>
                   <div class="start-video">
-                    图片海报: &nbsp;
+                    图片海报: {this.startPoster ? "已选择" : ""} &nbsp;
                     <button
                       onClick={() => {
                         this.getImageList(1);
@@ -364,7 +402,7 @@ export default {
                     首页背景
                   </p>
                   <div class="start-video">
-                    视频背景: &nbsp;
+                    视频背景: {this.startVideo ? "已选择" : ""}&nbsp;
                     <button
                       onClick={() => {
                         this.getImageList(2);
@@ -674,9 +712,9 @@ export default {
   },
 
   computed: {
-    userDesignSetting() {
-      return this.$store.getters.getUserDesignSetting;
-    },
+    ...mapGetters({
+      userDesignSetting: "getUserDesignSetting",
+    }),
 
     // 透明度
     opacity: {
@@ -739,8 +777,7 @@ export default {
     // 启动页海报
     startPoster: {
       get() {
-        let startPoster =
-          this.$store.getters.getUserDesignSetting.themeSetting.startPoster;
+        let startPoster = this.userDesignSetting.startSetting.startPoster;
         return startPoster || "";
       },
 
@@ -752,8 +789,7 @@ export default {
     // 启动页视频背景
     startVideo: {
       get() {
-        let startVideo =
-          this.$store.getters.getUserDesignSetting.themeSetting.startVideo;
+        let startVideo = this.userDesignSetting.startSetting.startVideo;
         return startVideo || "";
       },
 
@@ -763,9 +799,9 @@ export default {
     },
 
     // 用户当前的主题id
-    currentThemeId () {
-      return this.$store.getters.getUserInfo.userThemeId
-    }
+    currentThemeId() {
+      return this.$store.getters.getUserInfo.userThemeId;
+    },
   },
 
   created() {
@@ -889,29 +925,6 @@ export default {
         if (file.type.startsWith("video")) curFileType = 2;
         if (file.type.startsWith("image")) curFileType = 1;
         this.getImageList(curFileType);
-      });
-    },
-
-    // 创建用户主题
-    createTheme() {
-      if (!this.themeName) {
-        return this.$liveRem.showToast({ text: "请先输入主题名称···" });
-      }
-      let data = {
-        themeColor: this.themeColor,
-        background: this.background,
-        backgroundOpacity: this.opacity,
-        stratPoster: this.startPoster,
-        startVideo: this.startVideo,
-        name: this.themeName,
-      };
-      request({
-        url: "userTheme/createTheme",
-        data,
-        method: "POST",
-      }).then(() => {
-        this.$liveRem.showToast({ text: "新建主题成功！", type: "smail" });
-        this.$store.dispatch("setCurLoginUserInfo");
       });
     },
 
@@ -1142,6 +1155,41 @@ export default {
       this.getLoggerList();
     },
 
+    // 创建用户主题
+    createTheme() {
+      if (!this.themeValidator()) return;
+      let data = this._getThemeParams();
+      request({
+        url: "userTheme/createTheme",
+        data,
+        method: "POST",
+      }).then(() => {
+        this.$liveRem.showToast({ text: "新建主题成功！", type: "smail" });
+        this.$store.dispatch("setCurLoginUserInfo");
+      });
+    },
+
+    // 获取更新/新增主题参数
+    _getThemeParams() {
+      return {
+        themeColor: this.themeColor,
+        background: this.background,
+        backgroundOpacity: this.opacity,
+        startPoster: this.startPoster,
+        startVideo: this.startVideo,
+        name: this.themeName,
+      };
+    },
+
+    // 更新主题/创建主题校验
+    themeValidator() {
+      if (!this.themeName) {
+        this.$liveRem.showToast({ text: "请先输入主题名称···" });
+        return false;
+      }
+      return true
+    },
+
     // 获取主题列表
     async getThemeList() {
       const { curPage, pageSize } = this.themePagenation;
@@ -1158,38 +1206,95 @@ export default {
     },
 
     // 主题列表分页
-    themePagerChange (page) {
-      this.themePagenation.curPage = page
-      this.getThemeList()
+    themePagerChange(page) {
+      this.themePagenation.curPage = page;
+      this.getThemeList();
     },
 
     // 永久使用主题
-    setTheme (themeId) {
+    setTheme(themeId) {
       request({
-        url: 'userTheme/setUserTheme',
-        method: 'POST',
-        data: { themeId }
+        url: "userTheme/setUserTheme",
+        method: "POST",
+        data: { themeId },
       }).then(() => {
-        this.$liveRem.showToast({text: '该主题已经永久使用啦'})
-        this.$store.dispatch('setCurLoginUserInfo')
-      })
+        this.$liveRem.showToast({ text: "该主题已经永久使用啦" });
+        this.$store.dispatch("setCurLoginUserInfo");
+      });
     },
 
     // 试用主题
-    trialTheme (theme) {
-      const { backgroundOpacity: opacity, background, themeColor, startPoster, startVideo  } = theme
-      this.opacity = opacity
-      this.background = background
-      this.themeColor = themeColor
-      this.startPoster = startPoster
-      this.startVideo = startVideo
-      this.nightMode = background == bgColorArray[1] ? true : false
+    trialTheme(theme) {
+      const {
+        backgroundOpacity: opacity,
+        background,
+        themeColor,
+        startPoster,
+        startVideo,
+        name,
+      } = theme;
+      this.opacity = opacity;
+      this.background = background;
+      this.themeColor = themeColor;
+      this.startPoster = startPoster;
+      this.startVideo = startVideo;
+      this.nightMode = background == bgColorArray[1] ? true : false;
+      this.themeName = name;
     },
 
-    // 编辑主题
-    editTheme (theme) {
-      this.trialTheme(theme)
-    }
+    // 编辑选中主题
+    editTheme(theme) {
+      this.editThemeInfo.themeId = theme.id;
+      this.editThemeInfo.isEditing = true;
+      this.trialTheme(theme);
+    },
+
+    // 更新用户主题
+    updateTheme() {
+      if (!this.themeValidator()) return;
+      let params = this._getThemeParams();
+      const { themeId: id } = this.editThemeInfo;
+      request({
+        url: "userTheme/updateTheme",
+        method: "POST",
+        data: Object.assign({}, params, { id }),
+      }).then(() => {
+        this.$liveRem.showToast({
+          type: "success",
+          text: "更新主题成功啦",
+        })
+        this.getThemeList()
+      });
+    },
+
+    // 删除主题
+    async delTheme(themeId, name) {
+      try {
+        await this.$liveRem.showConfirm({
+          message: (
+            <span>
+              确定删除<b style={`color: ${this.themeColor}`}>{name}</b>主题？
+            </span>
+          ),
+        });
+        await request({
+          url: "userTheme/deleteTheme",
+          method: "POST",
+          data: {
+            themeId,
+          },
+        });
+        this.$liveRem.showToast({
+          type: "success",
+          text: "删除成功!",
+        });
+      } catch (error) {
+        this.$liveRem.showToast({
+          type: "sad",
+          text: "删除失败了`` 稍后再试...",
+        });
+      }
+    },
   },
 };
 </script>
@@ -1326,12 +1431,8 @@ export default {
           padding: 0 12px;
           border-radius: 4px;
           outline: none;
-          border: none;
-          margin-right: 20px;
-        }
-
-        input:focus {
           border: 1px solid $theme-color;
+          margin-right: 20px;
         }
 
         button {

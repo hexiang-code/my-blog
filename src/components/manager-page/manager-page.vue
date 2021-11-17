@@ -644,6 +644,7 @@ export default {
           imageList={this.imageList}
           classList={this.imageClassList}
           visible={this.albumVisibel}
+          preloadResource
           accept="image/jpeg,image/png,video/mp4,image/gif"
           {...{
             on: {

@@ -114,7 +114,7 @@ export default {
                           首页背景：
                         </span>
                         {item.startVideo ? (
-                          <video class="video" muted autoplay loop>
+                          <video class="video" muted="muted" loop>
                             <source src={item.startVideo} type="video/mp4" />
                             <source src={item.startVideo} type="video/ogg" />
                           </video>

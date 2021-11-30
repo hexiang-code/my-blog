@@ -1,6 +1,6 @@
 <template>
   <div class="bg-wall">
-    <backgroundVideo :resource="bgVideo" :poster="startPagePoster" @posterLoaded="videoAlready"></backgroundVideo>
+    <backgroundVideo :resource="bgVideo" poster="" @posterLoaded="videoAlready"></backgroundVideo>
     <load-animation :isShow.sync="isLoadAnimation" v-if="bgVideo"></load-animation>
     <div class="search-question">
       <div class="search-tabs">
